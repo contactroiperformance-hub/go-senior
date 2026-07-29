@@ -19,6 +19,8 @@ a{color:#2E5B4C}a:hover{color:#1F4237}
 :focus-visible{outline:3px solid #C05A2E;outline-offset:2px;border-radius:4px}
 html{scroll-padding-top:96px}
 details summary::-webkit-details-marker{display:none}
+
+@media(max-width:1023px){.gs-aside{position:static !important;max-width:none !important;flex:1 1 100% !important}.gs-aside nav[aria-label="Sommaire"]{display:none}}
 </style>
 <title>Plafonds MaPrimeAdapt’ 2026 : barème selon vos revenus — Go Senior</title>
 </helmet>
@@ -41,7 +43,7 @@ details summary::-webkit-details-marker{display:none}
     </div>
   </section>
   <div style="max-width:1200px;margin:0 auto;padding:56px 24px 0;display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start">
-    <aside style="flex:1 1 240px;max-width:300px;position:sticky;top:96px">
+    <aside class="gs-aside" style="flex:1 1 240px;max-width:300px;position:sticky;top:96px">
       <nav aria-label="Sommaire" style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:16px;padding:18px">
         <span style="font-size:15px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#6B7A70;display:block;margin-bottom:6px">Sommaire</span>
         <div style="display:flex;flex-direction:column;gap:2px">
