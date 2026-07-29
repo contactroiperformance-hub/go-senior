@@ -3,6 +3,17 @@ import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { transform as minifyJavaScript } from "esbuild";
+import { localPages } from "../local-pages/data.mjs";
+import {
+  effectivePublication,
+  isPublicLocalPage,
+  localSitemapUrls,
+  localPageRoute,
+  similarityReport,
+  sitemapXml,
+  validateLocalPage
+} from "../local-pages/schema.mjs";
+import { breadcrumbData, renderLocalPage } from "../local-pages/render.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
@@ -61,6 +72,12 @@ const sharedComponents = new Set([
   "Header.dc.html",
   "MiniFormulaire.dc.html",
   "Simulateur.dc.html"
+]);
+const localModelFiles = new Set([
+  "Modele-departement.dc.html",
+  "Modele-ville.dc.html",
+  "Modele-departement-douche.dc.html",
+  "Modele-ville-douche.dc.html"
 ]);
 
 const pages = [
@@ -141,7 +158,7 @@ function imageFrom(source) {
   };
 }
 
-function structuredData(route, title, description) {
+function structuredData(route, title, description, customBreadcrumbs = null) {
   const canonical = `${origin}${route}`;
   const graph = [
     {
@@ -180,29 +197,39 @@ function structuredData(route, title, description) {
   ];
 
   if (route !== "/") {
-    const parts = route.split("/").filter(Boolean);
-    const items = [
-      {
+    let items;
+    if (customBreadcrumbs?.length) {
+      items = customBreadcrumbs.map((item, index) => ({
         "@type": "ListItem",
-        position: 1,
-        name: "Accueil",
-        item: `${origin}/`
+        position: index + 1,
+        name: item.name,
+        item: new URL(item.route, origin).href
+      }));
+    } else {
+      const parts = route.split("/").filter(Boolean);
+      items = [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Accueil",
+          item: `${origin}/`
+        }
+      ];
+      if (parts[0] === "guides" && parts.length > 1) {
+        items.push({
+          "@type": "ListItem",
+          position: 2,
+          name: "Guides",
+          item: `${origin}/guides/`
+        });
       }
-    ];
-    if (parts[0] === "guides" && parts.length > 1) {
       items.push({
         "@type": "ListItem",
-        position: 2,
-        name: "Guides",
-        item: `${origin}/guides/`
+        position: items.length + 1,
+        name: cleanTitle(title),
+        item: canonical
       });
     }
-    items.push({
-      "@type": "ListItem",
-      position: items.length + 1,
-      name: cleanTitle(title),
-      item: canonical
-    });
     graph.push({
       "@type": "BreadcrumbList",
       "@id": `${canonical}#breadcrumb`,
@@ -252,7 +279,7 @@ function replaceLinks(source) {
   return result;
 }
 
-function addProductionHead(source, file, route, indexed) {
+function addProductionHead(source, file, route, indexed, options = {}) {
   const canonical = `${origin}${route}`;
   const title = titleFrom(source);
   const description = descriptionFrom(source, file);
@@ -280,7 +307,7 @@ function addProductionHead(source, file, route, indexed) {
     `<meta name="twitter:image" content="${escapeAttribute(image.url)}">`,
     `<meta name="author" content="Go Senior">`,
     `<meta name="theme-color" content="#1F4237">`,
-    `<script type="application/ld+json">${structuredData(route, title, description)}</script>`
+    `<script type="application/ld+json">${structuredData(route, title, description, options.breadcrumbs)}</script>`
   ].join("\n");
 
   let result = stripRuntimeMetadata(stripSharedFontHead(source));
@@ -291,7 +318,7 @@ function addProductionHead(source, file, route, indexed) {
   return result;
 }
 
-function transform(source, file, route = null, indexed = false, stripSharedFonts = false) {
+function transform(source, file, route = null, indexed = false, stripSharedFonts = false, options = {}) {
   let result = source
     .replaceAll("\u00a0!important", " !important")
     .replace("<html>", '<html lang="fr">')
@@ -308,7 +335,7 @@ function transform(source, file, route = null, indexed = false, stripSharedFonts
   result = replaceLinks(result);
   result = addImageLoadingPolicy(result, file);
   if (stripSharedFonts) result = stripSharedFontHead(result);
-  if (route) result = addProductionHead(result, file, route, indexed);
+  if (route) result = addProductionHead(result, file, route, indexed, options);
   return result;
 }
 
@@ -324,7 +351,22 @@ await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 
 const rootFiles = await readdir(root);
-const designFiles = rootFiles.filter((name) => name.endsWith(".dc.html"));
+const designFiles = rootFiles.filter(
+  (name) => name.endsWith(".dc.html") && !localModelFiles.has(name)
+);
+
+const localSchemaErrors = localPages.flatMap((page) =>
+  validateLocalPage(page).map((error) => `${page.id}: ${error}`)
+);
+if (localSchemaErrors.length) {
+  throw new Error(`Schéma local invalide:\n${localSchemaErrors.join("\n")}`);
+}
+const localSimilarityIssues = similarityReport(
+  localPages.filter((page) => page.status === "published")
+);
+if (localSimilarityIssues.length) {
+  throw new Error(`Contenus locaux trop similaires:\n${JSON.stringify(localSimilarityIssues, null, 2)}`);
+}
 
 for (const file of designFiles) {
   const source = await readFile(path.join(root, file), "utf8");
@@ -337,6 +379,22 @@ for (const file of designFiles) {
 for (const [file, route, indexed] of pages) {
   const source = await readFile(path.join(root, file), "utf8");
   await writeRoute(route, transform(source, file, route, indexed));
+}
+
+for (const page of localPages) {
+  const publication = effectivePublication(page);
+  const source = renderLocalPage(page, localPages);
+  await writeRoute(
+    localPageRoute(page),
+    transform(
+      source,
+      `${page.id}.local.html`,
+      localPageRoute(page),
+      publication.indexStatus === "index",
+      false,
+      { breadcrumbs: breadcrumbData(page) }
+    )
+  );
 }
 
 await cp(path.join(root, "uploads"), path.join(dist, "uploads"), { recursive: true });
@@ -358,9 +416,28 @@ const sitemap = [
   ...pages
     .filter(([, , indexed]) => indexed)
     .map(([, route]) => `  <url><loc>${origin}${route}</loc></url>`),
+  ...localPages
+    .filter(isPublicLocalPage)
+    .map((page) => `  <url><loc>${origin}${localPageRoute(page)}</loc></url>`),
   "</urlset>",
   ""
 ].join("\n");
+
+const localSitemapDefinitions = [
+  ["monte-escalier-departements.xml", "monte-escalier", "department"],
+  ["monte-escalier-villes.xml", "monte-escalier", "city"],
+  ["douche-senior-departements.xml", "douche-senior", "department"],
+  ["douche-senior-villes.xml", "douche-senior", "city"]
+];
+const localSitemaps = localSitemapDefinitions.map(([file, service, pageLevel]) => {
+  const urls = localSitemapUrls(localPages, origin, service, pageLevel);
+  return [file, sitemapXml(urls)];
+});
+
+const draftHeaders = localPages
+  .filter((page) => effectivePublication(page).status === "draft")
+  .map((page) => `${localPageRoute(page)}*\n  X-Robots-Tag: noindex, follow`)
+  .join("\n\n");
 
 const headers = `/*
   X-Content-Type-Options: nosniff
@@ -388,6 +465,8 @@ const headers = `/*
 
 /projet/*
   Cache-Control: public, max-age=0, must-revalidate, no-transform
+
+${draftHeaders}
 `;
 
 const redirects = [
@@ -412,12 +491,16 @@ const notFound = `<!doctype html>
 <body><main><p>Erreur 404</p><h1>Cette page n’existe pas.</h1><p>Retrouvez nos guides et nos solutions depuis la page d’accueil.</p><a href="/">Retour à l’accueil</a></main></body>
 </html>`;
 
+await mkdir(path.join(dist, "sitemaps"), { recursive: true });
 await Promise.all([
   writeFile(path.join(dist, "sitemap.xml"), sitemap),
   writeFile(path.join(dist, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap.xml\n`),
   writeFile(path.join(dist, "_headers"), headers),
   writeFile(path.join(dist, "_redirects"), redirects),
-  writeFile(path.join(dist, "404.html"), notFound)
+  writeFile(path.join(dist, "404.html"), notFound),
+  ...localSitemaps.map(([file, content]) =>
+    writeFile(path.join(dist, "sitemaps", file), content)
+  )
 ]);
 
-console.log(`Built ${pages.length} production routes and ${designFiles.length} design components.`);
+console.log(`Built ${pages.length + localPages.length} production routes and ${designFiles.length} design components.`);

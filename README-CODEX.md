@@ -128,6 +128,21 @@ Header.dc.html (navigation + menu mobile + barre CTA fixe), Footer.dc.html, Bloc
 - Couverture : 3 états (`disponible` / `partielle` / `non-confirmee`), copys publiques sans noms techniques.
 - Bloc budget haut de page sur les pages ville (H1 à intention tarifaire) ; « Périmètre de ce guide » ; sources enrichies ; FAQ dynamiques 6–10 ; villes voisines masquées si liste vide.
 
+## Moteur de pages locales — implémenté
+
+Le moteur programmatique se trouve dans `local-pages/` :
+- `data.mjs` contient les quatre exemples de développement Nord, Lille, Gironde et Bordeaux ;
+- `schema.mjs` applique le modèle commun, les champs propres à chaque service, les règles de publication, les codes postaux de couverture et le contrôle de similarité ;
+- `render.mjs` fournit les quatre templates réutilisables en conservant le design validé et en réutilisant Header, Footer et BlocProjet.
+
+Le build génère les quatre routes de validation en `draft`, `noindex, follow`, hors sitemap, sans aucun placeholder public. Les maquettes `Modele-*.dc.html` restent les références visuelles dans le dépôt mais ne sont plus copiées dans le site public.
+
+Sitemaps locaux préparés :
+- `/sitemaps/monte-escalier-departements.xml`
+- `/sitemaps/monte-escalier-villes.xml`
+- `/sitemaps/douche-senior-departements.xml`
+- `/sitemaps/douche-senior-villes.xml`
+
 ## Règles produit non négociables
 1. Mise en relation UN-À-UN : jamais de promesse « comparez plusieurs devis »
 2. Modules de confiance (avis, presse, statistiques, conseillers) masqués tant que les données réelles ne sont pas fournies — ne jamais inventer de notes, chiffres ou témoignages
