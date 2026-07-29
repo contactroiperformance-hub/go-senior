@@ -17,6 +17,8 @@ a{color:#2E5B4C}a:hover{color:#1F4237}
 :focus-visible{outline:3px solid #C05A2E;outline-offset:2px;border-radius:4px}
 html{scroll-padding-top:96px}
 details summary::-webkit-details-marker{display:none}
+.gs-hero-prix{display:none !important}
+@media(max-width:799px){.gs-hero-btns{display:none !important}}
 @media(max-width:560px){.gs-cta-hero{white-space:nowrap;font-size:clamp(13.5px,4.4vw,16.5px) !important;padding:15px 12px !important;width:100%;box-sizing:border-box}}
 
 @media(max-width:1023px){.gs-aside{position:static !important;max-width:none !important;flex:1 1 100% !important}.gs-aside nav[aria-label="Sommaire"]{display:none}}
@@ -32,9 +34,9 @@ details summary::-webkit-details-marker{display:none}
         <div style="display:flex;flex-direction:column;gap:18px;max-width:620px">
           <h1 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(34px,4vw,48px);line-height:1.14;letter-spacing:-0.015em;color:#1F2E27;text-wrap:balance">Douche sécurisée pour senior : remplacer une baignoire par une douche adaptée</h1>
           <p style="margin:0;font-size:21px;color:#41504A;text-wrap:pretty">Comparez les solutions de douche à accès facilité, les équipements disponibles, les coûts et les possibilités d’intervention près de chez vous.</p>
-          <div style="display:flex;flex-wrap:wrap;gap:14px">
+          <div class="gs-hero-btns" style="display:flex;flex-wrap:wrap;gap:14px">
             <a href="#secteur" class="gs-cta-hero" style="text-decoration:none;background:#C05A2E;color:#FFFFFF;font-weight:600;font-size:19px;padding:15px 26px;border-radius:10px;text-align:center" style-hover="background:#A84D24">Trouver des solutions près de chez moi</a>
-            <a href="#prix" style="text-decoration:none;border:2px solid #2E5B4C;color:#2E5B4C;font-weight:600;font-size:19px;padding:13px 26px;border-radius:10px" style-hover="background:#2E5B4C;color:#FFFFFF">Voir les prix</a>
+            <a href="#prix" class="gs-hero-prix" style="text-decoration:none;border:2px solid #2E5B4C;color:#2E5B4C;font-weight:600;font-size:19px;padding:13px 26px;border-radius:10px" style-hover="background:#2E5B4C;color:#FFFFFF">Voir les prix</a>
           </div>
         </div>
         <dc-import name="BlocProjet" projet="douche-senior" title="Vérifiez les solutions dans votre secteur" hint-size="100%,300px"></dc-import>
