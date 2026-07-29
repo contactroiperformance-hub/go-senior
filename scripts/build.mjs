@@ -436,7 +436,7 @@ const localSitemaps = localSitemapDefinitions.map(([file, service, pageLevel]) =
 
 const draftHeaders = localPages
   .filter((page) => effectivePublication(page).status === "draft")
-  .map((page) => `${localPageRoute(page)}*\n  X-Robots-Tag: noindex, follow`)
+  .map((page) => `${localPageRoute(page)}\n  X-Robots-Tag: noindex, follow`)
   .join("\n\n");
 
 const headers = `/*
