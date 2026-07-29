@@ -367,6 +367,9 @@ const headers = `/*
 
 /vendor/*
   Cache-Control: public, max-age=31536000, immutable
+
+/projet/*
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
 `;
 
 const redirects = [

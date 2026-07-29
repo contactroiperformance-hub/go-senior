@@ -144,6 +144,9 @@ if (!headers.includes("/support.js\n  Cache-Control: public, max-age=31536000, i
 if (!headers.includes("/vendor/*\n  Cache-Control: public, max-age=31536000, immutable")) {
   failures.push("_headers: cache immuable des dépendances manquant");
 }
+if (!headers.includes("/projet/*\n  Cache-Control: public, max-age=0, must-revalidate, no-transform")) {
+  failures.push("_headers: protection du lien support manquante");
+}
 
 if (failures.length) {
   console.error(failures.join("\n"));
