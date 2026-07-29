@@ -89,7 +89,7 @@ button[aria-pressed="false"]:hover{border-color:#2E5B4C !important;background:#
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:760,&quot;height&quot;:640},&quot;projet&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;monte-escalier&quot;,&quot;douche-senior&quot;],&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;},&quot;titre&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Étudiez votre projet en 2 minutes&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;},&quot;redirige&quot;:{&quot;editor&quot;:null,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Comportement&quot;,&quot;description&quot;:&quot;URL de la page formulaire dédiée : le premier clic y emmène en transmettant la réponse&quot;}}">
 class Component extends DCLogic {
-  state = { ecran: 0, projetChoisi: "", projetUrl: "", reponses: {}, cp: "", prenom: "", nom: "", tel: "", email: "", consent: false, erreur: "" };
+  state = { ecran: 0, projetChoisi: "", projetUrl: "", reponses: {}, cp: "", prenom: "", nom: "", tel: "", email: "", consent: false, envoi: false, erreur: "" };
   componentDidMount() {
     const q = new URLSearchParams(location.search);
     const patch = {};
@@ -221,7 +221,8 @@ class Component extends DCLogic {
         if (s.ecran === 0 && s.projetChoisi) this.setState({ projetChoisi: "", erreur: "" });
         else this.setState({ ecran: Math.max(0, s.ecran - 1), erreur: "" });
       },
-      suivant: () => {
+      suivant: async () => {
+        if (s.envoi) return;
         if (estQ) {
           const ok = e.cle === "__projet" ? !!s.projetChoisi : !!s.reponses[e.cle];
           if (!ok) return this.setState({ erreur: "Veuillez choisir une réponse pour continuer." });
@@ -230,6 +231,29 @@ class Component extends DCLogic {
         if (estCoords) {
           if (!s.prenom.trim() || !s.nom.trim() || !s.tel.trim() || !s.email.trim()) return this.setState({ erreur: "Veuillez renseigner votre prénom, votre nom, votre téléphone et votre email." });
           if (!s.consent) return this.setState({ erreur: "Merci de cocher la case de consentement pour transmettre votre demande." });
+          this.setState({ envoi: true, erreur: "" });
+          try {
+            const response = await fetch("/api/lead", {
+              method: "POST",
+              headers: { "Accept": "application/json", "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: s.email,
+                postcode: s.cp,
+                firstname: s.prenom,
+                lastname: s.nom,
+                phone1: s.tel,
+                project: this.projet(),
+                answers: s.reponses,
+                consent: s.consent
+              })
+            });
+            const result = await response.json();
+            if (!response.ok || !result.ok) throw new Error("submission_failed");
+            this.setState({ ecran: s.ecran + 1, envoi: false, erreur: "" });
+          } catch {
+            this.setState({ envoi: false, erreur: "Votre demande n’a pas pu être transmise. Merci de réessayer." });
+          }
+          return;
         }
         this.setState({ ecran: s.ecran + 1, erreur: "" });
       }
