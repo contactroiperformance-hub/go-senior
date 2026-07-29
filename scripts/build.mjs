@@ -1,6 +1,8 @@
 import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { transform as minifyJavaScript } from "esbuild";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
@@ -8,9 +10,14 @@ const origin = "https://go-senior.fr";
 const organizationId = `${origin}/#organization`;
 const websiteId = `${origin}/#website`;
 const defaultSocialImage = `${origin}/uploads/cover-linkedin-1584x396.png`;
-const fontHead = `<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">`;
+const supportSource = await readFile(path.join(root, "support.js"), "utf8");
+const supportVersion = createHash("sha256").update(supportSource).digest("hex").slice(0, 10);
+const fontHead = `<link rel="preload" href="/uploads/fonts/libre-franklin-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/uploads/fonts/source-serif-4-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:'Libre Franklin';font-style:normal;font-weight:100 900;font-display:swap;src:url('/uploads/fonts/libre-franklin-latin.woff2') format('woff2')}
+@font-face{font-family:'Source Serif 4';font-style:normal;font-weight:200 900;font-display:swap;src:url('/uploads/fonts/source-serif-4-latin.woff2') format('woff2')}
+</style>`;
 const analyticsTag = `<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HBZWTD0J4F"></script>
 <script>
@@ -215,6 +222,18 @@ function stripSharedFontHead(source) {
     .replace(/<link\s+href="https:\/\/fonts\.googleapis\.com\/css2\?[^"]+"\s+rel="stylesheet"\s*>\s*/gi, "");
 }
 
+function addImageLoadingPolicy(source, file) {
+  let imageIndex = 0;
+  return source.replace(/<img\b(?![^>]*\bloading=)([^>]*)>/gi, (match, attributes) => {
+    const shouldPrioritize = file !== "Accueil.dc.html" && imageIndex === 0;
+    imageIndex += 1;
+    const loading = shouldPrioritize
+      ? ' loading="eager" fetchpriority="high"'
+      : ' loading="lazy" fetchpriority="low"';
+    return `<img${loading} decoding="async"${attributes}>`;
+  });
+}
+
 function replaceLinks(source) {
   let result = source;
   for (const [file, route] of [...routes.entries()].sort((a, b) => b[0].length - a[0].length)) {
@@ -268,12 +287,13 @@ function transform(source, file, route = null, indexed = false, stripSharedFonts
     .replace("<html>", '<html lang="fr">')
     .replace(
       '<script src="./support.js"></script>',
-      '<base href="/">\n<script src="/support.js"></script>'
+      `<base href="/">\n<script defer src="/support.js?v=${supportVersion}"></script>`
     )
     .replaceAll('src="uploads/', 'src="/uploads/')
     .replaceAll('href="uploads/', 'href="/uploads/');
 
   result = replaceLinks(result);
+  result = addImageLoadingPolicy(result, file);
   if (stripSharedFonts) result = stripSharedFontHead(result);
   if (route) result = addProductionHead(result, file, route, indexed);
   return result;
@@ -307,7 +327,11 @@ for (const [file, route, indexed] of pages) {
 }
 
 await cp(path.join(root, "uploads"), path.join(dist, "uploads"), { recursive: true });
-await cp(path.join(root, "support.js"), path.join(dist, "support.js"));
+const minifiedSupport = await minifyJavaScript(supportSource, {
+  minify: true,
+  target: "es2020"
+});
+await writeFile(path.join(dist, "support.js"), minifiedSupport.code);
 
 const sitemap = [
   '<?xml version="1.0" encoding="UTF-8"?>',
@@ -335,7 +359,7 @@ const headers = `/*
   Cache-Control: public, max-age=31536000, immutable
 
 /support.js
-  Cache-Control: public, max-age=86400
+  Cache-Control: public, max-age=31536000, immutable
 `;
 
 const redirects = [

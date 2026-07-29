@@ -11,6 +11,7 @@
     "deploy": "wrangler pages deploy --branch main"
   },
   "devDependencies": {
+    "esbuild": "^0.28.1",
     "wrangler": "^4.0.0"
   }
 }

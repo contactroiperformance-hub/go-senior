@@ -44,14 +44,17 @@ for (const file of htmlFiles) {
     const descriptionCount = (head.match(/<meta name="description"/gi) || []).length;
     const canonicalCount = (head.match(/<link rel="canonical"/gi) || []).length;
     const structuredDataCount = (head.match(/type="application\/ld\+json"/gi) || []).length;
-    const fontStylesheetCount = (
-      head.match(/fonts\.googleapis\.com\/css2\?/gi) || []
+    const localFontCount = (
+      head.match(/\/uploads\/fonts\/(?:libre-franklin|source-serif-4)-latin\.woff2/gi) || []
     ).length;
     if (titleCount !== 1) failures.push(`${relative}: ${titleCount} balise title dans head`);
     if (descriptionCount !== 1) failures.push(`${relative}: ${descriptionCount} meta description dans head`);
     if (canonicalCount !== 1) failures.push(`${relative}: ${canonicalCount} canonical dans head`);
     if (structuredDataCount !== 1) failures.push(`${relative}: JSON-LD absent ou dupliqué`);
-    if (fontStylesheetCount !== 1) failures.push(`${relative}: police Google absente ou dupliquée`);
+    if (localFontCount !== 4) failures.push(`${relative}: polices locales absentes ou dupliquées`);
+    if (/fonts\.(?:googleapis|gstatic)\.com/i.test(head)) {
+      failures.push(`${relative}: ressource Google Fonts externe restante`);
+    }
     const jsonLd = head.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/i)?.[1];
     if (jsonLd) {
       try {
@@ -130,6 +133,9 @@ if (!headers.includes("/*.dc.html\n  X-Robots-Tag: noindex, nofollow")) {
 }
 if (!headers.includes("/*.dc\n  X-Robots-Tag: noindex, nofollow")) {
   failures.push("_headers: protection des URL .dc propres manquante");
+}
+if (!headers.includes("/support.js\n  Cache-Control: public, max-age=31536000, immutable")) {
+  failures.push("_headers: cache immuable du runtime manquant");
 }
 
 if (failures.length) {

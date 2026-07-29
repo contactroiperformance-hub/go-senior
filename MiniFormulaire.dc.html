@@ -11,7 +11,8 @@
 <style>html,body{overflow-x:hidden;max-width:100%}
 img{max-width:100%;height:auto}
 body{margin:0;font-family:'Libre Franklin',system-ui,sans-serif}a{color:#2E5B4C}a:hover{color:#1F4237}
-button[aria-pressed="false"]:hover{border-color:#2E5B4C !important;background:#F5F8F3 !important;box-shadow:0 6px 18px rgba(34,50,43,0.14);transform:translateY(-2px)}</style>
+button[aria-pressed="false"]:hover{border-color:#2E5B4C !important;background:#F5F8F3 !important;box-shadow:0 6px 18px rgba(34,50,43,0.14);transform:translateY(-2px)}
+@media(max-width:640px){.gsmf-photo{display:none !important}}</style>
 </helmet>
 <div style="display:flex;flex-direction:column;gap:22px;font-family:'Libre Franklin',system-ui,sans-serif">
   <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(34,50,43,0.06),0 14px 36px rgba(34,50,43,0.10)">
@@ -118,7 +119,8 @@ class Component extends DCLogic {
   centre(el) { return this.el("span", { key: "c", style: { height: "140px", display: "flex", alignItems: "center", justifyContent: "center" } }, el); }
   glyphe(txt) { return this.el("span", { key: "g", style: { fontFamily: "'Source Serif 4',Georgia,serif", fontWeight: 700, fontSize: "52px", color: "#2E5B4C", lineHeight: 1, height: "140px", display: "flex", alignItems: "center", justifyContent: "center", width: "100%" } }, txt); }
   img(src, alt) {
-    return this.el("img", { key: "i", src, alt, style: { width: "100%", height: "170px", borderRadius: "10px", objectFit: "cover", display: "block" } });
+    if (typeof window !== "undefined" && window.matchMedia("(max-width: 640px)").matches) return null;
+    return this.el("img", { key: "i", src, alt, className: "gsmf-photo", loading: "lazy", decoding: "async", style: { width: "100%", height: "170px", borderRadius: "10px", objectFit: "cover", display: "block" } });
   }
   photo(label) {
     return this.el("span", { key: "p", style: { width: "118px", height: "74px", borderRadius: "10px", background: "repeating-linear-gradient(45deg,#E9EFE4,#E9EFE4 8px,#E1E9DB 8px,#E1E9DB 16px)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" } },
@@ -127,19 +129,19 @@ class Component extends DCLogic {
   icones() {
     const p = d => ({ t: "path", a: { d } });
     return {
-      droit: this.img("uploads/monte-escalier-droit.jpg", "Monte-escalier droit"),
-      tournant: this.img("uploads/monte-escalier-tournant-interieur.jpg", "Monte-escalier tournant"),
-      exterieur: this.img("uploads/monte-escalier-exterieur-perron.jpg", "Monte-escalier extérieur"),
-      monteEscalier: this.img("uploads/monte-escalier-en-situation.jpg", "Monte-escalier en situation"),
+      droit: this.img("uploads/monte-escalier-droit.webp", "Monte-escalier droit"),
+      tournant: this.img("uploads/monte-escalier-tournant-interieur.webp", "Monte-escalier tournant"),
+      exterieur: this.img("uploads/monte-escalier-exterieur-perron.webp", "Monte-escalier extérieur"),
+      monteEscalier: this.img("uploads/monte-escalier-en-situation.webp", "Monte-escalier en situation"),
       nsp: this.glyphe("?"),
       m1: this.centre(this.svg([p("M4 12 L12 5 l8 7"), p("M6 11 V20 h12 V11"), p("M10.5 20 v-5 h3 v5")])),
       m2: this.centre(this.svg([p("M6 9 h12 V20 H6 z"), p("M6 9 L12 4 l6 5"), p("M9 12.5 h2 M13 12.5 h2 M9 16 h2 M13 16 h2")])),
       m3: this.centre(this.svg([p("M7 20 V5 a1 1 0 0 1 1-1 h8 a1 1 0 0 1 1 1 V20"), p("M5 20 h14"), p("M10 7.5 h1.5 M13 7.5 h1.5 M10 11 h1.5 M13 11 h1.5 M10 14.5 h1.5 M13 14.5 h1.5")])),
-      baignoire: this.img("uploads/baignoire-a-remplacer.jpg", "Baignoire à remplacer"),
-      douche: this.img("uploads/douche-existante-a-adapter.jpg", "Douche existante à adapter"),
-      plainpied: this.img("uploads/douche-de-plain-pied.jpg", "Douche de plain-pied"),
-      adaptation: this.img("uploads/douche-siege-mural-barres-appui.jpg", "Barres d’appui et siège de douche"),
-      sdb: this.img("uploads/salle-de-bain-adaptee-complete.jpg", "Salle de bain adaptée complète")
+      baignoire: this.img("uploads/baignoire-a-remplacer.webp", "Baignoire à remplacer"),
+      douche: this.img("uploads/douche-existante-a-adapter.webp", "Douche existante à adapter"),
+      plainpied: this.img("uploads/douche-de-plain-pied.webp", "Douche de plain-pied"),
+      adaptation: this.img("uploads/douche-siege-mural-barres-appui.webp", "Barres d’appui et siège de douche"),
+      sdb: this.img("uploads/salle-de-bain-adaptee-complete.webp", "Salle de bain adaptée complète")
     };
   }
   projet() { return this.state.projetChoisi || this.props.projet || this.state.projetUrl || ""; }
