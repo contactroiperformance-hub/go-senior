@@ -1,7 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "go-senior",
-  "account_id": "a3e14ec5b9d47f0b40e04bb0c107bcfc",
   "compatibility_date": "2026-07-29",
   "pages_build_output_dir": "./dist"
 }
