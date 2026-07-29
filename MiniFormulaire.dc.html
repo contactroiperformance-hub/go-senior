@@ -13,7 +13,8 @@ img{max-width:100%;height:auto}
 body{margin:0;font-family:'Libre Franklin',system-ui,sans-serif}a{color:#2E5B4C}a:hover{color:#1F4237}
 button[aria-pressed="false"]:hover{border-color:#2E5B4C !important;background:#F5F8F3 !important;box-shadow:0 6px 18px rgba(34,50,43,0.14);transform:translateY(-2px)}
 @media(max-width:640px){.gsmf-photo{display:none !important}.gsmf-opts{grid-template-columns:1fr !important;gap:10px !important}.gsmf-opts button{min-height:0 !important;padding:16px 18px !important;flex-direction:row !important;justify-content:center !important}.gsmf-opts button .gsmf-glyphe{height:auto !important;font-size:26px !important}}
-@media(max-width:680px){.gs-jlabel{display:none !important}}</style>
+@media(max-width:680px){.gs-jlabel{display:none !important}}
+@media(max-width:640px){.gsmf-nav{flex-direction:column-reverse !important;align-items:stretch !important}.gsmf-nav button{width:100%}}</style>
 </helmet>
 <div style="display:flex;flex-direction:column;gap:22px;font-family:'Libre Franklin',system-ui,sans-serif">
   <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(34,50,43,0.06),0 14px 36px rgba(34,50,43,0.10)">
@@ -68,13 +69,13 @@ button[aria-pressed="false"]:hover{border-color:#2E5B4C !important;background:#
       </sc-if>
       <sc-if value="{{ aErreur }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:18px 0 0;font-size:17px;font-weight:600;color:#A8442A;text-align:center">{{ erreur }}</p></sc-if>
       <sc-if value="{{ pasFin }}" hint-placeholder-val="{{ true }}">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:30px">
+        <div class="gsmf-nav" style="display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:30px">
           <sc-if value="{{ peutRetour }}" hint-placeholder-val="{{ false }}">
-            <button onClick="{{ retour }}" style="height:52px;padding:0 22px;background:#FFFFFF;color:#2E5B4C;border:2px solid #2E5B4C;border-radius:10px;font-family:'Libre Franklin',system-ui,sans-serif;font-weight:600;font-size:17.5px;cursor:pointer" style-hover="background:#EBF1E8">‹ Précédent</button>
+            <button onClick="{{ retour }}" style="min-height:52px;padding:12px 22px;background:#FFFFFF;color:#2E5B4C;border:2px solid #2E5B4C;border-radius:10px;font-family:'Libre Franklin',system-ui,sans-serif;font-weight:600;font-size:17.5px;cursor:pointer;flex-shrink:0" style-hover="background:#EBF1E8">‹ Précédent</button>
           </sc-if>
           <sc-if value="{{ pasRetour }}" hint-placeholder-val="{{ true }}"><span></span></sc-if>
           <sc-if value="{{ montrerSuivant }}" hint-placeholder-val="{{ false }}">
-            <button onClick="{{ suivant }}" style="height:52px;padding:0 30px;background:#C05A2E;color:#FFFFFF;border:none;border-radius:10px;font-family:'Libre Franklin',system-ui,sans-serif;font-weight:600;font-size:18.5px;cursor:pointer" style-hover="background:#A84D24">{{ labelSuivant }} ›</button>
+            <button onClick="{{ suivant }}" style="min-height:52px;padding:12px 30px;background:#C05A2E;color:#FFFFFF;border:none;border-radius:10px;font-family:'Libre Franklin',system-ui,sans-serif;font-weight:600;font-size:18.5px;cursor:pointer;line-height:1.3" style-hover="background:#A84D24">{{ labelSuivant }} ›</button>
           </sc-if>
         </div>
       </sc-if>
