@@ -76,14 +76,14 @@ for (const file of htmlFiles) {
     if (analyticsLoaderCount !== 1 || analyticsConfigCount !== 1) {
       failures.push(`${relative}: balise Google Analytics absente ou dupliquée`);
     }
-    const clarityLoaderCount = (
-      source.match(/www\.clarity\.ms\/tag\//g) || []
+    const consentLoaderCount = (
+      source.match(/\/consent\.js\?v=[a-f0-9]{10}/g) || []
     ).length;
-    const clarityConfigCount = (
-      source.match(/"clarity", "script", "xu36kqlw73"/g) || []
+    const consentDefaultCount = (
+      source.match(/gtag\('consent', 'default'/g) || []
     ).length;
-    if (clarityLoaderCount !== 1 || clarityConfigCount !== 1) {
-      failures.push(`${relative}: balise Microsoft Clarity absente ou dupliquée`);
+    if (consentLoaderCount !== 1 || consentDefaultCount !== 1) {
+      failures.push(`${relative}: Consent Mode v2 absent ou dupliqué`);
     }
     const localReactCount = (
       source.match(/\/vendor\/react(?:-dom)?-18\.3\.1\.min\.js/g) || []
@@ -141,12 +141,21 @@ if (!headers.includes("/*.dc\n  X-Robots-Tag: noindex, nofollow")) {
 if (!headers.includes("/support.js\n  Cache-Control: public, max-age=31536000, immutable")) {
   failures.push("_headers: cache immuable du runtime manquant");
 }
+if (!headers.includes("/consent.js\n  Cache-Control: public, max-age=31536000, immutable")) {
+  failures.push("_headers: cache immuable du gestionnaire de consentement manquant");
+}
 if (!headers.includes("/vendor/*\n  Cache-Control: public, max-age=31536000, immutable")) {
   failures.push("_headers: cache immuable des dépendances manquant");
 }
 if (!headers.includes("/projet/*\n  Cache-Control: public, max-age=0, must-revalidate, no-transform")) {
   failures.push("_headers: protection du lien support manquante");
 }
+
+const consentScript = await readFile(path.join(dist, "consent.js"), "utf8");
+for (const signal of ["ad_storage", "analytics_storage", "ad_user_data", "ad_personalization"]) {
+  if (!consentScript.includes(signal)) failures.push(`consent.js: signal v2 manquant ${signal}`);
+}
+if (!consentScript.includes("xu36kqlw73")) failures.push("consent.js: identifiant Clarity manquant");
 
 if (failures.length) {
   console.error(failures.join("\n"));

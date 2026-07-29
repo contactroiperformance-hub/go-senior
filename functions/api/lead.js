@@ -154,6 +154,7 @@ function toLeadByteFields(lead) {
     lastname: lead.lastname,
     phone1: lead.phone1,
     source: "go-senior.fr",
+    "Quand_souhaitez-vous_êtres_rappelé?": "Dès que possible",
     "quand_souhaitez-vous_réaliser_le_projet_?": answer("delai"),
     "Êtes-vous_propriétaire_du_logement_?": answer("proprio"),
     "quel_projet_envisagez-vous_?": answer("souhait") || PROJECT_LABELS[lead.project]

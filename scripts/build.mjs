@@ -12,28 +12,36 @@ const websiteId = `${origin}/#website`;
 const defaultSocialImage = `${origin}/uploads/cover-linkedin-1584x396.png`;
 const supportSource = await readFile(path.join(root, "support.js"), "utf8");
 const supportVersion = createHash("sha256").update(supportSource).digest("hex").slice(0, 10);
+const consentSource = await readFile(path.join(root, "consent.js"), "utf8");
+const consentVersion = createHash("sha256").update(consentSource).digest("hex").slice(0, 10);
 const fontHead = `<link rel="preload" href="/uploads/fonts/libre-franklin-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/uploads/fonts/source-serif-4-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 @font-face{font-family:'Libre Franklin';font-style:normal;font-weight:100 900;font-display:swap;src:url('/uploads/fonts/libre-franklin-latin.woff2') format('woff2')}
 @font-face{font-family:'Source Serif 4';font-style:normal;font-weight:200 900;font-display:swap;src:url('/uploads/fonts/source-serif-4-latin.woff2') format('woff2')}
 </style>`;
-const analyticsTag = `<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-HBZWTD0J4F"></script>
-<script>
+const consentBootstrap = `<script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
+  gtag('consent', 'default', {
+    ad_storage: 'denied',
+    analytics_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    functionality_storage: 'denied',
+    personalization_storage: 'denied',
+    security_storage: 'granted',
+    wait_for_update: 500
+  });
+</script>`;
+const analyticsTag = `<!-- Google tag (gtag.js) — Consent Mode v2 advanced -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HBZWTD0J4F"></script>
+<script>
   gtag('js', new Date());
 
   gtag('config', 'G-HBZWTD0J4F');
 </script>`;
-const clarityTag = `<script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "xu36kqlw73");
-</script>`;
+const consentTag = `<script defer src="/consent.js?v=${consentVersion}"></script>`;
 
 const missingDescriptions = new Map([
   ["Accueil.dc.html", "Découvrez les solutions pour adapter votre logement, comprenez les prix et les aides disponibles, puis trouvez des professionnels pouvant intervenir dans votre secteur."],
@@ -276,7 +284,7 @@ function addProductionHead(source, file, route, indexed) {
   let result = stripRuntimeMetadata(stripSharedFontHead(source));
   result = result.replace(
     "</head>",
-    `${social}\n${fontHead}\n${analyticsTag}\n${clarityTag}\n</head>`
+    `${social}\n${fontHead}\n${consentBootstrap}\n${analyticsTag}\n${consentTag}\n</head>`
   );
   return result;
 }
@@ -335,7 +343,12 @@ const minifiedSupport = await minifyJavaScript(supportSource, {
   minify: true,
   target: "es2020"
 });
+const minifiedConsent = await minifyJavaScript(consentSource, {
+  minify: true,
+  target: "es2020"
+});
 await writeFile(path.join(dist, "support.js"), minifiedSupport.code);
+await writeFile(path.join(dist, "consent.js"), minifiedConsent.code);
 
 const sitemap = [
   '<?xml version="1.0" encoding="UTF-8"?>',
@@ -363,6 +376,9 @@ const headers = `/*
   Cache-Control: public, max-age=31536000, immutable
 
 /support.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/consent.js
   Cache-Control: public, max-age=31536000, immutable
 
 /vendor/*

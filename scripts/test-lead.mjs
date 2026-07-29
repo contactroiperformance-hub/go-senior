@@ -68,6 +68,7 @@ try {
   assert.equal(submitted.get("lastname"), validLead.lastname);
   assert.equal(submitted.get("phone1"), "0612345678");
   assert.equal(submitted.get("source"), "go-senior.fr");
+  assert.equal(submitted.get("Quand_souhaitez-vous_êtres_rappelé?"), "Dès que possible");
   assert.equal(submitted.get("quand_souhaitez-vous_réaliser_le_projet_?"), "Dans les 3 mois");
   assert.equal(submitted.get("Êtes-vous_propriétaire_du_logement_?"), "Oui");
   assert.equal(submitted.get("quel_type_de_monte-escalier_recherchez-vous_?"), "Monte-escalier tournant");
