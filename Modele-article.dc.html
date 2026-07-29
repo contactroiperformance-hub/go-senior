@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FAF7F0;font-family:'Libre Franklin',system-ui,sans-serif;color:#22322B;font-size:19.5px;line-height:1.65}
+a{color:#2E5B4C}a:hover{color:#1F4237}
+:focus-visible{outline:3px solid #C05A2E;outline-offset:2px;border-radius:4px}
+html{scroll-padding-top:96px}
+details summary::-webkit-details-marker{display:none}
+</style>
+<title>Modèle d’article de guide — Go Senior</title>
+</helmet>
+<dc-import name="Header" active="guides" hint-size="100%,78px"></dc-import>
+<main data-screen-label="Modèle article">
+  <div style="background:#EBF1E8;border-bottom:1px solid #D7E2D2;padding:10px 24px;text-align:center;font-size:16.5px;color:#41504A"><strong>Modèle réutilisable</strong> — article de démonstration : « {{ titre }} ». Tous les champs entre [crochets] sont éditables.</div>
+  <section style="background:linear-gradient(180deg,#F3EFE4 0%,#FAF7F0 100%);border-bottom:1px solid #E5DFD2">
+    <div style="max-width:1200px;margin:0 auto;padding:40px 24px 48px">
+      <nav aria-label="Fil d’Ariane" style="font-size:17px;color:#6B7A70;margin-bottom:20px"><a href="Accueil.dc.html" style="color:#2E5B4C;text-decoration:none" style-hover="text-decoration:underline">Accueil</a> <span aria-hidden="true">›</span> <a href="Guides.dc.html" style="color:#2E5B4C;text-decoration:none" style-hover="text-decoration:underline">Guides</a> <span aria-hidden="true">›</span> <span>{{ titreCourt }}</span></nav>
+      <div style="max-width:820px;display:flex;flex-direction:column;gap:16px">
+        <span style="font-size:16.5px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:{{ couleurCat }}">{{ categorie }}</span>
+        <h1 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(32px,3.8vw,46px);line-height:1.15;letter-spacing:-0.015em;color:#1F2E27;text-wrap:balance">{{ titre }}</h1>
+        <p style="margin:0;font-size:21px;color:#41504A;text-wrap:pretty">{{ resume }}</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px 14px;font-size:17px;color:#6B7A70;align-items:center">
+          <span>Publié le <strong style="color:#41504A">[date]</strong></span><span>·</span>
+          <span>Mis à jour le <strong style="color:#41504A">[date]</strong></span><span>·</span>
+          <span>Rédigé par <strong style="color:#41504A">[auteur — personne réelle]</strong></span>
+          <sc-if value="{{ relecteur }}" hint-placeholder-val="{{ false }}"><span>·</span><span>Relu par <strong style="color:#41504A">[relecteur — uniquement si réel]</strong></span></sc-if>
+          <span>·</span><span>Lecture 6 min</span>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div style="max-width:1200px;margin:0 auto;padding:56px 24px 0;display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start">
+    <aside style="flex:1 1 240px;max-width:300px;position:sticky;top:80px">
+      <nav aria-label="Sommaire" style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:16px;padding:12px 16px">
+        <span style="font-size:15px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#6B7A70;display:block;margin-bottom:6px">Sommaire</span>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <a href="#apercu" style="text-decoration:none;color:#22322B;font-size:16px;line-height:1.4;padding:3px 10px;border-radius:7px" style-hover="background:#EBF1E8">En un coup d’œil</a>
+          <a href="#comparatif" style="text-decoration:none;color:#22322B;font-size:16px;line-height:1.4;padding:3px 10px;border-radius:7px" style-hover="background:#EBF1E8">Prix par type de modèle</a>
+          <a href="#facteurs" style="text-decoration:none;color:#22322B;font-size:16px;line-height:1.4;padding:3px 10px;border-radius:7px" style-hover="background:#EBF1E8">Ce qui fait varier le prix</a>
+          <a href="#etapes" style="text-decoration:none;color:#22322B;font-size:16px;line-height:1.4;padding:3px 10px;border-radius:7px" style-hover="background:#EBF1E8">Obtenir un devis fiable</a>
+          <a href="#faq" style="text-decoration:none;color:#22322B;font-size:16px;line-height:1.4;padding:3px 10px;border-radius:7px" style-hover="background:#EBF1E8">Questions fréquentes</a>
+          <a href="#sources" style="text-decoration:none;color:#22322B;font-size:16px;line-height:1.4;padding:3px 10px;border-radius:7px" style-hover="background:#EBF1E8">Sources</a>
+        </div>
+      </nav>
+      <div style="margin-top:10px;background:#1F4237;border-radius:16px;padding:24px 22px;display:flex;flex-direction:column;gap:12px">
+        <span style="font-family:'Source Serif 4',Georgia,serif;font-size:20px;font-weight:700;color:#FFFFFF">Préparer votre projet de travaux</span>
+        <a href="Formulaire.dc.html?projet=monte-escalier" style="text-decoration:none;background:#C05A2E;color:#FFFFFF;font-weight:600;font-size:17.5px;padding:15px 16px;border-radius:10px;text-align:center" style-hover="background:#A84D24">Étudier mon projet</a>
+        
+      </div>
+    </aside>
+    <article style="flex:999 1 520px;max-width:780px;display:flex;flex-direction:column;gap:52px;padding-bottom:32px">
+      <sc-if value="{{ heroSrc }}" hint-placeholder-val="{{ false }}"><img src="{{ heroSrc }}" alt="{{ heroAlt }}" style="width:100%;height:300px;object-fit:cover;display:block;border-radius:18px"></sc-if>
+      <section id="apercu" style="background:#EBF1E8;border:1px solid #D7E2D2;border-radius:18px;padding:26px;display:flex;flex-direction:column;gap:12px">
+        <h2 style="margin:0;font-size:21.5px;font-weight:600;color:#1F2E27">En un coup d’œil</h2>
+        <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ puces }}" as="puce" hint-placeholder-count="3">
+            <li style="display:flex;gap:10px;font-size:18.5px;color:#22322B"><span style="color:#2E5B4C;font-weight:700">·</span><span>{{ puce }}</span></li>
+          </sc-for>
+        </ul>
+      </section>
+      <section style="display:flex;flex-direction:column;gap:14px">
+        <p style="margin:0;color:#41504A">[Corps de l’article — paragraphes courts, sous-titres H2/H3 réguliers, une idée par paragraphe. Le contenu ci-dessous illustre les modules disponibles dans le modèle.]</p>
+      </section>
+      <section id="comparatif" style="display:flex;flex-direction:column;gap:18px">
+        <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">{{ titreComparatif }}</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
+          <sc-for list="{{ cartes }}" as="carte" hint-placeholder-count="3">
+            <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:8px"><span style="font-weight:600;font-size:18.5px;color:#1F2E27">{{ carte.nom }}</span><span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:26px;color:#2E5B4C">{{ carte.prix }}</span><span style="font-size:17px;color:#6B7A70">{{ carte.note }}</span></div>
+          </sc-for>
+        </div>
+        <p style="margin:0;font-size:16.5px;color:#6B7A70">Module « coûts » : fourchettes éditables, marquées indicatives. Chaque installation varie selon le logement.</p>
+      </section>
+      <section id="facteurs" style="display:flex;flex-direction:column;gap:16px">
+        <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Ce qui fait varier le prix</h2>
+        <p style="margin:0;color:#41504A">[Contenu…] Longueur du rail, nombre de virages et de paliers, options de siège, préparation électrique, garantie et entretien.</p>
+        <div style="background:#EBF1E8;border:1px solid #D7E2D2;border-radius:14px;padding:18px 22px;display:flex;gap:12px;align-items:flex-start">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" style="flex-shrink:0;margin-top:4px" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 8h.01M12 11v5"></path></svg>
+          <p style="margin:0;font-size:17.5px;color:#2C463B"><strong>Bon à savoir</strong> — module d’information : conseil pratique, précision utile, définition d’un terme technique.</p>
+        </div>
+        <div style="background:#FCF6E8;border:1px solid #E6D8AE;border-radius:14px;padding:18px 22px;display:flex;gap:12px;align-items:flex-start">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8A6A1F" stroke-width="2" style="flex-shrink:0;margin-top:4px" aria-hidden="true"><path d="M12 3 L22 20 L2 20 Z"></path><path d="M12 10v4M12 17h.01"></path></svg>
+          <p style="margin:0;font-size:17.5px;color:#5C4E22"><strong>Attention</strong> — module de vigilance : mise en garde mesurée (montants à vérifier, ne pas commencer les travaux avant accord, etc.).</p>
+        </div>
+      </section>
+      <section id="etapes" style="display:flex;flex-direction:column;gap:18px">
+        <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Obtenir un devis fiable : les étapes</h2>
+        <ol style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column">
+          <li style="display:flex;gap:18px;padding:13px 0;border-bottom:1px solid #E5DFD2"><span style="width:36px;height:36px;border-radius:10px;background:#EBF1E8;color:#2E5B4C;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:18.5px;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</span><p style="margin:0;font-size:18.5px;color:#22322B;align-self:center">Décrivez votre escalier (forme, niveaux, intérieur/extérieur).</p></li>
+          <li style="display:flex;gap:18px;padding:13px 0;border-bottom:1px solid #E5DFD2"><span style="width:36px;height:36px;border-radius:10px;background:#EBF1E8;color:#2E5B4C;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:18.5px;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</span><p style="margin:0;font-size:18.5px;color:#22322B;align-self:center">Faites établir une visite technique et une prise de mesures.</p></li>
+          <li style="display:flex;gap:18px;padding:13px 0"><span style="width:36px;height:36px;border-radius:10px;background:#EBF1E8;color:#2E5B4C;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:18.5px;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</span><p style="margin:0;font-size:18.5px;color:#22322B;align-self:center">Comparez le contenu du devis : modèle exact, options, garantie, entretien.</p></li>
+        </ol>
+      </section>
+      <section style="background:#1F4237;border-radius:18px;padding:clamp(26px,3.5vw,38px);display:flex;flex-wrap:wrap;align-items:center;gap:18px;justify-content:space-between">
+        <div style="max-width:460px">
+          <p style="margin:0 0 6px;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:23px;color:#FFFFFF">Vérifier les solutions dans votre secteur</p>
+          <p style="margin:0;font-size:17.5px;color:#B9CDBF">Demande gratuite et sans engagement. La disponibilité dépend du projet et du secteur.</p>
+        </div>
+        <a href="Formulaire.dc.html?projet=monte-escalier" style="text-decoration:none;background:#C05A2E;color:#FFFFFF;font-weight:600;font-size:19px;padding:15px 26px;border-radius:10px" style-hover="background:#A84D24">Étudier mon projet</a>
+      </section>
+      <section id="faq" style="display:flex;flex-direction:column;gap:16px">
+        <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Questions fréquentes</h2>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <details style-hover="border-color:#2E5B4C;background:#FDFCF9" style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:0 22px"><summary style="cursor:pointer;font-weight:600;font-size:19px;color:#1F2E27;padding:17px 0;list-style:none;display:flex;justify-content:space-between;gap:12px">[Question fréquente n°1]<span style="color:#2E5B4C" aria-hidden="true">+</span></summary><p style="margin:0;padding:0 0 17px;font-size:18px;color:#41504A">[Réponse claire en 2–4 phrases.]</p></details>
+          <details style-hover="border-color:#2E5B4C;background:#FDFCF9" style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:0 22px"><summary style="cursor:pointer;font-weight:600;font-size:19px;color:#1F2E27;padding:17px 0;list-style:none;display:flex;justify-content:space-between;gap:12px">[Question fréquente n°2]<span style="color:#2E5B4C" aria-hidden="true">+</span></summary><p style="margin:0;padding:0 0 17px;font-size:18px;color:#41504A">[Réponse claire en 2–4 phrases.]</p></details>
+        </div>
+      </section>
+      <section id="sources" style="display:flex;flex-direction:column;gap:14px">
+        <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Sources</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">
+          <a href="#" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:4px" style-hover="border-color:#2E5B4C"><span style="font-weight:600;font-size:18px;color:#1F2E27">[Nom de la source officielle]</span><span style="font-size:16.5px;color:#6B7A70">[URL] — consulté le [date]</span></a>
+          <a href="#" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:4px" style-hover="border-color:#2E5B4C"><span style="font-weight:600;font-size:18px;color:#1F2E27">[Nom de la source officielle]</span><span style="font-size:16.5px;color:#6B7A70">[URL] — consulté le [date]</span></a>
+        </div>
+      </section>
+      <section style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:18px;padding:26px;display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+        <div style="width:72px;height:72px;border-radius:50%;background:repeating-linear-gradient(45deg,#E9EFE4,#E9EFE4 8px,#E1E9DB 8px,#E1E9DB 16px);flex-shrink:0;display:flex;align-items:center;justify-content:center"><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#41504A">photo</span></div>
+        <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:15.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#6B7A70">Rédigé par</span>
+          <span style="font-weight:600;font-size:19.5px;color:#1F2E27">[Prénom Nom — personne réelle uniquement]</span>
+          <p style="margin:0;font-size:17.5px;color:#41504A">[Courte biographie factuelle : rôle, expérience réelle, méthode de travail. Aucun titre ou diplôme non vérifié.]</p>
+        </div>
+      </section>
+      <sc-if value="{{ relecteur }}" hint-placeholder-val="{{ false }}">
+        <section style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:18px;padding:26px;display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+          <div style="width:72px;height:72px;border-radius:50%;background:repeating-linear-gradient(45deg,#E9EFE4,#E9EFE4 8px,#E1E9DB 8px,#E1E9DB 16px);flex-shrink:0;display:flex;align-items:center;justify-content:center"><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#41504A">photo</span></div>
+          <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:6px">
+            <span style="font-size:15.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#6B7A70">Relu par</span>
+            <span style="font-weight:600;font-size:19.5px;color:#1F2E27">[Prénom Nom — uniquement si la relecture est réelle]</span>
+            <p style="margin:0;font-size:17.5px;color:#41504A">[Qualification réelle et vérifiable du relecteur. Ce module reste masqué par défaut.]</p>
+          </div>
+        </section>
+      </sc-if>
+      <section style="display:flex;flex-direction:column;gap:16px">
+        <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(23px,2.6vw,28px);color:#1F2E27">Guides liés</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
+          <a href="Guides.dc.html" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:6px" style-hover="border-color:#2E5B4C"><span style="font-size:14.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#2E5B4C">[Catégorie]</span><span style="font-weight:600;font-size:18.5px;color:#1F2E27">[Titre du guide lié]</span></a>
+          <a href="Guides.dc.html" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:6px" style-hover="border-color:#2E5B4C"><span style="font-size:14.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#B0682F">[Catégorie]</span><span style="font-weight:600;font-size:18.5px;color:#1F2E27">[Titre du guide lié]</span></a>
+          <a href="Guides.dc.html" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:6px" style-hover="border-color:#2E5B4C"><span style="font-size:14.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8A6A1F">[Catégorie]</span><span style="font-weight:600;font-size:18.5px;color:#1F2E27">[Titre du guide lié]</span></a>
+        </div>
+      </section>
+    </article>
+  </div>
+  <div style="height:88px"></div>
+</main>
+<dc-import name="Footer" hint-size="100%,520px"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;relecteur&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Crédibilité&quot;,&quot;description&quot;:&quot;Afficher le module « Relu par » — uniquement lorsqu'une relecture réelle a eu lieu&quot;}}">
+class Component extends DCLogic {
+  guides() {
+    const MONTE = ["Monte-escalier", "#2E5B4C"], DOUCHE = ["Douche & salle de bain", "#B0682F"], AIDES = ["Aides financières", "#8A6A1F"];
+    return {
+      "prix-monte-escalier": { cat: MONTE, titre: "Quel est le prix d’un monte-escalier ?", court: "Prix d’un monte-escalier", resume: "À titre indicatif, un monte-escalier coûte entre 2 500 et 12 000 € installé, selon la configuration de l’escalier. Voici comment se construit ce prix, et comment le réduire grâce aux aides.", img: "uploads/monte-escalier-escalier-tournant-bois.jpg", alt: "Monte-escalier sur escalier tournant en bois" },
+      "droit-tournant": { cat: MONTE, titre: "Monte-escalier droit ou tournant : comment choisir ?", court: "Droit ou tournant", resume: "Rail standard ou rail cintré sur mesure : la forme de votre escalier détermine le modèle, le délai et le budget. Voici comment les distinguer.", img: "uploads/monte-escalier-tournant-interieur.jpg", alt: "Monte-escalier sur un escalier tournant en bois" },
+      "aides-monte-escalier": { cat: AIDES, titre: "Quelles aides pour un monte-escalier ?", court: "Aides monte-escalier", resume: "MaPrimeAdapt’, APA, PCH, caisses de retraite : plusieurs dispositifs peuvent réduire le reste à charge, sous conditions. Voici le panorama.", img: "uploads/couple-senior-dossier-aides.jpg", alt: "Couple senior remplissant un dossier de demande d’aides" },
+      "monte-escalier-exterieur": { cat: MONTE, titre: "Monte-escalier extérieur : ce qu’il faut savoir", court: "Monte-escalier extérieur", resume: "Perron, jardin en pente, accès extérieur : les modèles d’extérieur résistent aux intempéries mais demandent quelques précautions. Voici lesquelles.", img: "uploads/monte-escalier-exterieur-perron.jpg", alt: "Monte-escalier extérieur sur un perron en pierre" },
+      "occasion-location": { cat: MONTE, titre: "Occasion ou location : quelles alternatives à l’achat ?", court: "Occasion ou location", resume: "Acheter d’occasion ou louer peut réduire le coût, à condition de vérifier la compatibilité du rail, la garantie et la pose. Voici les points clés.", img: "uploads/dame-siege-monte-escalier.jpg", alt: "Dame assise sur le siège d’un monte-escalier" },
+      "duree-installation": { cat: MONTE, titre: "Combien de temps prend l’installation ?", court: "Durée d’installation", resume: "De la demande à la pose : les délais réalistes selon le type de rail, et le déroulement d’une journée d’installation.", img: "uploads/installateur-rail-monte-escalier.jpg", alt: "Installateur fixant le rail d’un monte-escalier" },
+      "prix-douche": { cat: DOUCHE, titre: "Quel est le prix d’une douche senior ?", court: "Prix d’une douche senior", resume: "Du simple équipement de sécurité à la salle de bain complète : les fourchettes indicatives et ce qui fait varier un devis.", img: "uploads/douche-adaptee-siege-bois.jpg", alt: "Douche adaptée avec siège en bois et barres d’appui" },
+      "remplacement-baignoire": { cat: DOUCHE, titre: "Remplacer une baignoire par une douche", court: "Remplacement baignoire", resume: "Le projet le plus demandé : étapes, budget et points de vigilance pour passer d’une baignoire difficile d’accès à une douche sécurisée.", img: "uploads/remplacement-baignoire-par-douche-travaux.jpg", alt: "Artisan rénovant une salle de bain pour installer une douche" },
+      "douche-pmr": { cat: DOUCHE, titre: "Douche senior ou douche PMR : quelle différence ?", court: "Douche senior ou PMR", resume: "Normes, dimensions, usages : comprendre la différence entre une douche confort et une douche aux normes d’accessibilité.", img: "uploads/douche-plain-pied-siege-rabattable.jpg", alt: "Douche avec siège rabattable blanc et barre d’appui" },
+      "baignoire-porte": { cat: DOUCHE, titre: "Baignoire à porte ou douche : que choisir ?", court: "Baignoire à porte ou douche", resume: "Deux solutions pour se laver en sécurité, deux usages différents : avantages et limites selon vos habitudes.", img: "uploads/baignoire-a-porte-ou-douche.jpg", alt: "Baignoire à porte et douche accessible côte à côte" },
+      "equipements-securite": { cat: DOUCHE, titre: "Quels équipements pour sécuriser une douche ?", court: "Équipements de sécurité", resume: "Barres d’appui, sièges, sols antidérapants, robinetterie thermostatique : ce qui compte vraiment pour réduire les risques au quotidien.", img: "uploads/douche-siege-mural-barres-appui.jpg", alt: "Siège de douche mural et barres d’appui" },
+      "prix-salle-de-bain": { cat: DOUCHE, titre: "Quel est le prix d’une salle de bain adaptée ?", court: "Prix salle de bain adaptée", resume: "Le budget d’un réagencement complet : surface, matériaux, équipements — et les aides qui peuvent réduire le reste à charge.", img: "uploads/salle-de-bain-adaptee-complete.jpg", alt: "Salle de bain adaptée complète" },
+      "plafonds-ressources": { cat: AIDES, titre: "Plafonds de ressources : comprendre les critères", court: "Plafonds de ressources", resume: "Comment les conditions de ressources sont évaluées pour les aides à l’adaptation, et où vérifier les valeurs officielles en vigueur.", img: "uploads/couple-senior-dossier-aides.jpg", alt: "Couple senior remplissant un dossier de demande d’aides" },
+      "apa-pch": { cat: AIDES, titre: "APA, PCH et autres aides : le panorama", court: "APA, PCH et autres aides", resume: "Les dispositifs complémentaires selon votre situation d’autonomie, et comment ils s’articulent avec MaPrimeAdapt’.", img: "uploads/couple-senior-dossier-aides.jpg", alt: "Couple senior remplissant un dossier de demande d’aides" }
+    };
+  }
+  renderVals() {
+    const g = this.guides();
+    const slug = new URLSearchParams(location.search).get("g");
+    const d = g[slug] || g["prix-monte-escalier"];
+    const corps = {
+      "Monte-escalier": {
+        puces: ["Modèle droit : 2 500 – 5 500 € · modèle tournant : 6 000 – 12 000 € (fourchettes indicatives).", "Le rail sur mesure est le premier facteur de coût.", "Des aides peuvent réduire le reste à charge, sous conditions."],
+        titreComparatif: "Prix par type de modèle",
+        cartes: [{ nom: "Droit", prix: "2 500 – 5 500 €", note: "Rail standard, pose rapide" }, { nom: "Tournant", prix: "6 000 – 12 000 €", note: "Rail cintré sur mesure" }, { nom: "Extérieur", prix: "4 000 – 10 000 €", note: "Composants traités intempéries" }]
+      },
+      "Douche & salle de bain": {
+        puces: ["Adaptation ciblée : 500 – 2 000 € · remplacement baignoire par douche : 4 000 – 9 000 € (fourchettes indicatives).", "L’état de la plomberie existante est le premier facteur de coût.", "Des aides peuvent réduire le reste à charge, sous conditions."],
+        titreComparatif: "Prix par type de projet",
+        cartes: [{ nom: "Adaptation ciblée", prix: "500 – 2 000 €", note: "Barres, siège, robinetterie" }, { nom: "Remplacement baignoire", prix: "4 000 – 9 000 €", note: "Dans l’emprise existante" }, { nom: "Salle de bain complète", prix: "8 000 – 15 000 €", note: "Réagencement de la pièce" }]
+      },
+      "Aides financières": {
+        puces: ["MaPrimeAdapt’ est l’aide principale pour l’adaptation du logement, sous conditions.", "Les montants et plafonds officiels évoluent : vérifiez les valeurs en vigueur.", "Ne commencez pas les travaux avant d’avoir reçu les accords nécessaires."],
+        titreComparatif: "Les principaux dispositifs",
+        cartes: [{ nom: "MaPrimeAdapt’", prix: "Sous conditions", note: "L’aide principale pour l’adaptation" }, { nom: "APA · PCH", prix: "Selon autonomie", note: "Versées selon votre situation" }, { nom: "Caisses & aides locales", prix: "Selon situation", note: "Compléments possibles" }]
+      }
+    }[d.cat[0]];
+    return {
+      relecteur: this.props.relecteur ?? false,
+      categorie: d.cat[0], couleurCat: d.cat[1],
+      titre: d.titre, titreCourt: d.court, resume: d.resume,
+      heroSrc: d.img, heroAlt: d.alt,
+      puces: corps.puces, titreComparatif: corps.titreComparatif, cartes: corps.cartes
+    };
+  }
+}
+</script>
+</body>
+</html>

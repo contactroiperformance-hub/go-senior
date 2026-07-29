@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FAF7F0;font-family:'Libre Franklin',system-ui,sans-serif;color:#22322B;font-size:19.5px;line-height:1.65}
+a{color:#2E5B4C}a:hover{color:#1F4237}
+:focus-visible{outline:3px solid #C05A2E;outline-offset:2px;border-radius:4px}
+.gsh-desk{display:flex}.gsh-mob{display:none}.gsh-bar{display:none}
+@media(max-width:1060px){.gsh-desk{display:none !important}.gsh-mob{display:flex !important}.gsh-bar{display:flex !important}body{padding-bottom:76px}}
+</style>
+</helmet>
+<header style="background:#FFFFFF">
+  <div style="height:75px"></div>
+  <div style="position:fixed;top:0;left:0;right:0;z-index:60;background:#FFFFFF;border-bottom:1px solid #E5DFD2">
+  <div style="max-width:1200px;margin:0 auto;padding:0 24px;height:74px;display:flex;align-items:center;gap:26px">
+    <a href="Accueil.dc.html" aria-label="Go Senior — Accueil" style="display:flex;align-items:center;gap:12px;text-decoration:none;flex-shrink:0">
+      <svg width="44" height="44" viewBox="0 0 36 36" aria-hidden="true"><rect width="36" height="36" rx="11" fill="#2E5B4C"></rect><path d="M10.5 26.5 V17.5 a7.5 7.5 0 0 1 15 0 V26.5" fill="none" stroke="#FAF7F0" stroke-width="3.2" stroke-linecap="round"></path><circle cx="18" cy="23" r="2.8" fill="#E9B44C"></circle></svg>
+      <span style="display:flex;flex-direction:column;line-height:1.15">
+        <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:25px;color:#2E5B4C;letter-spacing:-0.01em">Go Senior</span>
+        <span style="font-size:14.5px;font-weight:600;color:#C05A2E;letter-spacing:0.01em">Les solutions pour bien vivre chez soi</span>
+      </span>
+    </a>
+    <div class="gsh-desk" style="align-items:center;gap:18px;margin-left:auto">
+      <a href="Formulaire.dc.html" style="text-decoration:none;background:#C05A2E;color:#FFFFFF;font-weight:600;font-size:18px;padding:13px 22px;border-radius:10px;white-space:nowrap" style-hover="background:#A84D24">Recevoir un devis gratuit</a>
+    </div>
+    <div class="gsh-mob" style="align-items:center;gap:14px;margin-left:auto">
+      <button onClick="{{ toggleMenu }}" aria-expanded="{{ menuOpen }}" aria-label="Menu" style="display:flex;align-items:center;gap:8px;background:none;border:1.5px solid #E5DFD2;border-radius:12px;padding:11px 16px;cursor:pointer;font-family:'Libre Franklin',system-ui,sans-serif;font-size:17.5px;font-weight:600;color:#22322B">{{ menuLabel }}</button>
+    </div>
+  </div>
+  </div>
+  <nav class="gsh-desk" aria-label="Navigation principale" style="border-bottom:1px solid #E5DFD2;background:#FFFFFF">
+    <div style="max-width:1200px;margin:0 auto;padding:0 24px;height:58px;display:flex;align-items:center;gap:16px;width:100%;box-sizing:border-box">
+      <div style="position:relative">
+        <button onClick="{{ toggleDrop }}" aria-expanded="{{ dropOpen }}" style="display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;font-family:'Libre Franklin',system-ui,sans-serif;font-size:18.5px;font-weight:500;color:#22322B;padding:9px 12px;border-radius:9px" style-hover="background:#EBF1E8;color:#1F4237"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 L12 4 l9 7.5"></path><path d="M5.5 10 V20 h13 V10"></path></svg>Adapter son logement <span style="font-size:12px;color:#5A685F">{{ dropArrow }}</span></button>
+        <sc-if value="{{ dropOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;top:100%;left:-12px;margin-top:8px;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;box-shadow:0 12px 32px rgba(34,50,43,0.14);padding:10px;min-width:290px;display:flex;flex-direction:column;gap:2px;z-index:70">
+            <a href="Monte-escalier.dc.html" style="text-decoration:none;color:#22322B;font-size:18px;font-weight:500;padding:11px 14px;border-radius:9px;display:block" style-hover="background:#EBF1E8;color:#1F4237">Monte-escalier</a>
+            <a href="Douche-senior.dc.html" style="text-decoration:none;color:#22322B;font-size:18px;font-weight:500;padding:11px 14px;border-radius:9px;display:block" style-hover="background:#EBF1E8;color:#1F4237">Douche senior</a>
+            <a href="Douche-senior.dc.html#baignoire" style="text-decoration:none;color:#22322B;font-size:18px;font-weight:500;padding:11px 14px;border-radius:9px;display:block" style-hover="background:#EBF1E8;color:#1F4237">Remplacement baignoire par douche</a>
+            <a href="Douche-senior.dc.html#types" style="text-decoration:none;color:#22322B;font-size:18px;font-weight:500;padding:11px 14px;border-radius:9px;display:block" style-hover="background:#EBF1E8;color:#1F4237">Salle de bain adaptée</a>
+            <a href="MaPrimeAdapt.dc.html" style="text-decoration:none;color:#22322B;font-size:18px;font-weight:500;padding:11px 14px;border-radius:9px;display:block" style-hover="background:#EBF1E8;color:#1F4237">MaPrimeAdapt’</a>
+          </div>
+        </sc-if>
+      </div>
+      <a href="Monte-escalier.dc.html" style="text-decoration:none;font-size:18.5px;font-weight:500;color:{{ cMonte }};padding:9px 12px;border-radius:9px;box-shadow:inset 0 -2px 0 {{ uMonte }};display:flex;align-items:center;gap:9px" style-hover="background:#EBF1E8;color:#1F4237"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20 h4 v-4 h4 v-4 h4 v-4 h4 V5"></path></svg>Monte-escalier</a>
+      <a href="Douche-senior.dc.html" style="text-decoration:none;font-size:18.5px;font-weight:500;color:{{ cDouche }};padding:9px 12px;border-radius:9px;box-shadow:inset 0 -2px 0 {{ uDouche }};display:flex;align-items:center;gap:9px" style-hover="background:#EBF1E8;color:#1F4237"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 20 V7 a3 3 0 0 1 3-3 h1"></path><circle cx="14.5" cy="7.5" r="3"></circle><path d="M12 13 v1.5 M14.5 13.5 v2 M17 13 v1.5"></path></svg>Douche senior</a>
+      <a href="MaPrimeAdapt.dc.html" style="text-decoration:none;font-size:18.5px;font-weight:500;color:{{ cAides }};padding:9px 12px;border-radius:9px;box-shadow:inset 0 -2px 0 {{ uAides }};display:flex;align-items:center;gap:9px" style-hover="background:#EBF1E8;color:#1F4237"><span style="width:21px;height:21px;border:2px solid #2E5B4C;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14.5px;color:#2E5B4C;box-sizing:border-box" aria-hidden="true">€</span>Aides financières</a>
+      <div style="position:relative">
+        <button onClick="{{ toggleGuides }}" aria-expanded="{{ guidesOpen }}" style="display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;font-family:'Libre Franklin',system-ui,sans-serif;font-size:18.5px;font-weight:500;color:{{ cGuides }};padding:9px 12px;border-radius:9px;box-shadow:inset 0 -2px 0 {{ uGuides }}" style-hover="background:#EBF1E8;color:#1F4237"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5 V5 a2 2 0 0 1 2-2 h13 v16 H6 a2 2 0 0 0 0 4 h13"></path></svg>Guides <span style="font-size:12px;color:#5A685F">{{ guidesArrow }}</span></button>
+        <sc-if value="{{ guidesOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;top:100%;right:0;margin-top:8px;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;box-shadow:0 12px 32px rgba(34,50,43,0.14);padding:10px;min-width:280px;display:flex;flex-direction:column;gap:2px;z-index:70">
+            <a href="Guides.dc.html" style="text-decoration:none;color:#22322B;font-size:18px;font-weight:500;padding:11px 14px;border-radius:9px;display:block" style-hover="background:#EBF1E8;color:#1F4237">Tous les guides</a>
+            <a href="Guides.dc.html" style="text-decoration:none;color:#22322B;font-size:18px;font-weight:500;padding:11px 14px;border-radius:9px;display:block" style-hover="background:#EBF1E8;color:#1F4237">Monte-escalier</a>
+            <a href="Guides.dc.html" style="text-decoration:none;color:#22322B;font-size:18px;font-weight:500;padding:11px 14px;border-radius:9px;display:block" style-hover="background:#EBF1E8;color:#1F4237">Douche et salle de bain</a>
+            <a href="Guides.dc.html" style="text-decoration:none;color:#22322B;font-size:18px;font-weight:500;padding:11px 14px;border-radius:9px;display:block" style-hover="background:#EBF1E8;color:#1F4237">MaPrimeAdapt’ et aides</a>
+            <a href="Actualites.dc.html" style="text-decoration:none;color:#22322B;font-size:18px;font-weight:500;padding:11px 14px;border-radius:9px;display:block;border-top:1px solid #E5DFD2;margin-top:4px;padding-top:13px" style-hover="background:#EBF1E8;color:#1F4237">Actualités</a>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </nav>
+  <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+    <nav aria-label="Menu mobile" style="position:fixed;top:74px;left:0;right:0;z-index:60;max-height:calc(100vh - 160px);overflow:auto;box-shadow:0 14px 32px rgba(34,50,43,0.14);background:#FFFFFF;border-top:1px solid #E5DFD2;padding:14px 24px 22px;display:flex;flex-direction:column;gap:2px">
+      <span style="font-size:15px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#5A685F;padding:10px 0 6px">Adapter son logement</span>
+      <a href="Monte-escalier.dc.html" style="text-decoration:none;color:#22322B;font-size:19.5px;font-weight:500;padding:13px 12px;border-radius:10px;display:flex;align-items:center;gap:12px" style-hover="background:#EBF1E8"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20 h4 v-4 h4 v-4 h4 v-4 h4 V5"></path></svg>Monte-escalier</a>
+      <a href="Douche-senior.dc.html" style="text-decoration:none;color:#22322B;font-size:19.5px;font-weight:500;padding:13px 12px;border-radius:10px;display:flex;align-items:center;gap:12px" style-hover="background:#EBF1E8"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 20 V7 a3 3 0 0 1 3-3 h1"></path><circle cx="14.5" cy="7.5" r="3"></circle><path d="M12 13 v1.5 M14.5 13.5 v2 M17 13 v1.5"></path></svg>Douche senior</a>
+      <a href="Douche-senior.dc.html#baignoire" style="text-decoration:none;color:#22322B;font-size:19.5px;font-weight:500;padding:13px 12px;border-radius:10px;display:flex;align-items:center;gap:12px" style-hover="background:#EBF1E8"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12 h16 v3 a4 4 0 0 1-4 4 h-8 a4 4 0 0 1-4-4 z"></path><path d="M6 12 V6 a2 2 0 0 1 4 0"></path></svg>Remplacement baignoire par douche</a>
+      <a href="MaPrimeAdapt.dc.html" style="text-decoration:none;color:#22322B;font-size:19.5px;font-weight:500;padding:13px 12px;border-radius:10px;display:flex;align-items:center;gap:12px" style-hover="background:#EBF1E8"><span style="width:22px;height:22px;border:2px solid #2E5B4C;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14.5px;color:#2E5B4C;box-sizing:border-box" aria-hidden="true">€</span>MaPrimeAdapt’ et aides</a>
+      <a href="Guides.dc.html" style="text-decoration:none;color:#22322B;font-size:19.5px;font-weight:500;padding:13px 12px;border-radius:10px;display:flex;align-items:center;gap:12px" style-hover="background:#EBF1E8"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5 V5 a2 2 0 0 1 2-2 h13 v16 H6 a2 2 0 0 0 0 4 h13"></path></svg>Guides</a>
+      <a href="Actualites.dc.html" style="text-decoration:none;color:#22322B;font-size:19.5px;font-weight:500;padding:13px 12px;border-radius:10px;display:flex;align-items:center;gap:12px" style-hover="background:#EBF1E8"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6 h13 v14 H6 a2 2 0 0 1-2-2 z"></path><path d="M17 9 h3 v9 a2 2 0 0 1-2 2"></path><path d="M7.5 10 h6 M7.5 13.5 h6 M7.5 17 h4"></path></svg>Actualités</a>
+      <div style="border-top:1px solid #E5DFD2;margin-top:12px;padding-top:16px;display:flex;flex-direction:column;gap:12px">
+        <a href="Formulaire.dc.html" style="text-decoration:none;background:#C05A2E;color:#FFFFFF;font-weight:600;font-size:19px;padding:15px 22px;border-radius:10px;text-align:center" style-hover="background:#A84D24">Recevoir un devis gratuit</a>
+      </div>
+    </nav>
+  </sc-if>
+</header>
+<div class="gsh-bar" style="position:fixed;bottom:0;left:0;right:0;z-index:55;background:#FFFFFF;border-top:1px solid #E5DFD2;padding:10px 16px calc(10px + env(safe-area-inset-bottom));gap:10px;box-shadow:0 -6px 20px rgba(34,50,43,0.08)">
+  <a href="Formulaire.dc.html" style="flex:1;text-decoration:none;background:#C05A2E;color:#FFFFFF;font-weight:600;font-size:18.5px;padding:14px;border-radius:10px;text-align:center" style-hover="background:#A84D24">Recevoir un devis gratuit</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:420},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;monte-escalier&quot;,&quot;douche&quot;,&quot;aides&quot;,&quot;guides&quot;],&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Navigation&quot;}}">
+class Component extends DCLogic {
+  state = { dropOpen: false, menuOpen: false, guidesOpen: false };
+  renderVals() {
+    const active = this.props.active ?? "";
+    const col = k => (active === k ? "#1F4237" : "#22322B");
+    const und = k => (active === k ? "#C05A2E" : "transparent");
+    return {
+      dropOpen: this.state.dropOpen,
+      menuOpen: this.state.menuOpen,
+      dropArrow: this.state.dropOpen ? "▲" : "▼",
+      guidesOpen: this.state.guidesOpen,
+      guidesArrow: this.state.guidesOpen ? "▲" : "▼",
+      menuLabel: this.state.menuOpen ? "Fermer ✕" : "Menu ☰",
+      toggleDrop: () => this.setState(s => ({ dropOpen: !s.dropOpen, guidesOpen: false, menuOpen: false })),
+      toggleGuides: () => this.setState(s => ({ guidesOpen: !s.guidesOpen, dropOpen: false, menuOpen: false })),
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen, dropOpen: false, guidesOpen: false })),
+      cMonte: col("monte-escalier"), uMonte: und("monte-escalier"),
+      cDouche: col("douche"), uDouche: und("douche"),
+      cAides: col("aides"), uAides: und("aides"),
+      cGuides: col("guides"), uGuides: und("guides")
+    };
+  }
+}
+</script>
+</body>
+</html>

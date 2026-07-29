@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0;font-family:'Libre Franklin',system-ui,sans-serif}a{color:#2E5B4C}a:hover{color:#1F4237}
+button[aria-pressed="false"]:hover{border-color:#2E5B4C !important;background:#F5F8F3 !important;box-shadow:0 6px 18px rgba(34,50,43,0.14);transform:translateY(-2px)}</style>
+</helmet>
+<div style="display:flex;flex-direction:column;gap:22px;font-family:'Libre Franklin',system-ui,sans-serif">
+  <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(34,50,43,0.06),0 14px 36px rgba(34,50,43,0.10)">
+    <div style="background:#1F4237;padding:18px 24px;text-align:center">
+      <p style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:22px;color:#FFFFFF">{{ titre }}</p>
+      <p style="margin:6px 0 0;font-size:20.5px;font-weight:600;color:#FFFFFF">Comparez et économisez <span style="color:#E9B44C;font-weight:700;font-size:23px;white-space:nowrap">jusqu’à 30 %</span></p>
+      <div style="margin-top:10px;display:flex;flex-wrap:wrap;justify-content:center;gap:8px">
+        <sc-for list="{{ badges }}" as="b" hint-placeholder-count="3">
+          <span style="{{ b.style }}">{{ b.label }}</span>
+        </sc-for>
+      </div>
+    </div>
+    <div style="padding:clamp(24px,3.5vw,38px)">
+      <sc-if value="{{ estQuestion }}" hint-placeholder-val="{{ true }}">
+        <h3 style="margin:0 0 8px;font-size:22px;font-weight:600;color:#1F2E27;text-align:center;text-wrap:balance">{{ question }}</h3>
+        <p style="margin:0 0 24px;font-size:18px;color:#41504A;text-align:center">{{ sousQuestion }}</p>
+        <div style="display:grid;grid-template-columns:{{ gabaritColonnes }};justify-content:center;gap:14px">
+          <sc-for list="{{ options }}" as="o" hint-placeholder-count="3">
+            <button onClick="{{ o.pick }}" aria-pressed="{{ o.sel }}" style="{{ o.style }}">{{ o.icone }}<span style="font-weight:600;font-size:18px;color:#1F2E27;text-align:center;line-height:1.3">{{ o.label }}</span></button>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ estCp }}" hint-placeholder-val="{{ false }}">
+        <h3 style="margin:0 0 8px;font-size:22px;font-weight:600;color:#1F2E27;text-align:center">Où se situe votre projet ?</h3>
+        <p style="margin:0 0 24px;font-size:17px;color:#6B7A70;text-align:center">Afin de vérifier si un professionnel intervient dans votre secteur.</p>
+        <label style="display:flex;flex-direction:column;gap:8px;max-width:280px;margin:0 auto">
+          <span style="font-size:17.5px;font-weight:600;color:#22322B">Votre code postal</span>
+          <input type="text" inputMode="numeric" maxLength="5" placeholder="ex. 59000" value="{{ cp }}" onChange="{{ setCp }}" style="height:58px;border:1.5px solid #C9C2B2;border-radius:10px;padding:0 14px;font-family:'Libre Franklin',system-ui,sans-serif;font-size:19.5px;color:#22322B;box-sizing:border-box;text-align:center">
+        </label>
+      </sc-if>
+      <sc-if value="{{ estCoords }}" hint-placeholder-val="{{ false }}">
+        <h3 style="margin:0 0 8px;font-size:22px;font-weight:600;color:#1F2E27;text-align:center">Vos coordonnées</h3>
+        <p style="margin:0 0 24px;font-size:17px;color:#6B7A70;text-align:center">Pour que le professionnel disponible puisse vous recontacter au sujet de votre projet.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px">
+          <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:17px;font-weight:600;color:#22322B">Prénom</span><input type="text" value="{{ prenom }}" onChange="{{ setPrenom }}" autoComplete="given-name" style="height:54px;border:1.5px solid #C9C2B2;border-radius:10px;padding:0 14px;font-family:'Libre Franklin',system-ui,sans-serif;font-size:18.5px;color:#22322B;box-sizing:border-box"></label>
+          <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:17px;font-weight:600;color:#22322B">Nom</span><input type="text" value="{{ nom }}" onChange="{{ setNom }}" autoComplete="family-name" style="height:54px;border:1.5px solid #C9C2B2;border-radius:10px;padding:0 14px;font-family:'Libre Franklin',system-ui,sans-serif;font-size:18.5px;color:#22322B;box-sizing:border-box"></label>
+          <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:17px;font-weight:600;color:#22322B">Téléphone</span><input type="tel" value="{{ tel }}" onChange="{{ setTel }}" autoComplete="tel" inputMode="tel" placeholder="06 12 34 56 78" style="height:54px;border:1.5px solid #C9C2B2;border-radius:10px;padding:0 14px;font-family:'Libre Franklin',system-ui,sans-serif;font-size:18.5px;color:#22322B;box-sizing:border-box"></label>
+          <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:17px;font-weight:600;color:#22322B">Email</span><input type="email" value="{{ email }}" onChange="{{ setEmail }}" autoComplete="email" placeholder="prenom@exemple.fr" style="height:54px;border:1.5px solid #C9C2B2;border-radius:10px;padding:0 14px;font-family:'Libre Franklin',system-ui,sans-serif;font-size:18.5px;color:#22322B;box-sizing:border-box"></label>
+        </div>
+        <label style="display:flex;gap:12px;align-items:flex-start;background:#FAF7F0;border:1px solid #E5DFD2;border-radius:12px;padding:14px 16px;cursor:pointer">
+          <input type="checkbox" checked="{{ consent }}" onChange="{{ toggleConsent }}" style="width:24px;height:24px;margin:2px 0 0;accent-color:#2E5B4C;cursor:pointer;flex-shrink:0">
+          <span style="font-size:17.5px;line-height:1.55;color:#22322B">J’accepte que mes informations soient utilisées par Go Senior et ses <a href="#">partenaires</a> pour le traitement de ma demande (contact par email et téléphone). En cochant cette case, je reconnais avoir lu et accepté la <a href="Politique-confidentialite.dc.html">Politique de confidentialité</a> et les <a href="Conditions-generales.dc.html">CGU</a>.</span>
+        </label>
+      </sc-if>
+      <sc-if value="{{ estFin }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding:8px 0">
+          <span style="width:60px;height:60px;border-radius:50%;background:#EBF1E8;display:flex;align-items:center;justify-content:center"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2.4" aria-hidden="true"><path d="M5 12.5 l4.5 4.5 L19 7"></path></svg></span>
+          <h3 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:24px;color:#1F2E27">Merci, votre demande est enregistrée</h3>
+          <p style="margin:0;font-size:18px;color:#41504A;max-width:480px">Nous vérifions si un professionnel indépendant prend en charge votre projet dans le secteur <strong>{{ cpAffiche }}</strong>. Si c’est le cas, il peut vous recontacter pour échanger et établir un devis personnalisé.</p>
+          
+        </div>
+      </sc-if>
+      <sc-if value="{{ aErreur }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:18px 0 0;font-size:17px;font-weight:600;color:#A8442A;text-align:center">{{ erreur }}</p></sc-if>
+      <sc-if value="{{ pasFin }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:30px">
+          <sc-if value="{{ peutRetour }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ retour }}" style="height:52px;padding:0 22px;background:#FFFFFF;color:#2E5B4C;border:2px solid #2E5B4C;border-radius:10px;font-family:'Libre Franklin',system-ui,sans-serif;font-weight:600;font-size:17.5px;cursor:pointer" style-hover="background:#EBF1E8">‹ Précédent</button>
+          </sc-if>
+          <sc-if value="{{ pasRetour }}" hint-placeholder-val="{{ true }}"><span></span></sc-if>
+          <sc-if value="{{ montrerSuivant }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ suivant }}" style="height:52px;padding:0 30px;background:#C05A2E;color:#FFFFFF;border:none;border-radius:10px;font-family:'Libre Franklin',system-ui,sans-serif;font-weight:600;font-size:18.5px;cursor:pointer" style-hover="background:#A84D24">{{ labelSuivant }} ›</button>
+          </sc-if>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+  <div style="display:flex;align-items:flex-start;justify-content:center;gap:0;padding:0 12px">
+    <sc-for list="{{ jalons }}" as="j" hint-placeholder-count="4">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;flex:0 0 auto;min-width:90px">
+        <span style="{{ j.rond }}">{{ j.numero }}</span>
+        <span style="font-size:16.5px;font-weight:600;color:#22322B;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:7px;padding:4px 12px;white-space:nowrap">{{ j.label }}</span>
+      </div>
+      <sc-if value="{{ j.trait }}" hint-placeholder-val="{{ true }}"><span style="flex:1;height:2px;background:#D9D2C2;margin-top:19px;max-width:110px"></span></sc-if>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:760,&quot;height&quot;:640},&quot;projet&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;monte-escalier&quot;,&quot;douche-senior&quot;],&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;},&quot;titre&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Étudiez votre projet en 2 minutes&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;},&quot;redirige&quot;:{&quot;editor&quot;:null,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Comportement&quot;,&quot;description&quot;:&quot;URL de la page formulaire dédiée : le premier clic y emmène en transmettant la réponse&quot;}}">
+class Component extends DCLogic {
+  state = { ecran: 0, projetChoisi: "", projetUrl: "", reponses: {}, cp: "", prenom: "", nom: "", tel: "", email: "", consent: false, erreur: "" };
+  componentDidMount() {
+    const q = new URLSearchParams(location.search);
+    const patch = {};
+    const p = q.get("projet");
+    if (p && ["monte-escalier", "baignoire-douche", "douche-senior", "salle-de-bain", "inconnu"].includes(p)) patch.projetUrl = p;
+    const cp = q.get("cp");
+    if (cp && /^[0-9]{1,5}$/.test(cp)) patch.cp = cp;
+    const reponses = {};
+    ["type", "niveaux", "installation", "souhait", "delai", "proprio"].forEach(k => { const v = q.get(k); if (v) reponses[k] = v; });
+    if (Object.keys(reponses).length) patch.reponses = reponses;
+    if (Object.keys(patch).length) this.setState(patch, () => {
+      const ecrans = this.ecrans();
+      let i = 0;
+      while (i < ecrans.length && ecrans[i].q && ecrans[i].cle !== "__projet" && this.state.reponses[ecrans[i].cle]) i++;
+      if (i > 0) this.setState({ ecran: i });
+    });
+  }
+  el(tag, props, kids) { return React.createElement(tag, props, kids); }
+  svg(children) {
+    return this.el("svg", { width: 46, height: 46, viewBox: "0 0 24 24", fill: "none", stroke: "#2E5B4C", strokeWidth: 1.7, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true, key: "s" },
+      children.map((c, i) => this.el(c.t, Object.assign({ key: i }, c.a)))
+    );
+  }
+  centre(el) { return this.el("span", { key: "c", style: { height: "140px", display: "flex", alignItems: "center", justifyContent: "center" } }, el); }
+  glyphe(txt) { return this.el("span", { key: "g", style: { fontFamily: "'Source Serif 4',Georgia,serif", fontWeight: 700, fontSize: "52px", color: "#2E5B4C", lineHeight: 1, height: "140px", display: "flex", alignItems: "center", justifyContent: "center", width: "100%" } }, txt); }
+  img(src, alt) {
+    return this.el("img", { key: "i", src, alt, style: { width: "100%", height: "170px", borderRadius: "10px", objectFit: "cover", display: "block" } });
+  }
+  photo(label) {
+    return this.el("span", { key: "p", style: { width: "118px", height: "74px", borderRadius: "10px", background: "repeating-linear-gradient(45deg,#E9EFE4,#E9EFE4 8px,#E1E9DB 8px,#E1E9DB 16px)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" } },
+      this.el("span", { key: "l", style: { fontFamily: "ui-monospace,Menlo,monospace", fontSize: "10.5px", color: "#41504A", background: "rgba(255,255,255,0.85)", padding: "2px 6px", borderRadius: "4px", textAlign: "center", lineHeight: 1.3, maxWidth: "100px" } }, label));
+  }
+  icones() {
+    const p = d => ({ t: "path", a: { d } });
+    return {
+      droit: this.img("uploads/monte-escalier-droit.jpg", "Monte-escalier droit"),
+      tournant: this.img("uploads/monte-escalier-tournant-interieur.jpg", "Monte-escalier tournant"),
+      exterieur: this.img("uploads/monte-escalier-exterieur-perron.jpg", "Monte-escalier extérieur"),
+      monteEscalier: this.img("uploads/monte-escalier-en-situation.jpg", "Monte-escalier en situation"),
+      nsp: this.glyphe("?"),
+      m1: this.centre(this.svg([p("M4 12 L12 5 l8 7"), p("M6 11 V20 h12 V11"), p("M10.5 20 v-5 h3 v5")])),
+      m2: this.centre(this.svg([p("M6 9 h12 V20 H6 z"), p("M6 9 L12 4 l6 5"), p("M9 12.5 h2 M13 12.5 h2 M9 16 h2 M13 16 h2")])),
+      m3: this.centre(this.svg([p("M7 20 V5 a1 1 0 0 1 1-1 h8 a1 1 0 0 1 1 1 V20"), p("M5 20 h14"), p("M10 7.5 h1.5 M13 7.5 h1.5 M10 11 h1.5 M13 11 h1.5 M10 14.5 h1.5 M13 14.5 h1.5")])),
+      baignoire: this.img("uploads/baignoire-a-remplacer.jpg", "Baignoire à remplacer"),
+      douche: this.img("uploads/douche-existante-a-adapter.jpg", "Douche existante à adapter"),
+      plainpied: this.img("uploads/douche-de-plain-pied.jpg", "Douche de plain-pied"),
+      adaptation: this.img("uploads/douche-siege-mural-barres-appui.jpg", "Barres d’appui et siège de douche"),
+      sdb: this.img("uploads/salle-de-bain-adaptee-complete.jpg", "Salle de bain adaptée complète")
+    };
+  }
+  projet() { return this.state.projetChoisi || this.props.projet || this.state.projetUrl || ""; }
+  ecrans() {
+    const ic = this.icones(), e = [];
+    const projet = this.projet();
+    if (!projet) e.push({ q: "Quel projet souhaitez-vous réaliser ?", sous: "", cle: "__projet", opts: [["monte-escalier", "Installer un monte-escalier", ic.monteEscalier], ["baignoire-douche", "Remplacer une baignoire par une douche", ic.baignoire], ["douche-senior", "Installer une douche adaptée", ic.douche], ["salle-de-bain", "Adapter une salle de bain", ic.sdb]] });
+    if (projet === "monte-escalier") {
+      e.push({ q: "Quel type de monte-escalier recherchez-vous ?", sous: "Afin de vous orienter vers la solution la plus adaptée.", cle: "type", opts: [["droit", "Monte-escalier droit", ic.droit], ["tournant", "Monte-escalier tournant", ic.tournant], ["exterieur", "Monte-escalier extérieur", ic.exterieur]] });
+      e.push({ q: "De combien de niveaux est composé votre logement ?", sous: "Afin d’évaluer la configuration de l’escalier.", cle: "niveaux", opts: [["2", "2 niveaux", ic.m1], ["3", "3 niveaux", ic.m2], ["4+", "Plus de 3 niveaux", ic.m3]] });
+    } else if (["baignoire-douche", "douche-senior", "salle-de-bain"].includes(projet)) {
+      e.push({ q: "Quelle est votre installation actuelle ?", sous: "Afin de comprendre le point de départ des travaux.", cle: "installation", opts: [["baignoire", "Une baignoire", ic.baignoire], ["douche", "Une douche à adapter", ic.douche]] });
+      e.push({ q: "Quel projet envisagez-vous ?", sous: "Afin de vous proposer la solution la plus adaptée.", cle: "souhait", opts: [["remplacement", "Remplacer la baignoire par une douche", ic.baignoire], ["plain-pied", "Douche de plain-pied", ic.plainpied], ["adaptation", "Adapter l’existant", ic.adaptation]] });
+    }
+    e.push({ q: "Quand souhaitez-vous réaliser le projet ?", sous: "Afin d’adapter la prise de contact à votre calendrier.", cle: "delai", texte: true, opts: [["asap", "Dès que possible"], ["3mois", "Dans les 3 mois"], ["plus", "Plus de 3 mois"]] });
+    e.push({ q: "Êtes-vous propriétaire du logement ?", sous: "Certains travaux et aides en dépendent.", cle: "proprio", texte: true, opts: [["oui", "Oui"], ["non", "Non"]] });
+    e.push({ type: "cp" });
+    e.push({ type: "coords" });
+    e.push({ type: "fin" });
+    return e;
+  }
+  renderVals() {
+    const s = this.state, ecrans = this.ecrans(), e = ecrans[Math.min(s.ecran, ecrans.length - 1)];
+    const estQ = !!e.q, estCp = e.type === "cp", estCoords = e.type === "coords", estFin = e.type === "fin";
+    const options = estQ ? e.opts.map(([v, label, icone]) => {
+      const sel = e.cle === "__projet" ? s.projetChoisi === v : s.reponses[e.cle] === v;
+      const base = e.texte
+        ? "min-width:180px;padding:20px 22px;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:'Libre Franklin',system-ui,sans-serif;transition:border-color 0.15s;"
+        : "min-height:240px;padding:12px 12px 16px;border-radius:14px;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:12px;cursor:pointer;font-family:'Libre Franklin',system-ui,sans-serif;transition:border-color 0.15s;";
+      return {
+        label, icone: icone ?? null, sel,
+        style: base + (sel ? "border:2.5px solid #2E5B4C;background:#EBF1E8" : "border:1.5px solid #C9C2B2;background:#FFFFFF"),
+
+        pick: () => {
+          if (this.props.redirige) {
+            const q = new URLSearchParams();
+            const proj = e.cle === "__projet" ? v : this.projet();
+            if (proj) q.set("projet", proj);
+            if (e.cle !== "__projet") q.set(e.cle, v);
+            Object.keys(s.reponses).forEach(k => { if (s.reponses[k]) q.set(k, s.reponses[k]); });
+            if (s.cp) q.set("cp", s.cp);
+            location.href = this.props.redirige + "?" + q.toString();
+            return;
+          }
+          if (e.cle === "__projet") this.setState({ projetChoisi: v, ecran: s.ecran, erreur: "" });
+          else this.setState({ reponses: Object.assign({}, s.reponses, { [e.cle]: v }), ecran: s.ecran + 1, erreur: "" });
+        }
+      };
+    }) : [];
+    const phase = estFin ? 3 : estCoords ? 2 : (estCp || e.cle === "proprio") ? 1 : 0;
+    const jalons = ["Votre projet", "Précisions", "Vos coordonnées", "Vérification"].map((label, i) => ({
+      label, numero: String(i + 1), trait: i < 3,
+      rond: "width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18.5px;" + (i === phase ? "background:#C05A2E;color:#FFFFFF" : i < phase ? "background:#2E5B4C;color:#FFFFFF" : "background:#FFFFFF;color:#6B7A70;border:2px solid #C9C2B2;box-sizing:border-box")
+    }));
+    const pilule = "font-size:16px;font-weight:600;color:#DCE8DF;background:rgba(250,247,240,0.12);padding:5px 14px;border-radius:999px";
+    const piluleAmbre = "font-size:16px;font-weight:700;color:#1F2E27;background:#E9B44C;padding:5px 14px;border-radius:999px";
+    const projetCourant = this.projet();
+    const badges = [
+      { label: "Devis gratuit et sans engagement", style: pilule },
+      { label: "Professionnels indépendants", style: pilule }
+    ];
+    if (projetCourant === "monte-escalier" || projetCourant === "") badges.push({ label: "Aides de l’État possibles", style: piluleAmbre });
+    return {
+      badges,
+      titre: this.props.titre ?? "Étudiez votre projet en 2 minutes",
+      question: e.q ?? "", sousQuestion: e.sous ?? "", options, jalons,
+      estQuestion: estQ, estCp, estCoords, estFin, pasFin: !estFin, montrerSuivant: estCp || estCoords,
+      cp: s.cp, cpAffiche: s.cp || "—",
+      prenom: s.prenom, nom: s.nom, tel: s.tel, email: s.email, consent: s.consent,
+      erreur: s.erreur, aErreur: !!s.erreur,
+      gabaritColonnes: estQ ? (e.texte ? "repeat(auto-fit,minmax(180px,240px))" : (e.opts.length === 4 ? "repeat(2,minmax(200px,280px))" : "repeat(" + Math.min(e.opts.length, 3) + ",minmax(200px,280px))")) : "1fr",
+      peutRetour: (s.ecran > 0 || !!s.projetChoisi) && !estFin, pasRetour: s.ecran === 0 && !s.projetChoisi,
+      labelSuivant: estCoords ? "Voir les solutions disponibles" : "Suivant",
+      setCp: ev => this.setState({ cp: ev.target.value.replace(/[^0-9]/g, "").slice(0, 5), erreur: "" }),
+      setPrenom: ev => this.setState({ prenom: ev.target.value, erreur: "" }),
+      setNom: ev => this.setState({ nom: ev.target.value, erreur: "" }),
+      setTel: ev => this.setState({ tel: ev.target.value, erreur: "" }),
+      setEmail: ev => this.setState({ email: ev.target.value, erreur: "" }),
+      toggleConsent: ev => this.setState({ consent: ev.target.checked, erreur: "" }),
+      retour: () => {
+        if (s.ecran === 0 && s.projetChoisi) this.setState({ projetChoisi: "", erreur: "" });
+        else this.setState({ ecran: Math.max(0, s.ecran - 1), erreur: "" });
+      },
+      suivant: () => {
+        if (estQ) {
+          const ok = e.cle === "__projet" ? !!s.projetChoisi : !!s.reponses[e.cle];
+          if (!ok) return this.setState({ erreur: "Veuillez choisir une réponse pour continuer." });
+        }
+        if (estCp && s.cp.length !== 5) return this.setState({ erreur: "Veuillez saisir un code postal à 5 chiffres." });
+        if (estCoords) {
+          if (!s.prenom.trim() || !s.nom.trim() || !s.tel.trim() || !s.email.trim()) return this.setState({ erreur: "Veuillez renseigner votre prénom, votre nom, votre téléphone et votre email." });
+          if (!s.consent) return this.setState({ erreur: "Merci de cocher la case de consentement pour transmettre votre demande." });
+        }
+        this.setState({ ecran: s.ecran + 1, erreur: "" });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

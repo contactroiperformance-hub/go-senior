@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FAF7F0;font-family:'Libre Franklin',system-ui,sans-serif;color:#22322B;font-size:19.5px;line-height:1.65}
+a{color:#2E5B4C}a:hover{color:#1F4237}
+:focus-visible{outline:3px solid #C05A2E;outline-offset:2px;border-radius:4px}
+</style>
+<title>Modèle de page département — Go Senior</title>
+</helmet>
+<dc-import name="Header" active="monte-escalier" hint-size="100%,78px"></dc-import>
+<main data-screen-label="Modèle département">
+  <div style="background:#EBF1E8;border-bottom:1px solid #D7E2D2;padding:10px 24px;text-align:center;font-size:16.5px;color:#41504A"><strong>Modèle réutilisable</strong> — exemple : /monte-escalier/nord/. Ne pas générer en masse : publier uniquement avec des données locales réelles et vérifiées.</div>
+  <section style="background:linear-gradient(180deg,#F3EFE4 0%,#FAF7F0 100%);border-bottom:1px solid #E5DFD2">
+    <div style="max-width:1200px;margin:0 auto;padding:40px 24px 52px">
+      <nav aria-label="Fil d’Ariane" style="font-size:17px;color:#6B7A70;margin-bottom:20px"><a href="Accueil.dc.html" style="color:#2E5B4C;text-decoration:none" style-hover="text-decoration:underline">Accueil</a> <span aria-hidden="true">›</span> <a href="Monte-escalier.dc.html" style="color:#2E5B4C;text-decoration:none" style-hover="text-decoration:underline">Monte-escalier</a> <span aria-hidden="true">›</span> <span>Nord</span></nav>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:44px;align-items:center">
+        <div style="display:flex;flex-direction:column;gap:16px;max-width:620px">
+          <h1 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(32px,3.8vw,46px);line-height:1.15;letter-spacing:-0.015em;color:#1F2E27;text-wrap:balance">Monte-escalier dans le Nord : prix et solutions disponibles</h1>
+          <p style="margin:0;font-size:20.5px;color:#41504A">[Introduction unique au département : contexte du bâti, spécificités locales — rédigée, pas générée.]</p>
+        </div>
+        <dc-import name="BlocProjet" projet="monte-escalier" title="Vérifiez les solutions dans le Nord" hint-size="100%,300px"></dc-import>
+      </div>
+    </div>
+  </section>
+  <div style="max-width:1200px;margin:0 auto;padding:56px 24px 88px;display:flex;flex-direction:column;gap:56px">
+    <section style="display:flex;flex-direction:column;gap:18px">
+      <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Le logement et le vieillissement dans le département</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
+        <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:4px"><span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:28px;color:#2E5B4C">[X %]</span><span style="font-size:17px;color:#41504A">de la population a 60 ans ou plus <span style="color:#6B7A70">(INSEE, [année])</span></span></div>
+        <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:4px"><span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:28px;color:#2E5B4C">[X %]</span><span style="font-size:17px;color:#41504A">de maisons individuelles, souvent à étage <span style="color:#6B7A70">(INSEE, [année])</span></span></div>
+        <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:4px"><span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:28px;color:#2E5B4C">[X %]</span><span style="font-size:17px;color:#41504A">de propriétaires occupants <span style="color:#6B7A70">(INSEE, [année])</span></span></div>
+      </div>
+      <p style="margin:0;font-size:16.5px;color:#6B7A70">Champs de données à alimenter avec les statistiques INSEE réelles du département, avec source et millésime.</p>
+    </section>
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Prix de référence et spécificités locales</h2>
+      <p style="margin:0;color:#41504A">Les fourchettes nationales s’appliquent : <a href="Guide-prix-monte-escalier.dc.html">voir le guide des prix</a>. [Considérations propres au département : types d’escaliers fréquents dans le bâti local, contraintes d’accès, etc. — contenu rédigé.]</p>
+    </section>
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Aides dans le département</h2>
+      <p style="margin:0;color:#41504A">En complément des dispositifs nationaux (<a href="MaPrimeAdapt.dc.html">MaPrimeAdapt’</a>, APA, PCH), le département peut proposer des aides locales. [Lister uniquement les dispositifs vérifiés, avec l’organisme et un lien officiel.]</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">
+        <a href="#" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:4px" style-hover="border-color:#2E5B4C"><span style="font-weight:600;font-size:18px;color:#1F2E27">[Conseil départemental — dispositif]</span><span style="font-size:16.5px;color:#6B7A70">[URL officielle] — vérifié le [date]</span></a>
+        <a href="#" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:4px" style-hover="border-color:#2E5B4C"><span style="font-weight:600;font-size:18px;color:#1F2E27">[Point d’information local]</span><span style="font-size:16.5px;color:#6B7A70">[URL officielle] — vérifié le [date]</span></a>
+      </div>
+    </section>
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Couverture professionnelle</h2>
+      <div style="background:#FCF6E8;border:1px solid #E6D8AE;border-radius:14px;padding:18px 22px">
+        <p style="margin:0;font-size:17.5px;color:#5C4E22">[Décrire uniquement la couverture réelle : « Des professionnels indépendants prenant en charge les projets de monte-escalier interviennent dans une partie du département. » Ne jamais annoncer d’agence locale ou de couverture non vérifiée.]</p>
+      </div>
+    </section>
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Principales villes publiées</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:12px">
+        <a href="Modele-ville.dc.html" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:999px;padding:11px 22px;font-weight:600;font-size:18px;color:#2E5B4C" style-hover="border-color:#2E5B4C;background:#EBF1E8">Lille</a>
+        <span style="border:2px dashed #C9C2B2;border-radius:999px;padding:9px 22px;font-family:ui-monospace,Menlo,monospace;font-size:15.5px;color:#6B7A70">uniquement les villes réellement publiées — pas de « bientôt disponible »</span>
+      </div>
+    </section>
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Questions fréquentes dans le département</h2>
+      <div style="border:2px dashed #C9C2B2;border-radius:14px;padding:20px 24px"><p style="margin:0;font-family:ui-monospace,Menlo,monospace;font-size:16px;color:#6B7A70">2–4 FAQ réellement locales (bâti, aides départementales, démarches) — pas de FAQ génériques dupliquées.</p></div>
+    </section>
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Sources</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">
+        <a href="#" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:4px" style-hover="border-color:#2E5B4C"><span style="font-weight:600;font-size:18px;color:#1F2E27">INSEE — dossier départemental</span><span style="font-size:16.5px;color:#6B7A70">[URL] — consulté le [date]</span></a>
+        <a href="#" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:4px" style-hover="border-color:#2E5B4C"><span style="font-weight:600;font-size:18px;color:#1F2E27">[Source aide locale]</span><span style="font-size:16.5px;color:#6B7A70">[URL] — consulté le [date]</span></a>
+      </div>
+    </section>
+    <section style="background:#1F4237;border-radius:20px;padding:clamp(28px,4vw,44px);display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:32px;align-items:center">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(24px,2.8vw,30px);color:#FFFFFF">Votre projet dans le Nord</h2>
+        <p style="margin:0;font-size:18.5px;color:#C6D7CB">Indiquez votre code postal pour vérifier les possibilités dans votre secteur.</p>
+      </div>
+      <dc-import name="BlocProjet" projet="monte-escalier" title="" hint-size="100%,280px"></dc-import>
+    </section>
+  </div>
+</main>
+<dc-import name="Footer" hint-size="100%,520px"></dc-import>
+</x-dc>
+</body>
+</html>

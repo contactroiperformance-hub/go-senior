@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FAF7F0;font-family:'Libre Franklin',system-ui,sans-serif;color:#22322B;font-size:18px;line-height:1.65}
+a{color:#2E5B4C}a:hover{color:#1F4237}
+:focus-visible{outline:3px solid #C05A2E;outline-offset:2px;border-radius:4px}
+</style>
+<title>Bannière cookies — Go Senior</title>
+</helmet>
+<main data-screen-label="Bannière cookies" style="min-height:100vh;display:flex;flex-direction:column">
+  <div style="max-width:900px;margin:0 auto;padding:48px 24px;display:flex;flex-direction:column;gap:14px;flex:1">
+    <h1 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(28px,3.4vw,38px);color:#1F2E27">Bannière de consentement cookies</h1>
+    <p style="margin:0;color:#41504A">Maquette interactive, conforme CNIL : consentement préalable, refus aussi simple que l’acceptation, personnalisation par catégorie. Les catégories reprennent exactement la <a href="Politique-cookies.dc.html">Politique cookies</a> du site.</p>
+    <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;font-size:16.5px;color:#41504A">
+      <li style="display:flex;gap:10px"><span style="color:#2E5B4C;font-weight:700">·</span><span>Aucun traceur non essentiel ne se charge avant le choix (Codex : conditionner GTM/Analytics/Clarity au consentement).</span></li>
+      <li style="display:flex;gap:10px"><span style="color:#2E5B4C;font-weight:700">·</span><span>Choix mémorisé 6 mois (clé <code style="font-family:ui-monospace,Menlo,monospace;font-size:14.5px">gs-consent</code> : version, date, catégories) — preuve de consentement à journaliser côté serveur.</span></li>
+      <li style="display:flex;gap:10px"><span style="color:#2E5B4C;font-weight:700">·</span><span>Réouverture à tout moment via le lien « Vos choix en matière de confidentialité » du footer.</span></li>
+    </ul>
+    <button onClick="{{ rouvrir }}" style="align-self:flex-start;height:52px;padding:0 24px;background:#FFFFFF;color:#2E5B4C;border:2px solid #2E5B4C;border-radius:10px;font-family:'Libre Franklin',system-ui,sans-serif;font-weight:600;font-size:16.5px;cursor:pointer" style-hover="background:#EBF1E8">Rouvrir la bannière</button>
+    <sc-if value="{{ choixFait }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#EBF1E8;border:1px solid #D7E2D2;border-radius:14px;padding:16px 20px;font-size:16.5px;color:#2C463B">Choix enregistré (démo) : {{ resume }}</div>
+    </sc-if>
+  </div>
+  <sc-if value="{{ ouverte }}" hint-placeholder-val="{{ true }}">
+    <div role="dialog" aria-modal="false" aria-label="Gestion des cookies" style="position:sticky;bottom:0;z-index:80;background:#FFFFFF;border-top:1px solid #E5DFD2;box-shadow:0 -10px 34px rgba(34,50,43,0.14)">
+      <div style="max-width:1200px;margin:0 auto;padding:22px 24px;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;gap:14px;align-items:flex-start">
+          <svg width="34" height="34" viewBox="0 0 36 36" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><rect width="36" height="36" rx="10" fill="#2E5B4C"></rect><path d="M11 26 V17.5 a7 7 0 0 1 14 0 V26" fill="none" stroke="#FAF7F0" stroke-width="3.2" stroke-linecap="round"></path></svg>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <p style="margin:0;font-weight:600;font-size:18px;color:#1F2E27">Le respect de votre vie privée est notre priorité</p>
+            <p style="margin:0;font-size:16px;color:#41504A;max-width:860px">Nous utilisons des cookies pour assurer le fonctionnement du site et, avec votre accord, pour mesurer son audience et améliorer votre expérience. Vous pouvez accepter, refuser ou personnaliser ces usages, et changer d’avis à tout moment. <a href="Politique-cookies.dc.html">Politique cookies</a> · <a href="Politique-confidentialite.dc.html">Politique de confidentialité</a></p>
+          </div>
+        </div>
+        <sc-if value="{{ panneau }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;border-top:1px solid #E5DFD2;padding-top:16px">
+            <sc-for list="{{ categories }}" as="c" hint-placeholder-count="4">
+              <div style="border:1px solid #E5DFD2;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+                  <span style="font-weight:600;font-size:16px;color:#1F2E27">{{ c.nom }}</span>
+                  <button onClick="{{ c.toggle }}" role="switch" aria-checked="{{ c.actif }}" aria-label="{{ c.aria }}" disabled="{{ c.verrou }}" style="{{ c.styleSwitch }}"><span style="{{ c.styleBille }}"></span></button>
+                </div>
+                <p style="margin:0;font-size:14.5px;color:#6B7A70">{{ c.description }}</p>
+                <span style="font-size:13.5px;font-weight:600;color:{{ c.couleurEtat }}">{{ c.etat }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+          <button onClick="{{ accepterTout }}" style="height:54px;padding:0 26px;background:#2E5B4C;color:#FFFFFF;border:none;border-radius:10px;font-family:'Libre Franklin',system-ui,sans-serif;font-weight:600;font-size:16.5px;cursor:pointer" style-hover="background:#1F4237">Tout accepter</button>
+          <button onClick="{{ refuserTout }}" style="height:54px;padding:0 26px;background:#FFFFFF;color:#22322B;border:1.5px solid #C9C2B2;border-radius:10px;font-family:'Libre Franklin',system-ui,sans-serif;font-weight:600;font-size:16.5px;cursor:pointer" style-hover="border-color:#22322B">Tout refuser</button>
+          <sc-if value="{{ panneau }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ validerChoix }}" style="height:54px;padding:0 26px;background:#FFFFFF;color:#2E5B4C;border:2px solid #2E5B4C;border-radius:10px;font-family:'Libre Franklin',system-ui,sans-serif;font-weight:600;font-size:16.5px;cursor:pointer" style-hover="background:#EBF1E8">Valider mes choix</button>
+          </sc-if>
+          <sc-if value="{{ panneauFerme }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ personnaliser }}" style="height:54px;padding:0 26px;background:none;color:#2E5B4C;border:none;font-family:'Libre Franklin',system-ui,sans-serif;font-weight:600;font-size:16.5px;cursor:pointer;text-decoration:underline;text-underline-offset:3px" style-hover="color:#1F4237">Personnaliser</button>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:720}}">
+class Component extends DCLogic {
+  state = { ouverte: true, panneau: false, experience: false, mesure: false, marketing: false, choix: null };
+  cat(key, nom, description, verrou) {
+    const actif = verrou ? true : this.state[key];
+    return {
+      nom, description, verrou: !!verrou, actif,
+      aria: (actif ? "Désactiver " : "Activer ") + nom,
+      etat: verrou ? "Toujours actifs" : (actif ? "Activé" : "Désactivé"),
+      couleurEtat: verrou ? "#6B7A70" : (actif ? "#2E5B4C" : "#A8442A"),
+      styleSwitch: "width:52px;height:30px;border-radius:999px;border:none;cursor:" + (verrou ? "not-allowed" : "pointer") + ";position:relative;flex-shrink:0;transition:background 0.2s;background:" + (actif ? "#2E5B4C" : "#C9C2B2") + (verrou ? ";opacity:0.55" : ""),
+      styleBille: "position:absolute;top:3px;left:" + (actif ? "25px" : "3px") + ";width:24px;height:24px;border-radius:50%;background:#FFFFFF;transition:left 0.2s;display:block",
+      toggle: () => { if (!verrou) this.setState(s => ({ [key]: !s[key] })); }
+    };
+  }
+  fermer(choix) { this.setState({ ouverte: false, panneau: false, choix }); }
+  renderVals() {
+    const s = this.state;
+    const noms = [];
+    if (s.choix === "tout") noms.push("toutes catégories acceptées");
+    else if (s.choix === "rien") noms.push("uniquement les cookies nécessaires");
+    else if (s.choix === "perso") noms.push("nécessaires" + (s.experience ? " + expérience" : "") + (s.mesure ? " + mesure d’audience" : "") + (s.marketing ? " + marketing" : ""));
+    return {
+      ouverte: s.ouverte, panneau: s.panneau, panneauFerme: !s.panneau,
+      choixFait: !!s.choix && !s.ouverte, resume: noms.join(""),
+      categories: [
+        this.cat("necessaires", "Strictement nécessaires", "Fonctionnement du site, sécurité et distribution du trafic (Cloudflare, hébergement). Exemptés de consentement.", true),
+        this.cat("experience", "Amélioration de l’expérience", "Affichage de contenus externes et confort de navigation (polices, vidéos intégrées).", false),
+        this.cat("mesure", "Mesure d’audience", "Statistiques anonymisées de fréquentation et d’usage (Google Analytics, Microsoft Clarity).", false),
+        this.cat("marketing", "Marketing", "Mesure de l’efficacité de nos campagnes. Aucune revente de données.", false)
+      ],
+      accepterTout: () => { this.setState({ experience: true, mesure: true, marketing: true }); this.fermer("tout"); },
+      refuserTout: () => { this.setState({ experience: false, mesure: false, marketing: false }); this.fermer("rien"); },
+      personnaliser: () => this.setState({ panneau: true }),
+      validerChoix: () => this.fermer("perso"),
+      rouvrir: () => this.setState({ ouverte: true, panneau: false, choix: null })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FAF7F0;font-family:'Libre Franklin',system-ui,sans-serif;color:#22322B;font-size:19.5px;line-height:1.65}
+a{color:#2E5B4C}a:hover{color:#1F4237}
+:focus-visible{outline:3px solid #C05A2E;outline-offset:2px;border-radius:4px}
+</style>
+<title>Préparer votre projet — Go Senior</title>
+</helmet>
+<dc-import name="Header" active="" hint-size="100%,140px"></dc-import>
+<main data-screen-label="Formulaire projet" style="background:linear-gradient(180deg,#F3EFE4 0%,#FAF7F0 260px)">
+  <div style="max-width:860px;margin:0 auto;padding:44px 24px 24px">
+    <dc-import name="MiniFormulaire" titre="Étudiez votre projet en 2 minutes" hint-size="100%,640px"></dc-import>
+  </div>
+  <section aria-label="Nos engagements" style="max-width:860px;margin:0 auto;padding:28px 24px 8px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+      <div style="display:flex;align-items:center;gap:12px;justify-content:center;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:12px;padding:14px 16px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11 V8 a4 4 0 0 1 8 0 v3"></path></svg><span style="font-size:17px;font-weight:600">Données confidentielles</span></div>
+      <div style="display:flex;align-items:center;gap:12px;justify-content:center;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:12px;padding:14px 16px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"></circle><path d="M8 12.5 l2.8 2.8 L16 9.5"></path></svg><span style="font-size:17px;font-weight:600">Demande gratuite et sans engagement</span></div>
+      <div style="display:flex;align-items:center;gap:12px;justify-content:center;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:12px;padding:14px 16px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21 C12 21 5 14.5 5 9.5 a7 7 0 0 1 14 0 C19 14.5 12 21 12 21 z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span style="font-size:17px;font-weight:600">Mise en relation selon votre secteur</span></div>
+    </div>
+  </section>
+  <section style="max-width:1100px;margin:0 auto;padding:72px 24px 0">
+    <h2 style="margin:0 0 36px;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(26px,3vw,34px);color:#1F2E27;text-align:center">Comment procédons-nous pour vous aider ?</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px">
+      <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:16px;padding:26px 22px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center">
+        <span style="width:60px;height:60px;border-radius:50%;background:#EBF1E8;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20 h16"></path><path d="M6 16 L16 6 l2.5 2.5 L8.5 18.5 L5.5 19 z"></path></svg></span>
+        <p style="margin:0;font-weight:600;font-size:19px;color:#1F2E27">Description de votre projet</p>
+        <p style="margin:0;font-size:17px;color:#41504A">Vous nous expliquez votre projet à l’aide du formulaire en ligne.</p>
+      </div>
+      <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:16px;padding:26px 22px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center">
+        <span style="width:60px;height:60px;border-radius:50%;background:#EBF1E8;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16 L21 21"></path></svg></span>
+        <p style="margin:0;font-weight:600;font-size:19px;color:#1F2E27">Vérification de votre secteur</p>
+        <p style="margin:0;font-size:17px;color:#41504A">Nous vérifions si un professionnel indépendant prend en charge votre projet dans votre secteur.</p>
+      </div>
+      <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:16px;padding:26px 22px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center">
+        <span style="width:60px;height:60px;border-radius:50%;background:#EBF1E8;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3 h9 l4 4 v14 H6 z"></path><path d="M15 3 v4 h4 M9 12 h6 M9 15.5 h6"></path></svg></span>
+        <p style="margin:0;font-weight:600;font-size:19px;color:#1F2E27">Échange et devis personnalisé</p>
+        <p style="margin:0;font-size:17px;color:#41504A">Le professionnel disponible vous recontacte pour échanger et établir un devis après visite.</p>
+      </div>
+      <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:16px;padding:26px 22px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center">
+        <span style="width:60px;height:60px;border-radius:50%;background:#EBF1E8;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"></circle><path d="M8 12.5 l2.8 2.8 L16 9.5"></path></svg></span>
+        <p style="margin:0;font-weight:600;font-size:19px;color:#1F2E27">Vous faites votre choix</p>
+        <p style="margin:0;font-size:17px;color:#41504A">Vous restez libre d’accepter ou non la proposition, à chaque étape.</p>
+      </div>
+    </div>
+  </section>
+  <section style="max-width:1100px;margin:0 auto;padding:64px 24px 80px">
+    <div style="background:#1F4237;border-radius:20px;padding:clamp(26px,3.5vw,40px);display:flex;flex-wrap:wrap;align-items:center;gap:24px;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:18px">
+        <span style="width:56px;height:56px;border-radius:14px;background:rgba(250,247,240,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FAF7F0" stroke-width="2" aria-hidden="true"><path d="M4 6 h16 v12 H4 z"></path><path d="M4 7 l8 6 8-6"></path></svg></span>
+        <div>
+          <p style="margin:0;font-size:20px;font-weight:600;color:#FFFFFF">Un conseiller vous accompagne à chaque étape</p>
+          <p style="margin:0;font-size:17px;color:#B9CDBF">Comprendre les options, préparer votre demande, vérifier votre secteur — écrivez-nous à support@go-senior.fr.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer style="background:#1F4237;padding:22px 24px">
+  <div style="max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;justify-content:space-between">
+    <span style="font-size:16px;color:#8FAE98">© 2026 Go Senior — go-senior.fr · Service d’information et de mise en relation indépendant</span>
+    <span style="display:flex;gap:18px;flex-wrap:wrap"><a href="Politique-confidentialite.dc.html" style="font-size:16px;color:#DCE8DF;text-decoration:none" style-hover="text-decoration:underline">Politique de confidentialité</a><a href="Mentions-legales.dc.html" style="font-size:16px;color:#DCE8DF;text-decoration:none" style-hover="text-decoration:underline">Mentions légales</a><a href="Accueil.dc.html" style="font-size:16px;color:#DCE8DF;text-decoration:none" style-hover="text-decoration:underline">Retour au site</a></span>
+  </div>
+</footer>
+</x-dc>
+</body>
+</html>

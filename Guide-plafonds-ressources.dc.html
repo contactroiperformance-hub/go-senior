@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
+<meta name="robots" content="index,follow">
+<meta name="description" content="Consultez les plafonds de ressources MaPrimeAdapt’ 2026 selon la taille du ménage, le revenu fiscal de référence et la région.">
+<style>
+body{margin:0;background:#FAF7F0;font-family:'Libre Franklin',system-ui,sans-serif;color:#22322B;font-size:19px;line-height:1.65}
+a{color:#2E5B4C}a:hover{color:#1F4237}
+:focus-visible{outline:3px solid #C05A2E;outline-offset:2px;border-radius:4px}
+html{scroll-padding-top:96px}
+details summary::-webkit-details-marker{display:none}
+</style>
+<title>Plafonds MaPrimeAdapt’ 2026 : barème selon vos revenus — Go Senior</title>
+</helmet>
+<dc-import name="Header" active="guides" hint-size="100%,140px"></dc-import>
+<main data-screen-label="Guide plafonds de ressources">
+  <section style="background:linear-gradient(180deg,#F3EFE4 0%,#FAF7F0 100%);border-bottom:1px solid #E5DFD2">
+    <div style="max-width:1200px;margin:0 auto;padding:40px 24px 48px">
+      <nav aria-label="Fil d’Ariane" style="font-size:17px;color:#6B7A70;margin-bottom:20px"><a href="Accueil.dc.html" style="color:#2E5B4C;text-decoration:none" style-hover="text-decoration:underline">Accueil</a> <span aria-hidden="true">›</span> <a href="Guides.dc.html" style="color:#2E5B4C;text-decoration:none" style-hover="text-decoration:underline">Guides</a> <span aria-hidden="true">›</span> <span>Plafonds de ressources MaPrimeAdapt’</span></nav>
+      <div style="max-width:820px;display:flex;flex-direction:column;gap:16px">
+        <span style="font-size:16.5px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:#8A6A1F">Aides financières</span>
+        <h1 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(32px,3.8vw,46px);line-height:1.15;letter-spacing:-0.015em;color:#1F2E27;text-wrap:balance">Plafonds de ressources MaPrimeAdapt’ 2026&nbsp;: dans quelle catégorie êtes-vous&nbsp;?</h1>
+        <p style="margin:0;font-size:21px;color:#41504A;text-wrap:pretty">MaPrimeAdapt’ est actuellement réservée, pour le parcours principal, aux ménages classés <strong>«&nbsp;très modestes&nbsp;»&nbsp;ou «&nbsp;modestes&nbsp;»</strong> par l’Anah. Votre catégorie dépend de trois éléments&nbsp;: votre <strong>revenu fiscal de référence</strong>, le <strong>nombre de personnes du ménage</strong> et la <strong>localisation du logement</strong> — les plafonds sont plus élevés en Île-de-France. Utilisez le calculateur ou les tableaux ci-dessous pour identifier votre catégorie 2026 et le taux potentiellement associé (70&nbsp;% ou 50&nbsp;%). Cette première lecture aide à préparer le projet&nbsp;; elle ne remplace pas l’examen complet du dossier.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px 14px;font-size:17px;color:#6B7A70;align-items:center">
+          <span>Rédigé par <strong style="color:#41504A">l’équipe éditoriale Go Senior</strong></span><span>·</span>
+          <span>Publié le <strong style="color:#41504A">28 juillet 2026</strong></span><span>·</span>
+          <span>Barème 2026 vérifié le <strong style="color:#41504A">28 juillet 2026</strong></span><span>·</span>
+          <span>Lecture 8 min</span>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div style="max-width:1200px;margin:0 auto;padding:56px 24px 0;display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start">
+    <aside style="flex:1 1 240px;max-width:300px;position:sticky;top:96px">
+      <nav aria-label="Sommaire" style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:16px;padding:18px">
+        <span style="font-size:15px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#6B7A70;display:block;margin-bottom:6px">Sommaire</span>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <a href="#retenir" style="text-decoration:none;color:#22322B;font-size:16px;line-height:1.4;padding:3px 10px;border-radius:7px" style-hover="background:#EBF1E8">À retenir</a>
+          <a href="#calculateur" style="text-decoration:none;color:#22322B;font-size:16px;line-height:1.4;padding:3px 10px;border-radius:7px" style-hover="background:#EBF1E8">Calculer ma catégorie</a>
+          <a href="#rfr" style="text-decoration:none;color:#22322B;font-size:16px;line-height:1.4;padding:3px 10px;border-radius:7px" style-hover="background:#EBF1E8">Le revenu fiscal de référence</a>
+          <a href="#bareme-province" style="text-decoration:none;color:#22322B;font-size:16px;line-height:1.4;padding:3px 10px;border-radius:7px" style-hover="background:#EBF1E8">Barème hors Île-de-France</a>
+          <a href="#bareme-idf" style="text-decoration:none;color:#22322B;font-size:16px;line-height:1.4;padding:3px 10px;border-radius:7px" style-hover="background:#EBF1E8">Barème Île-de-France</a>
+          <a href="#exemples" style="text-decoration:none;color:#22322B;font-size:16px;line-height:1.4;padding:3px 10px;border-radius:7px" style-hover="background:#EBF1E8">Exemples de lecture</a>
+          <a href="#categories" style="text-decoration:none;color:#22322B;font-size:16px;line-height:1.4;padding:3px 10px;border-radius:7px" style-hover="background:#EBF1E8">Ce que change la catégorie</a>
+          <a href="#limites" style="text-decoration:none;color:#22322B;font-size:16px;line-height:1.4;padding:3px 10px;border-radius:7px" style-hover="background:#EBF1E8">Ce que le barème ne dit pas</a>
+          <a href="#faq" style="text-decoration:none;color:#22322B;font-size:16px;line-height:1.4;padding:3px 10px;border-radius:7px" style-hover="background:#EBF1E8">Questions fréquentes</a>
+          <a href="#sources" style="text-decoration:none;color:#22322B;font-size:16px;line-height:1.4;padding:3px 10px;border-radius:7px" style-hover="background:#EBF1E8">Sources</a>
+        </div>
+      </nav>
+    </aside>
+    <article style="flex:999 1 520px;max-width:780px;display:flex;flex-direction:column;gap:52px;padding-bottom:32px">
+      <img src="uploads/avis-imposition-plafonds-ressources.jpg" alt="Avis d’imposition et lunettes de lecture posés sur une table" style="width:100%;height:300px;object-fit:cover;border-radius:18px;display:block">
+      <section id="retenir" style="background:#EBF1E8;border:1px solid #D7E2D2;border-radius:18px;padding:26px;display:flex;flex-direction:column;gap:12px">
+        <h2 style="margin:0;font-size:21px;font-weight:600;color:#1F2E27">À retenir</h2>
+        <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px">
+          <li style="display:flex;gap:10px;font-size:18px;color:#22322B"><span style="color:#2E5B4C;font-weight:700">·</span><span><strong>Revenu examiné</strong>&nbsp;: le revenu fiscal de référence (RFR) du ménage.</span></li>
+          <li style="display:flex;gap:10px;font-size:18px;color:#22322B"><span style="color:#2E5B4C;font-weight:700">·</span><span><strong>Personnes prises en compte</strong>&nbsp;: les membres du ménage occupant le logement.</span></li>
+          <li style="display:flex;gap:10px;font-size:18px;color:#22322B"><span style="color:#2E5B4C;font-weight:700">·</span><span><strong>Deux zones</strong>&nbsp;: Île-de-France / autres régions et Outre-mer.</span></li>
+          <li style="display:flex;gap:10px;font-size:18px;color:#22322B"><span style="color:#2E5B4C;font-weight:700">·</span><span><strong>Deux catégories financées</strong> par MaPrimeAdapt’&nbsp;: très modestes (70&nbsp;%) et modestes (50&nbsp;%).</span></li>
+          <li style="display:flex;gap:10px;font-size:18px;color:#22322B"><span style="color:#2E5B4C;font-weight:700">·</span><span><strong>Année du barème</strong>&nbsp;: 2026.</span></li>
+        </ul>
+      </section>
+      <section id="calculateur" style="display:flex;flex-direction:column;gap:18px">
+        <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Calculez votre catégorie en 30 secondes</h2>
+        <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(34,50,43,0.06),0 14px 36px rgba(34,50,43,0.10)">
+          <div style="background:#1F4237;padding:18px 24px;text-align:center">
+            <p style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:21px;color:#FFFFFF">Ma catégorie de ressources 2026</p>
+            <p style="margin:4px 0 0;font-size:15.5px;color:#B9CDBF">Gratuit · sans coordonnées · estimation indicative</p>
+          </div>
+          <div style="padding:clamp(22px,3vw,32px);display:flex;flex-direction:column;gap:20px">
+            <fieldset style="border:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px">
+              <legend style="padding:0;margin:0 0 10px;font-size:17px;font-weight:600;color:#22322B">Où se situe le logement&nbsp;?</legend>
+              <div style="display:flex;flex-wrap:wrap;gap:12px">
+                <sc-for list="{{ optsZone }}" as="o" hint-placeholder-count="2">
+                  <button onClick="{{ o.pick }}" aria-pressed="{{ o.sel }}" style="{{ o.style }}" style-hover="border-color:#2E5B4C;background:#EBF1E8">{{ o.label }}</button>
+                </sc-for>
+              </div>
+            </fieldset>
+            <label style="display:flex;flex-direction:column;gap:8px;max-width:320px">
+              <span style="font-size:17px;font-weight:600;color:#22322B">Nombre de personnes du ménage</span>
+              <select value="{{ taille }}" onChange="{{ setTaille }}" style="height:56px;border:1.5px solid #C9C2B2;border-radius:10px;padding:0 14px;font-family:'Libre Franklin',system-ui,sans-serif;font-size:18px;color:#22322B;background:#FFFFFF;cursor:pointer">
+                <option value="1">1 personne</option>
+                <option value="2">2 personnes</option>
+                <option value="3">3 personnes</option>
+                <option value="4">4 personnes</option>
+                <option value="5">5 personnes</option>
+                <option value="6">6 personnes</option>
+                <option value="7">7 personnes</option>
+                <option value="8">8 personnes</option>
+              </select>
+            </label>
+            <fieldset style="border:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px">
+              <legend style="padding:0;margin:0 0 10px;font-size:17px;font-weight:600;color:#22322B">Votre revenu fiscal de référence total (sur l’avis d’imposition)</legend>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px">
+                <sc-for list="{{ optsRfr }}" as="o" hint-placeholder-count="4">
+                  <button onClick="{{ o.pick }}" aria-pressed="{{ o.sel }}" style="{{ o.style }}" style-hover="border-color:#2E5B4C;background:#EBF1E8">{{ o.label }}</button>
+                </sc-for>
+              </div>
+            </fieldset>
+            <sc-if value="{{ aResultat }}" hint-placeholder-val="{{ false }}">
+              <div style="{{ styleResultat }}">
+                <p style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:21px">{{ titreResultat }}</p>
+                <p style="margin:8px 0 0;font-size:17px;line-height:1.55">{{ texteResultat }}</p>
+                <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:16px">
+                  <a href="Formulaire.dc.html" style="text-decoration:none;background:#2E5B4C;color:#FFFFFF;font-weight:600;font-size:16.5px;padding:12px 20px;border-radius:10px" style-hover="background:#1F4237">Étudier mon projet de travaux</a>
+
+                </div>
+              </div>
+            </sc-if>
+            <p style="margin:0;font-size:15px;color:#6B7A70">Selon les informations saisies et le barème 2026. Cette estimation vous permet de préparer votre projet&nbsp;; la décision finale dépend de l’examen complet du dossier.</p>
+          </div>
+        </div>
+      </section>
+      <section id="rfr" style="display:flex;flex-direction:column;gap:16px">
+        <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Le revenu fiscal de référence, mode d’emploi</h2>
+        <p style="margin:0;color:#41504A">Le RFR figure sur votre <strong>avis d’imposition</strong>, dans le cadre «&nbsp;Vos références&nbsp;» de la première page. Ce n’est ni votre salaire mensuel ni votre pension nette&nbsp;: c’est un montant annuel calculé par l’administration fiscale, qui intègre l’ensemble des revenus du foyer après certains abattements.</p>
+        <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px">
+          <li style="display:flex;gap:10px;color:#22322B"><span style="color:#2E5B4C;font-weight:700">·</span><span><strong>Quel avis utiliser&nbsp;?</strong> Celui indiqué par le parcours officiel au moment de la demande — en pratique le plus récent disponible. En cas de doute, votre accompagnateur (AMO) ou France Rénov’ le confirme.</span></li>
+          <li style="display:flex;gap:10px;color:#22322B"><span style="color:#2E5B4C;font-weight:700">·</span><span><strong>Plusieurs avis d’imposition dans le logement&nbsp;?</strong> On additionne les RFR de l’ensemble des personnes composant le ménage — un couple non marié a par exemple deux avis à additionner.</span></li>
+          <li style="display:flex;gap:10px;color:#22322B"><span style="color:#2E5B4C;font-weight:700">·</span><span><strong>Qui compte dans le ménage&nbsp;?</strong> Les personnes occupant le logement concerné. La composition retenue peut différer du foyer fiscal — c’est le dossier qui tranche les cas particuliers.</span></li>
+          <li style="display:flex;gap:10px;color:#22322B"><span style="color:#2E5B4C;font-weight:700">·</span><span><strong>Changement récent de situation&nbsp;?</strong> (retraite, veuvage, séparation) Signalez-le dans le dossier&nbsp;: des règles spécifiques peuvent s’appliquer selon les cas prévus par le dispositif.</span></li>
+        </ul>
+      </section>
+      <section id="bareme-province" style="display:flex;flex-direction:column;gap:18px">
+        <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;justify-content:space-between">
+          <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Barème 2026 — hors Île-de-France et Outre-mer</h2>
+          <span style="font-size:15px;font-weight:600;color:#2C463B;background:#EBF1E8;border:1px solid #D7E2D2;padding:4px 12px;border-radius:999px">Barème officiel Anah 2026</span>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:16px;overflow-x:auto">
+          <div style="min-width:640px">
+            <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr;background:#1F4237;padding:13px 20px;gap:10px">
+              <span style="font-size:15px;font-weight:600;color:#FFFFFF">Ménage</span>
+              <span style="font-size:15px;font-weight:600;color:#FFFFFF;text-align:center">Très modestes<br><span style="font-weight:400;color:#B9CDBF">MaPrimeAdapt’ 70&nbsp;%</span></span>
+              <span style="font-size:15px;font-weight:600;color:#FFFFFF;text-align:center">Modestes<br><span style="font-weight:400;color:#B9CDBF">MaPrimeAdapt’ 50&nbsp;%</span></span>
+              <span style="font-size:15px;font-weight:600;color:#FFFFFF;text-align:center">Intermédiaires</span>
+              <span style="font-size:15px;font-weight:600;color:#FFFFFF;text-align:center">Supérieurs</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr;padding:12px 20px;gap:10px;border-bottom:1px solid #E5DFD2;background:#FAF7F0"><span style="font-size:16px;font-weight:600;color:#22322B">1 personne</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 17 363 €</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 22 259 €</span><span style="font-size:16px;text-align:center;color:#41504A">≤ 31 185 €</span><span style="font-size:16px;text-align:center;color:#6B7A70">&gt; 31 185 €</span></div>
+            <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr;padding:12px 20px;gap:10px;border-bottom:1px solid #E5DFD2"><span style="font-size:16px;font-weight:600;color:#22322B">2 personnes</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 25 393 €</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 32 553 €</span><span style="font-size:16px;text-align:center;color:#41504A">≤ 45 842 €</span><span style="font-size:16px;text-align:center;color:#6B7A70">&gt; 45 842 €</span></div>
+            <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr;padding:12px 20px;gap:10px;border-bottom:1px solid #E5DFD2;background:#FAF7F0"><span style="font-size:16px;font-weight:600;color:#22322B">3 personnes</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 30 540 €</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 39 148 €</span><span style="font-size:16px;text-align:center;color:#41504A">≤ 55 196 €</span><span style="font-size:16px;text-align:center;color:#6B7A70">&gt; 55 196 €</span></div>
+            <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr;padding:12px 20px;gap:10px;border-bottom:1px solid #E5DFD2"><span style="font-size:16px;font-weight:600;color:#22322B">4 personnes</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 35 676 €</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 45 735 €</span><span style="font-size:16px;text-align:center;color:#41504A">≤ 64 550 €</span><span style="font-size:16px;text-align:center;color:#6B7A70">&gt; 64 550 €</span></div>
+            <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr;padding:12px 20px;gap:10px;border-bottom:1px solid #E5DFD2;background:#FAF7F0"><span style="font-size:16px;font-weight:600;color:#22322B">5 personnes</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 40 835 €</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 52 348 €</span><span style="font-size:16px;text-align:center;color:#41504A">≤ 73 907 €</span><span style="font-size:16px;text-align:center;color:#6B7A70">&gt; 73 907 €</span></div>
+            <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr;padding:12px 20px;gap:10px"><span style="font-size:16px;font-weight:600;color:#22322B">Par pers. suppl.</span><span style="font-size:16px;text-align:center;color:#22322B">+ 5 151 €</span><span style="font-size:16px;text-align:center;color:#22322B">+ 6 598 €</span><span style="font-size:16px;text-align:center;color:#41504A">+ 9 357 €</span><span style="font-size:16px;text-align:center;color:#6B7A70">—</span></div>
+          </div>
+        </div>
+      </section>
+      <section id="bareme-idf" style="display:flex;flex-direction:column;gap:18px">
+        <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;justify-content:space-between">
+          <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Barème 2026 — Île-de-France</h2>
+          <span style="font-size:15px;font-weight:600;color:#2C463B;background:#EBF1E8;border:1px solid #D7E2D2;padding:4px 12px;border-radius:999px">Barème officiel Anah 2026</span>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:16px;overflow-x:auto">
+          <div style="min-width:640px">
+            <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr;background:#1F4237;padding:13px 20px;gap:10px">
+              <span style="font-size:15px;font-weight:600;color:#FFFFFF">Ménage</span>
+              <span style="font-size:15px;font-weight:600;color:#FFFFFF;text-align:center">Très modestes<br><span style="font-weight:400;color:#B9CDBF">MaPrimeAdapt’ 70&nbsp;%</span></span>
+              <span style="font-size:15px;font-weight:600;color:#FFFFFF;text-align:center">Modestes<br><span style="font-weight:400;color:#B9CDBF">MaPrimeAdapt’ 50&nbsp;%</span></span>
+              <span style="font-size:15px;font-weight:600;color:#FFFFFF;text-align:center">Intermédiaires</span>
+              <span style="font-size:15px;font-weight:600;color:#FFFFFF;text-align:center">Supérieurs</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr;padding:12px 20px;gap:10px;border-bottom:1px solid #E5DFD2;background:#FAF7F0"><span style="font-size:16px;font-weight:600;color:#22322B">1 personne</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 24 031 €</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 29 253 €</span><span style="font-size:16px;text-align:center;color:#41504A">≤ 40 851 €</span><span style="font-size:16px;text-align:center;color:#6B7A70">&gt; 40 851 €</span></div>
+            <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr;padding:12px 20px;gap:10px;border-bottom:1px solid #E5DFD2"><span style="font-size:16px;font-weight:600;color:#22322B">2 personnes</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 35 270 €</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 42 933 €</span><span style="font-size:16px;text-align:center;color:#41504A">≤ 60 051 €</span><span style="font-size:16px;text-align:center;color:#6B7A70">&gt; 60 051 €</span></div>
+            <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr;padding:12px 20px;gap:10px;border-bottom:1px solid #E5DFD2;background:#FAF7F0"><span style="font-size:16px;font-weight:600;color:#22322B">3 personnes</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 42 357 €</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 51 564 €</span><span style="font-size:16px;text-align:center;color:#41504A">≤ 71 846 €</span><span style="font-size:16px;text-align:center;color:#6B7A70">&gt; 71 846 €</span></div>
+            <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr;padding:12px 20px;gap:10px;border-bottom:1px solid #E5DFD2"><span style="font-size:16px;font-weight:600;color:#22322B">4 personnes</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 49 455 €</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 60 208 €</span><span style="font-size:16px;text-align:center;color:#41504A">≤ 84 562 €</span><span style="font-size:16px;text-align:center;color:#6B7A70">&gt; 84 562 €</span></div>
+            <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr;padding:12px 20px;gap:10px;border-bottom:1px solid #E5DFD2;background:#FAF7F0"><span style="font-size:16px;font-weight:600;color:#22322B">5 personnes</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 56 580 €</span><span style="font-size:16px;text-align:center;color:#22322B">≤ 68 877 €</span><span style="font-size:16px;text-align:center;color:#41504A">≤ 96 817 €</span><span style="font-size:16px;text-align:center;color:#6B7A70">&gt; 96 817 €</span></div>
+            <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr;padding:12px 20px;gap:10px"><span style="font-size:16px;font-weight:600;color:#22322B">Par pers. suppl.</span><span style="font-size:16px;text-align:center;color:#22322B">+ 7 116 €</span><span style="font-size:16px;text-align:center;color:#22322B">+ 8 663 €</span><span style="font-size:16px;text-align:center;color:#41504A">+ 12 257 €</span><span style="font-size:16px;text-align:center;color:#6B7A70">—</span></div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:16px;color:#6B7A70">Pourquoi des plafonds plus élevés en Île-de-France&nbsp;? Le barème Anah tient compte du coût de la vie et du logement, structurellement supérieurs dans la région francilienne.</p>
+      </section>
+      <section id="exemples" style="display:flex;flex-direction:column;gap:18px">
+        <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Quatre exemples de lecture</h2>
+        <p style="margin:0;font-size:16.5px;color:#6B7A70">Situations fictives à titre pédagogique — dans chaque cas, les autres conditions du dispositif (âge ou autonomie, logement, dossier) restent à vérifier.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">
+          <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:8px"><span style="font-weight:600;font-size:17.5px;color:#1F2E27">Personne seule à Limoges — RFR 16 900 €</span><p style="margin:0;font-size:16px;color:#41504A">Hors IDF, 1 personne&nbsp;: 16 900 € ≤ 17 363 € → <strong>très modeste</strong>, taux potentiel 70&nbsp;%.</p></div>
+          <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:8px"><span style="font-weight:600;font-size:17.5px;color:#1F2E27">Couple à Versailles — RFR 38 400 €</span><p style="margin:0;font-size:16px;color:#41504A">IDF, 2 personnes&nbsp;: 38 400 € dépasse 35 270 € (très modestes) mais reste ≤ 42 933 € → <strong>modeste</strong>, taux potentiel 50&nbsp;%.</p></div>
+          <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:8px"><span style="font-weight:600;font-size:17.5px;color:#1F2E27">Ménage de 3 personnes à Nantes, deux avis d’imposition</span><p style="margin:0;font-size:16px;color:#41504A">RFR 22 100 € + 9 800 € = 31 900 €&nbsp;: dépasse 30 540 € (très modestes) mais ≤ 39 148 € → <strong>modeste</strong>, taux potentiel 50&nbsp;%.</p></div>
+          <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:8px"><span style="font-weight:600;font-size:17.5px;color:#1F2E27">Ménage de 6 personnes à Arras — RFR 45 200 €</span><p style="margin:0;font-size:16px;color:#41504A">Plafond très modestes 6 personnes&nbsp;: 40 835 + 5 151 = 45 986 €. 45 200 € ≤ 45 986 € → <strong>très modeste</strong>, taux potentiel 70&nbsp;%.</p></div>
+        </div>
+      </section>
+      <section id="categories" style="display:flex;flex-direction:column;gap:16px">
+        <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Ce que votre catégorie change concrètement</h2>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-left:5px solid #33586E;border-radius:14px;padding:20px 24px"><p style="margin:0;font-size:17.5px;color:#22322B"><strong>Très modeste</strong> — MaPrimeAdapt’ peut couvrir <strong>70&nbsp;%</strong> des dépenses de travaux éligibles retenues.</p></div>
+          <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-left:5px solid #C9A227;border-radius:14px;padding:20px 24px"><p style="margin:0;font-size:17.5px;color:#22322B"><strong>Modeste</strong> — MaPrimeAdapt’ peut couvrir <strong>50&nbsp;%</strong> des dépenses de travaux éligibles retenues.</p></div>
+          <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-left:5px solid #6C5B8A;border-radius:14px;padding:20px 24px"><p style="margin:0 0 8px;font-size:17.5px;color:#22322B"><strong>Intermédiaire ou supérieur</strong> — ces catégories ne relèvent pas actuellement du parcours principal MaPrimeAdapt’. Des pistes restent ouvertes&nbsp;:</p><p style="margin:0;font-size:16.5px;color:#41504A">l’<a href="Guide-apa-pch.dc.html">APA ou la PCH</a> selon votre situation d’autonomie ou de handicap (sans plafond d’exclusion par les revenus pour l’APA), les aides locales de votre territoire, votre caisse de retraite — et un <a href="Formulaire.dc.html">devis adapté au projet</a> pour dimensionner un financement personnel serein.</p></div>
+        </div>
+      </section>
+      <section id="limites" style="display:flex;flex-direction:column;gap:16px">
+        <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Ce que la catégorie ne détermine pas à elle seule</h2>
+        <p style="margin:0;color:#41504A">Être dans les plafonds est nécessaire mais pas suffisant. Restent notamment à examiner&nbsp;: l’âge (70 ans ou plus, ou 60–69 ans avec GIR), le taux d’incapacité ou le bénéfice de la PCH le cas échéant, le statut d’occupation (propriétaire occupant, locataire du parc privé), le logement en résidence principale, la nature du projet de travaux, le parcours d’accompagnement (AMO), l’acceptation du dossier — et les dépenses réellement retenues, qui déterminent le montant final. L’ensemble est détaillé dans <a href="MaPrimeAdapt.dc.html">notre page MaPrimeAdapt’</a>.</p>
+      </section>
+      <section style="background:#1F4237;border-radius:18px;padding:clamp(26px,3.5vw,38px);display:flex;flex-wrap:wrap;align-items:center;gap:18px;justify-content:space-between">
+        <div style="max-width:460px">
+          <p style="margin:0 0 6px;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:23px;color:#FFFFFF">Vous connaissez maintenant votre catégorie&nbsp;?</p>
+          <p style="margin:0;font-size:17px;color:#B9CDBF">Découvrez les travaux pouvant être concernés et préparez votre projet d’adaptation avec Go Senior.</p>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px">
+          <a href="Formulaire.dc.html" style="text-decoration:none;background:#C05A2E;color:#FFFFFF;font-weight:600;font-size:17.5px;padding:15px 24px;border-radius:10px" style-hover="background:#A84D24">Étudier mon projet de travaux</a>
+
+        </div>
+      </section>
+      <section id="faq" style="display:flex;flex-direction:column;gap:16px">
+        <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Questions fréquentes sur les plafonds</h2>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <details style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:0 22px"><summary style="cursor:pointer;font-weight:600;font-size:18px;color:#1F2E27;padding:17px 0;list-style:none;display:flex;justify-content:space-between;gap:12px">Quel revenu est pris en compte pour MaPrimeAdapt’&nbsp;?<span style="color:#2E5B4C" aria-hidden="true">+</span></summary><p style="margin:0;padding:0 0 17px;font-size:17px;color:#41504A">Le revenu fiscal de référence (RFR) du ménage, indiqué sur l’avis d’imposition — pas le salaire ou la pension mensuelle. Si le ménage compte plusieurs avis, les RFR s’additionnent.</p></details>
+          <details style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:0 22px"><summary style="cursor:pointer;font-weight:600;font-size:18px;color:#1F2E27;padding:17px 0;list-style:none;display:flex;justify-content:space-between;gap:12px">Où trouver le revenu fiscal de référence&nbsp;?<span style="color:#2E5B4C" aria-hidden="true">+</span></summary><p style="margin:0;padding:0 0 17px;font-size:17px;color:#41504A">Sur la première page de votre avis d’imposition, dans le cadre «&nbsp;Vos références&nbsp;», ou dans votre espace particulier sur impots.gouv.fr.</p></details>
+          <details style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:0 22px"><summary style="cursor:pointer;font-weight:600;font-size:18px;color:#1F2E27;padding:17px 0;list-style:none;display:flex;justify-content:space-between;gap:12px">Quels sont les plafonds MaPrimeAdapt’ 2026 pour une personne seule&nbsp;?<span style="color:#2E5B4C" aria-hidden="true">+</span></summary><p style="margin:0;padding:0 0 17px;font-size:17px;color:#41504A">Hors Île-de-France&nbsp;: 17 363 € (très modeste) et 22 259 € (modeste). En Île-de-France&nbsp;: 24 031 € et 29 253 €. Au-delà, la personne relève des catégories intermédiaire ou supérieure, hors parcours principal.</p></details>
+          <details style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:0 22px"><summary style="cursor:pointer;font-weight:600;font-size:18px;color:#1F2E27;padding:17px 0;list-style:none;display:flex;justify-content:space-between;gap:12px">Que se passe-t-il si mes revenus dépassent légèrement le plafond&nbsp;?<span style="color:#2E5B4C" aria-hidden="true">+</span></summary><p style="margin:0;padding:0 0 17px;font-size:17px;color:#41504A">Le barème s’applique tel quel&nbsp;: quelques euros au-dessus font basculer dans la catégorie suivante. Vérifiez que vous utilisez le bon avis, la bonne zone et la bonne taille de ménage — puis explorez APA, PCH, caisse de retraite et aides locales si vous restez au-dessus.</p></details>
+          <details style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:0 22px"><summary style="cursor:pointer;font-weight:600;font-size:18px;color:#1F2E27;padding:17px 0;list-style:none;display:flex;justify-content:space-between;gap:12px">Comment calculer le plafond pour 6 personnes ou plus&nbsp;?<span style="color:#2E5B4C" aria-hidden="true">+</span></summary><p style="margin:0;padding:0 0 17px;font-size:17px;color:#41504A">Partez du plafond 5 personnes et ajoutez le montant «&nbsp;par personne supplémentaire&nbsp;» autant de fois que nécessaire&nbsp;: par exemple, très modestes hors IDF pour 6 personnes = 40 835 + 5 151 = 45 986 €.</p></details>
+          <details style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:0 22px"><summary style="cursor:pointer;font-weight:600;font-size:18px;color:#1F2E27;padding:17px 0;list-style:none;display:flex;justify-content:space-between;gap:12px">Être dans les plafonds garantit-il l’aide&nbsp;?<span style="color:#2E5B4C" aria-hidden="true">+</span></summary><p style="margin:0;padding:0 0 17px;font-size:17px;color:#41504A">Non&nbsp;: la catégorie de ressources est l’une des conditions. L’âge ou la situation d’autonomie, le statut d’occupation, le logement, le diagnostic, le parcours AMO et l’acceptation du dossier restent déterminants.</p></details>
+          <details style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:0 22px"><summary style="cursor:pointer;font-weight:600;font-size:18px;color:#1F2E27;padding:17px 0;list-style:none;display:flex;justify-content:space-between;gap:12px">Les plafonds changent-ils chaque année&nbsp;?<span style="color:#2E5B4C" aria-hidden="true">+</span></summary><p style="margin:0;padding:0 0 17px;font-size:17px;color:#41504A">Oui, le barème Anah est revalorisé périodiquement. Les montants de cette page correspondent au barème 2026&nbsp;: vérifiez l’année en vigueur au moment de votre demande.</p></details>
+          <details style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:0 22px"><summary style="cursor:pointer;font-weight:600;font-size:18px;color:#1F2E27;padding:17px 0;list-style:none;display:flex;justify-content:space-between;gap:12px">Quelles aides étudier si je suis en catégorie intermédiaire&nbsp;?<span style="color:#2E5B4C" aria-hidden="true">+</span></summary><p style="margin:0;padding:0 0 17px;font-size:17px;color:#41504A">L’APA (qui n’exclut pas par les revenus), la PCH selon la situation de handicap, votre caisse de retraite et les aides locales. Notre <a href="Guide-apa-pch.dc.html">panorama APA, PCH et autres aides</a> vous oriente selon votre situation.</p></details>
+        </div>
+      </section>
+      <section id="sources" style="display:flex;flex-direction:column;gap:14px">
+        <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">Sources</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">
+          <a href="https://www.anah.gouv.fr" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:4px" style-hover="border-color:#2E5B4C"><span style="font-weight:600;font-size:17px;color:#1F2E27">Anah — Plafonds de ressources 2026</span><span style="font-size:15.5px;color:#6B7A70">anah.gouv.fr — barème 2026, vérifié le 28 juillet 2026</span></a>
+          <a href="https://france-renov.gouv.fr" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:4px" style-hover="border-color:#2E5B4C"><span style="font-weight:600;font-size:17px;color:#1F2E27">France Rénov’ — MaPrimeAdapt’</span><span style="font-size:15.5px;color:#6B7A70">france-renov.gouv.fr — conditions du dispositif, vérifié le 28 juillet 2026</span></a>
+          <a href="https://www.impots.gouv.fr" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:4px" style-hover="border-color:#2E5B4C"><span style="font-weight:600;font-size:17px;color:#1F2E27">Impots.gouv.fr — Revenu fiscal de référence</span><span style="font-size:15.5px;color:#6B7A70">impots.gouv.fr — définition du RFR, vérifié le 28 juillet 2026</span></a>
+        </div>
+      </section>
+      <section style="display:flex;flex-direction:column;gap:16px">
+        <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(23px,2.6vw,28px);color:#1F2E27">Pour aller plus loin</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
+          <a href="MaPrimeAdapt.dc.html" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:6px" style-hover="border-color:#2E5B4C"><span style="font-size:14.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8A6A1F">Aides financières</span><span style="font-weight:600;font-size:17.5px;color:#1F2E27">MaPrimeAdapt’ 2026&nbsp;: le guide complet</span></a>
+          <a href="Guide-apa-pch.dc.html" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:6px" style-hover="border-color:#2E5B4C"><span style="font-size:14.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8A6A1F">Aides financières</span><span style="font-weight:600;font-size:17.5px;color:#1F2E27">APA, PCH et autres aides&nbsp;: le panorama</span></a>
+          <a href="Guide-aides-monte-escalier.dc.html" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:6px" style-hover="border-color:#2E5B4C"><span style="font-size:14.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8A6A1F">Aides financières</span><span style="font-weight:600;font-size:17.5px;color:#1F2E27">Quelles aides pour un monte-escalier&nbsp;?</span></a>
+        </div>
+      </section>
+    </article>
+  </div>
+  <div style="height:88px"></div>
+</main>
+<dc-import name="Footer" hint-size="100%,520px"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { zone: "province", taille: "2", tranche: -1 };
+  // Barème Anah 2026 — source : anah.gouv.fr, vérifié le 28/07/2026
+  bareme() {
+    return {
+      province: { seuils: [[17363, 22259, 31185], [25393, 32553, 45842], [30540, 39148, 55196], [35676, 45735, 64550], [40835, 52348, 73907]], suppl: [5151, 6598, 9357] },
+      idf: { seuils: [[24031, 29253, 40851], [35270, 42933, 60051], [42357, 51564, 71846], [49455, 60208, 84562], [56580, 68877, 96817]], suppl: [7116, 8663, 12257] }
+    };
+  }
+  plafonds(zone, n) {
+    const b = this.bareme()[zone];
+    if (n <= 5) return b.seuils[n - 1];
+    const extra = n - 5;
+    return b.seuils[4].map((v, i) => v + extra * b.suppl[i]);
+  }
+  renderVals() {
+    const s = this.state;
+    const fmt = v => v.toLocaleString("fr-FR") + " €";
+    const optsZone = [["province", "Hors Île-de-France et Outre-mer"], ["idf", "Île-de-France"]].map(([v, label]) => ({
+      label, sel: s.zone === v,
+      style: "min-height:56px;padding:14px 20px;border-radius:12px;font-family:'Libre Franklin',system-ui,sans-serif;font-size:17px;cursor:pointer;font-weight:600;color:#1F2E27;" + (s.zone === v ? "border:2.5px solid #2E5B4C;background:#EBF1E8" : "border:1.5px solid #C9C2B2;background:#FFFFFF"),
+      pick: () => this.setState({ zone: v, tranche: -1 })
+    }));
+    const n = parseInt(s.taille, 10);
+    const [tm, mo, inter] = this.plafonds(s.zone, n);
+    const baseOpt = "min-height:58px;padding:14px 16px;border-radius:12px;font-family:'Libre Franklin',system-ui,sans-serif;font-size:17px;cursor:pointer;font-weight:600;color:#1F2E27;text-align:center;";
+    const optsRfr = ["Moins de " + fmt(tm), "De " + fmt(tm + 1) + " à " + fmt(mo), "De " + fmt(mo + 1) + " à " + fmt(inter), "Plus de " + fmt(inter)].map((label, i) => ({
+      label, sel: s.tranche === i,
+      style: baseOpt + (s.tranche === i ? "border:2.5px solid #2E5B4C;background:#EBF1E8" : "border:1.5px solid #C9C2B2;background:#FFFFFF"),
+      pick: () => this.setState({ tranche: i })
+    }));
+    let aResultat = false, titreResultat = "", texteResultat = "", styleResultat = "";
+    if (s.tranche >= 0) {
+      aResultat = true;
+      const carte = (nom, couleur) => "background:#FFFFFF;border:1px solid #E5DFD2;border-left:6px solid " + couleur + ";border-radius:14px;padding:20px 24px;color:#22322B";
+      if (s.tranche === 0) {
+        titreResultat = "Catégorie « très modeste » (bleue)";
+        texteResultat = "Selon les informations saisies et le barème 2026, votre ménage semble relever de la catégorie très modeste (plafond : " + fmt(tm) + "). MaPrimeAdapt’ peut couvrir jusqu’à 70 % des dépenses éligibles retenues, sous réserve des autres conditions du dispositif.";
+        styleResultat = carte("très modeste", "#33586E");
+      } else if (s.tranche === 1) {
+        titreResultat = "Catégorie « modeste » (jaune)";
+        texteResultat = "Selon les informations saisies et le barème 2026, votre ménage semble relever de la catégorie modeste (plafond : " + fmt(mo) + "). MaPrimeAdapt’ peut couvrir jusqu’à 50 % des dépenses éligibles retenues, sous réserve des autres conditions du dispositif.";
+        styleResultat = carte("modeste", "#C9A227");
+      } else if (s.tranche === 2) {
+        titreResultat = "Catégorie « intermédiaire » (violette)";
+        texteResultat = "Selon les informations saisies et le barème 2026, votre ménage semble relever de la catégorie intermédiaire (plafond : " + fmt(inter) + "), qui ne relève pas actuellement du parcours principal MaPrimeAdapt’. D’autres pistes restent ouvertes : APA, PCH, caisse de retraite, aides locales.";
+        styleResultat = carte("intermédiaire", "#6C5B8A");
+      } else {
+        titreResultat = "Catégorie « supérieure » (rose)";
+        texteResultat = "Selon les informations saisies et le barème 2026, votre ménage semble relever de la catégorie supérieure (au-delà de " + fmt(inter) + "), hors du parcours principal MaPrimeAdapt’. L’APA, la PCH ou votre caisse de retraite peuvent rester pertinentes selon votre situation.";
+        styleResultat = carte("supérieure", "#A85575");
+      }
+      texteResultat += " Cette estimation vous aide à préparer votre projet ; la décision finale dépend de l’examen complet du dossier.";
+    }
+    return {
+      optsZone, optsRfr, taille: s.taille,
+      setTaille: e => this.setState({ taille: e.target.value, tranche: -1 }),
+      aResultat, titreResultat, texteResultat, styleResultat
+    };
+  }
+}
+</script>
+</body>
+</html>

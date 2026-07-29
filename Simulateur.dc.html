@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0;font-family:'Libre Franklin',system-ui,sans-serif}a{color:#2E5B4C}a:hover{color:#1F4237}</style>
+</helmet>
+<div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(34,50,43,0.06),0 14px 36px rgba(34,50,43,0.10);font-family:'Libre Franklin',system-ui,sans-serif">
+  <div style="background:#1F4237;padding:20px 24px;text-align:center">
+    <p style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:22px;color:#FFFFFF">Suis-je concerné par MaPrimeAdapt’ ?</p>
+    <p style="margin:6px 0 0;font-size:16.5px;color:#B9CDBF">4 questions · 1 minute · estimation indicative</p>
+  </div>
+  <div style="padding:clamp(24px,3.5vw,38px)">
+    <sc-if value="{{ enCours }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px">
+        <div style="flex:1;height:9px;background:#E5DFD2;border-radius:999px;overflow:hidden"><div style="height:100%;width:{{ progression }};background:#2E5B4C;border-radius:999px;transition:width 0.3s"></div></div>
+        <span style="font-size:16px;font-weight:600;color:#41504A;white-space:nowrap">{{ compteur }}</span>
+      </div>
+      <h3 style="margin:0 0 8px;font-size:23px;font-weight:600;color:#1F2E27;text-align:center;text-wrap:balance">{{ question }}</h3>
+      <p style="margin:0 0 24px;font-size:17px;color:#41504A;text-align:center">{{ sousQuestion }}</p>
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:14px">
+        <sc-for list="{{ options }}" as="o" hint-placeholder-count="3">
+          <button onClick="{{ o.pick }}" aria-pressed="{{ o.sel }}" style="{{ o.style }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+      <sc-if value="{{ peutRetour }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:26px"><button onClick="{{ retour }}" style="height:52px;padding:0 22px;background:#FFFFFF;color:#2E5B4C;border:2px solid #2E5B4C;border-radius:10px;font-family:'Libre Franklin',system-ui,sans-serif;font-weight:600;font-size:17px;cursor:pointer" style-hover="background:#EBF1E8">‹ Précédent</button></div>
+      </sc-if>
+    </sc-if>
+    <sc-if value="{{ estResultat }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div style="{{ styleVerdict }}">
+          <p style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:22px">{{ titreVerdict }}</p>
+          <p style="margin:8px 0 0;font-size:17.5px;line-height:1.55">{{ texteVerdict }}</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ criteres }}" as="c" hint-placeholder-count="3">
+            <div style="display:flex;gap:12px;align-items:flex-start;font-size:17px;color:#22322B"><span style="{{ c.pastille }}">{{ c.signe }}</span><span>{{ c.texte }}</span></div>
+          </sc-for>
+        </div>
+        <p style="margin:0;font-size:15.5px;color:#6B7A70;display:flex;gap:9px;align-items:flex-start"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B7A70" stroke-width="2" style="flex-shrink:0;margin-top:3px" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 8h.01M12 11v5"></path></svg><span>Estimation indicative, sans valeur d’engagement. Go Senior n’est pas un organisme public et ne décide pas de l’éligibilité : les conditions officielles en vigueur font seules référence.</span></p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px">
+          <a href="Formulaire.dc.html" style="text-decoration:none;background:#C05A2E;color:#FFFFFF;font-weight:600;font-size:17.5px;padding:15px 24px;border-radius:10px" style-hover="background:#A84D24">Explorer les solutions</a>
+        </div>
+        <button onClick="{{ recommencer }}" style="align-self:flex-start;background:none;border:none;padding:0;cursor:pointer;font-family:'Libre Franklin',system-ui,sans-serif;font-size:16px;font-weight:600;color:#2E5B4C;text-decoration:underline">Refaire le test</button>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:720,&quot;height&quot;:520}}">
+class Component extends DCLogic {
+  state = { ecran: 0, reponses: {} };
+  questions() {
+    return [
+      { cle: "age", q: "Quel est l’âge de la personne concernée ?", sous: "Vous-même ou le proche pour qui vous vous renseignez.", opts: [["<60", "Moins de 60 ans"], ["60-69", "Entre 60 et 69 ans"], ["70+", "70 ans ou plus"]] },
+      { cle: "autonomie", q: "Une perte d’autonomie ou un handicap est-il reconnu ?", sous: "Par exemple un GIR évalué ou un taux d’incapacité reconnu.", opts: [["oui", "Oui"], ["non", "Non"], ["nsp", "Je ne sais pas"]] },
+      { cle: "logement", q: "Quelle est votre situation dans le logement ?", sous: "Le logement à adapter, en résidence principale.", opts: [["proprio", "Propriétaire occupant"], ["locataire", "Locataire du parc privé"], ["autre", "Autre situation"]] },
+      { cle: "ressources", q: "Comment situez-vous les ressources du foyer ?", sous: "L’aide est réservée aux ménages aux ressources modestes, selon des plafonds officiels.", opts: [["modestes", "Modestes"], ["tres", "Très modestes"], ["sup", "Plutôt supérieures"], ["nsp", "Je ne sais pas"]] }
+    ];
+  }
+  renderVals() {
+    const s = this.state, qs = this.questions();
+    const enCours = s.ecran < qs.length, q = qs[Math.min(s.ecran, qs.length - 1)];
+    const options = q.opts.map(([v, label]) => {
+      const sel = s.reponses[q.cle] === v;
+      return {
+        label, sel,
+        style: "flex:1 1 160px;min-width:160px;max-width:240px;min-height:64px;padding:16px 20px;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:'Libre Franklin',system-ui,sans-serif;font-weight:600;font-size:18px;color:#1F2E27;text-align:center;transition:border-color 0.15s;" + (sel ? "border:2.5px solid #2E5B4C;background:#EBF1E8" : "border:1.5px solid #C9C2B2;background:#FFFFFF"),
+        pick: () => this.setState({ reponses: Object.assign({}, s.reponses, { [q.cle]: v }), ecran: s.ecran + 1 })
+      };
+    });
+    const r = s.reponses;
+    const persOk = r.age === "70+" || r.autonomie === "oui";
+    const persInc = !persOk && r.autonomie === "nsp";
+    const logOk = r.logement === "proprio" || r.logement === "locataire";
+    const resOk = r.ressources === "modestes" || r.ressources === "tres";
+    const resInc = r.ressources === "nsp";
+    let verdict = "proche";
+    if (!persOk && !persInc) verdict = "eloigne";
+    if (!logOk) verdict = "eloigne";
+    if (!resOk && !resInc) verdict = "eloigne";
+    if (verdict === "proche" && (persInc || resInc)) verdict = "incertain";
+    const verdicts = {
+      proche: { t: "Votre profil semble correspondre aux principaux critères", x: "Sur la base de vos réponses, les grands critères habituels (situation personnelle, logement, ressources) semblent réunis. La décision dépend du dossier complet et des règles officielles en vigueur.", style: "background:#EBF1E8;border:1px solid #D7E2D2;border-radius:16px;padding:22px 24px;color:#1F2E27" },
+      incertain: { t: "Votre situation mérite d’être vérifiée", x: "Certaines réponses restent à préciser (autonomie reconnue ou plafonds de ressources). Un point avec les organismes officiels permettra d’y voir clair avant tout engagement.", style: "background:#FCF6E8;border:1px solid #E6D8AE;border-radius:16px;padding:22px 24px;color:#5C4E22" },
+      eloigne: { t: "Votre profil ne semble pas correspondre aux critères habituels", x: "D’après vos réponses, MaPrimeAdapt’ paraît peu probable en l’état. D’autres dispositifs peuvent exister selon votre situation : caisses de retraite, aides locales, crédit d’impôt le cas échéant.", style: "background:#FAF7F0;border:1px solid #E5DFD2;border-radius:16px;padding:22px 24px;color:#22322B" }
+    };
+    const v = verdicts[verdict];
+    const past = ok => "width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;margin-top:1px;" + (ok === true ? "background:#EBF1E8;color:#2E5B4C" : ok === false ? "background:#F5E4DC;color:#A8442A" : "background:#F5ECD4;color:#8A6A1F");
+    const criteres = [
+      { texte: "Situation personnelle (âge, autonomie ou handicap)", ok: persOk ? true : persInc ? null : false },
+      { texte: "Logement concerné (résidence principale, propriétaire ou locataire du parc privé)", ok: logOk },
+      { texte: "Conditions de ressources (plafonds officiels à vérifier)", ok: resOk ? true : resInc ? null : false }
+    ].map(c => ({ texte: c.texte, signe: c.ok === true ? "✓" : c.ok === false ? "✕" : "?", pastille: past(c.ok) }));
+    return {
+      enCours, estResultat: !enCours,
+      question: q.q, sousQuestion: q.sous, options,
+      compteur: "Question " + Math.min(s.ecran + 1, qs.length) + " sur " + qs.length,
+      progression: Math.round((Math.min(s.ecran, qs.length) / qs.length) * 100) + "%",
+      peutRetour: s.ecran > 0,
+      retour: () => this.setState({ ecran: Math.max(0, s.ecran - 1) }),
+      recommencer: () => this.setState({ ecran: 0, reponses: {} }),
+      titreVerdict: v.t, texteVerdict: v.x, styleVerdict: v.style, criteres
+    };
+  }
+}
+</script>
+</body>
+</html>

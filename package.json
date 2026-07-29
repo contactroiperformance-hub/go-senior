@@ -1,0 +1,15 @@
+{
+  "name": "go-senior",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "dev": "wrangler pages dev dist",
+    "deploy": "wrangler pages deploy dist --project-name go-senior"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
