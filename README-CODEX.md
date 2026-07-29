@@ -64,4 +64,4 @@ Header.dc.html (navigation + menu mobile + barre CTA fixe), Footer.dc.html, Bloc
 - Accessibilité AA : corps 18px min, cibles 44px min, focus visible, details natifs
 
 ## À compléter avant mise en ligne
-Hébergeur (mentions légales), numéro de téléphone validé, remplacement des fixtures Actualités par de vraies publications, vérification de la liste des services tiers dans les politiques (Clarity, Ionos, Cloudflare…).
+Numéro de téléphone validé, remplacement des fixtures Actualités par de vraies publications, vérification de la liste des services tiers dans les politiques (Clarity, IONOS, Cloudflare…).
