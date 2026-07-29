@@ -96,6 +96,7 @@ function parseLead(input) {
   const postcode = cleanText(input.postcode, 5);
   const firstname = cleanText(input.firstname, 80);
   const lastname = cleanText(input.lastname, 80);
+  const towncity = cleanText(input.towncity, 120);
   const phone1 = normalizePhone(input.phone1);
   const project = cleanText(input.project, 40);
   const answers = input.answers && typeof input.answers === "object" && !Array.isArray(input.answers)
@@ -137,6 +138,7 @@ function parseLead(input) {
       postcode,
       firstname,
       lastname,
+      towncity,
       phone1,
       project,
       answers
@@ -159,6 +161,8 @@ function toLeadByteFields(lead) {
     "Êtes-vous_propriétaire_du_logement_?": answer("proprio"),
     "quel_projet_envisagez-vous_?": answer("souhait") || PROJECT_LABELS[lead.project]
   });
+
+  if (lead.towncity) fields.set("towncity", lead.towncity);
 
   const optionalFields = {
     "quelle_est_votre_installation_actuelle_?": answer("installation"),

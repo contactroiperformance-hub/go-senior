@@ -48,6 +48,20 @@ button[aria-pressed="false"]:hover{border-color:#2E5B4C !important;background:#
       <sc-if value="{{ estCoords }}" hint-placeholder-val="{{ false }}">
         <h3 style="margin:0 0 8px;font-size:22px;font-weight:600;color:#1F2E27;text-align:center">Vos coordonnées</h3>
         <p style="margin:0 0 24px;font-size:17px;color:#6B7A70;text-align:center">Pour que le professionnel disponible puisse vous recontacter au sujet de votre projet.</p>
+        <sc-if value="{{ montrerRecap }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#F5F8F3;border:1px solid #D7E2D2;border-radius:12px;padding:18px 20px;margin:-8px 0 24px;display:flex;flex-direction:column;gap:12px">
+            <span style="font-size:17.5px;font-weight:700;color:#1F2E27">Ce que vous nous avez indiqué :</span>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ recap }}" as="r" hint-placeholder-count="3">
+                <div style="display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline;font-size:17.5px;line-height:1.45"><span style="color:#41504A">{{ r.label }} :</span><strong style="color:#1F2E27">{{ r.valeur }}</strong></div>
+              </sc-for>
+              <sc-if value="{{ montrerSecteur }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline;font-size:17.5px;line-height:1.45"><span style="color:#41504A">Secteur :</span><strong style="color:#1F2E27">{{ secteurAffiche }}</strong><button onClick="{{ modifierCp }}" type="button" style="background:none;border:none;padding:0;font-family:'Libre Franklin',system-ui,sans-serif;font-size:16.5px;color:#2E5B4C;text-decoration:underline;cursor:pointer">modifier</button></div>
+              </sc-if>
+            </div>
+            <p style="margin:0;font-size:16px;color:#6B7A70">Besoin de corriger une réponse ? Utilisez le bouton « ‹ Précédent » en bas du formulaire.</p>
+          </div>
+        </sc-if>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px">
           <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:17px;font-weight:600;color:#22322B">Prénom</span><input type="text" value="{{ prenom }}" onChange="{{ setPrenom }}" autoComplete="given-name" style="height:54px;border:1.5px solid #C9C2B2;border-radius:10px;padding:0 14px;font-family:'Libre Franklin',system-ui,sans-serif;font-size:18.5px;color:#22322B;box-sizing:border-box"></label>
           <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:17px;font-weight:600;color:#22322B">Nom</span><input type="text" value="{{ nom }}" onChange="{{ setNom }}" autoComplete="family-name" style="height:54px;border:1.5px solid #C9C2B2;border-radius:10px;padding:0 14px;font-family:'Libre Franklin',system-ui,sans-serif;font-size:18.5px;color:#22322B;box-sizing:border-box"></label>
@@ -94,23 +108,33 @@ button[aria-pressed="false"]:hover{border-color:#2E5B4C !important;background:#
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:760,&quot;height&quot;:640},&quot;projet&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;monte-escalier&quot;,&quot;douche-senior&quot;],&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;},&quot;titre&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Étudiez votre projet en 2 minutes&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;},&quot;redirige&quot;:{&quot;editor&quot;:null,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Comportement&quot;,&quot;description&quot;:&quot;URL de la page formulaire dédiée : le premier clic y emmène en transmettant la réponse&quot;}}">
 class Component extends DCLogic {
-  state = { ecran: 0, projetChoisi: "", projetUrl: "", reponses: {}, cp: "", prenom: "", nom: "", tel: "", email: "", consent: false, envoi: false, erreur: "" };
+  state = { ecran: 0, projetChoisi: "", projetUrl: "", reponses: {}, cp: "", cpFourni: false, ville: "", prenom: "", nom: "", tel: "", email: "", consent: false, envoi: false, erreur: "" };
   componentDidMount() {
     const q = new URLSearchParams(location.search);
     const patch = {};
     const p = q.get("projet");
     if (p && ["monte-escalier", "baignoire-douche", "douche-senior", "salle-de-bain", "inconnu"].includes(p)) patch.projetUrl = p;
     const cp = q.get("cp");
-    if (cp && /^[0-9]{1,5}$/.test(cp)) patch.cp = cp;
+    if (cp && /^[0-9]{1,5}$/.test(cp)) {
+      patch.cp = cp;
+      if (cp.length === 5) patch.cpFourni = true;
+    }
+    const ville = q.get("ville");
+    if (ville) patch.ville = ville.trim().replace(/\s+/g, " ").slice(0, 40);
     const reponses = {};
     ["type", "niveaux", "installation", "souhait", "delai", "proprio"].forEach(k => { const v = q.get(k); if (v) reponses[k] = v; });
     if (Object.keys(reponses).length) patch.reponses = reponses;
-    if (Object.keys(patch).length) this.setState(patch, () => {
-      const ecrans = this.ecrans();
-      let i = 0;
-      while (i < ecrans.length && ecrans[i].q && ecrans[i].cle !== "__projet" && this.state.reponses[ecrans[i].cle]) i++;
-      if (i > 0) this.setState({ ecran: i });
-    });
+    if (Object.keys(patch).length) this.setState(patch, () => this.allerAuProchain(0));
+  }
+  ecranDejaRenseigne(ecran) {
+    if (ecran.q && ecran.cle !== "__projet") return !!this.state.reponses[ecran.cle];
+    return ecran.type === "cp" && this.state.cpFourni && /^[0-9]{5}$/.test(this.state.cp);
+  }
+  allerAuProchain(debut) {
+    const ecrans = this.ecrans();
+    let i = Math.max(0, debut);
+    while (i < ecrans.length && this.ecranDejaRenseigne(ecrans[i])) i++;
+    this.setState({ ecran: Math.min(i, ecrans.length - 1) });
   }
   el(tag, props, kids) { return React.createElement(tag, props, kids); }
   svg(children) {
@@ -160,7 +184,7 @@ class Component extends DCLogic {
     }
     e.push({ q: "Quand souhaitez-vous réaliser le projet ?", sous: "Afin d’adapter la prise de contact à votre calendrier.", cle: "delai", texte: true, opts: [["asap", "Dès que possible"], ["3mois", "Dans les 3 mois"], ["plus", "Plus de 3 mois"]] });
     e.push({ q: "Êtes-vous propriétaire du logement ?", sous: "Certains travaux et aides en dépendent.", cle: "proprio", texte: true, opts: [["oui", "Oui"], ["non", "Non"]] });
-    e.push({ type: "cp" });
+    if (!this.state.cpFourni) e.push({ type: "cp" });
     e.push({ type: "coords" });
     e.push({ type: "fin" });
     return e;
@@ -188,8 +212,8 @@ class Component extends DCLogic {
             location.href = this.props.redirige + "?" + q.toString();
             return;
           }
-          if (e.cle === "__projet") this.setState({ projetChoisi: v, ecran: s.ecran, erreur: "" });
-          else this.setState({ reponses: Object.assign({}, s.reponses, { [e.cle]: v }), ecran: s.ecran + 1, erreur: "" });
+          if (e.cle === "__projet") this.setState({ projetChoisi: v, ecran: 0, erreur: "" });
+          else this.setState({ reponses: Object.assign({}, s.reponses, { [e.cle]: v }), erreur: "" }, () => this.allerAuProchain(s.ecran + 1));
         }
       };
     }) : [];
@@ -198,6 +222,17 @@ class Component extends DCLogic {
       label, numero: String(i + 1), trait: i < 3,
       rond: "width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18.5px;" + (i === phase ? "background:#C05A2E;color:#FFFFFF" : i < phase ? "background:#2E5B4C;color:#FFFFFF" : "background:#FFFFFF;color:#6B7A70;border:2px solid #C9C2B2;box-sizing:border-box")
     }));
+    const libsProjet = { "monte-escalier": "Monte-escalier", "baignoire-douche": "Remplacement baignoire par douche", "douche-senior": "Douche senior", "salle-de-bain": "Salle de bain adaptée", "inconnu": "Projet à définir" };
+    const libsCle = { type: "Type de monte-escalier", niveaux: "Niveaux du logement", installation: "Installation actuelle", souhait: "Transformation souhaitée", delai: "Délai envisagé", proprio: "Propriétaire du logement" };
+    const recap = [];
+    const projetRecap = this.projet();
+    if (projetRecap && libsProjet[projetRecap]) recap.push({ label: "Votre projet", valeur: libsProjet[projetRecap] });
+    ecrans.forEach(x => {
+      if (x.q && x.cle !== "__projet" && s.reponses[x.cle]) {
+        const option = x.opts.find(item => item[0] === s.reponses[x.cle]);
+        if (option) recap.push({ label: libsCle[x.cle] ?? x.q, valeur: option[1] });
+      }
+    });
     const pilule = "font-size:16px;font-weight:600;color:#DCE8DF;background:rgba(250,247,240,0.12);padding:5px 14px;border-radius:999px";
     const piluleAmbre = "font-size:16px;font-weight:700;color:#1F2E27;background:#E9B44C;padding:5px 14px;border-radius:999px";
     const projetCourant = this.projet();
@@ -208,10 +243,18 @@ class Component extends DCLogic {
     if (projetCourant === "monte-escalier" || projetCourant === "") badges.push({ label: "Aides de l’État possibles", style: piluleAmbre });
     return {
       badges,
-      titre: this.props.titre ?? "Étudiez votre projet en 2 minutes",
+      titre: s.ville ? "Étudiez votre projet à " + s.ville + " en 2 minutes" : (this.props.titre ?? "Étudiez votre projet en 2 minutes"),
       question: e.q ?? "", sousQuestion: e.sous ?? "", options, jalons,
       estQuestion: estQ, estCp, estCoords, estFin, pasFin: !estFin, montrerSuivant: estCp || estCoords,
       cp: s.cp, cpAffiche: s.cp || "—",
+      montrerSecteur: estCoords && s.cp.length === 5,
+      modifierCp: () => this.setState({ cpFourni: false, erreur: "" }, () => {
+        const indexCp = this.ecrans().findIndex(item => item.type === "cp");
+        if (indexCp >= 0) this.setState({ ecran: indexCp });
+      }),
+      montrerRecap: estCoords && (recap.length > 0 || s.cp.length === 5),
+      recap,
+      secteurAffiche: s.cp + (s.ville ? " · " + s.ville : ""),
       prenom: s.prenom, nom: s.nom, tel: s.tel, email: s.email, consent: s.consent,
       erreur: s.erreur, aErreur: !!s.erreur,
       gabaritColonnes: estQ ? (e.texte ? "repeat(auto-fit,minmax(min(180px,100%),240px))" : (e.opts.length === 4 ? "repeat(2,minmax(0,280px))" : "repeat(" + Math.min(e.opts.length, 3) + ",minmax(0,280px))")) : "1fr",
@@ -248,6 +291,7 @@ class Component extends DCLogic {
                 firstname: s.prenom,
                 lastname: s.nom,
                 phone1: s.tel,
+                towncity: s.ville,
                 project: this.projet(),
                 answers: s.reponses,
                 consent: s.consent

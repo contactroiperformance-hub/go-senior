@@ -6,6 +6,7 @@ const validLead = {
   postcode: "75015",
   firstname: "Marie",
   lastname: "Dupont",
+  towncity: "Paris",
   phone1: "06 12 34 56 78",
   project: "monte-escalier",
   answers: {
@@ -66,6 +67,7 @@ try {
   assert.equal(submitted.get("selectionner_un_service:"), "Habitat");
   assert.equal(submitted.get("firstname"), validLead.firstname);
   assert.equal(submitted.get("lastname"), validLead.lastname);
+  assert.equal(submitted.get("towncity"), validLead.towncity);
   assert.equal(submitted.get("phone1"), "0612345678");
   assert.equal(submitted.get("source"), "go-senior.fr");
   assert.equal(submitted.get("Quand_souhaitez-vous_êtres_rappelé?"), "Dès que possible");
@@ -74,7 +76,6 @@ try {
   assert.equal(submitted.get("quel_type_de_monte-escalier_recherchez-vous_?"), "Monte-escalier tournant");
   assert.equal(submitted.get("de_combien_de_niveaux_est_composé_votre_logement_?"), "3 niveaux");
   assert.equal(submitted.get("quel_projet_envisagez-vous_?"), "Installer un monte-escalier");
-  assert.equal(submitted.has("towncity"), false);
   assert.equal(submitted.has("quelle_est_votre_installation_actuelle_?"), false);
 
   const bathroomLead = {

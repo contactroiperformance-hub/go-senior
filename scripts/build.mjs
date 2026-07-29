@@ -100,6 +100,8 @@ routes.set("Actualite-modele.dc.html", "/actualites/");
 routes.set("Modele-article.dc.html", "/guides/");
 routes.set("Modele-departement.dc.html", "/monte-escalier/");
 routes.set("Modele-ville.dc.html", "/monte-escalier/");
+routes.set("Modele-departement-douche.dc.html", "/douche-senior/");
+routes.set("Modele-ville-douche.dc.html", "/douche-senior/");
 routes.set("Design-system.dc.html", "/");
 
 function escapeAttribute(value) {
