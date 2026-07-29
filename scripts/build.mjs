@@ -328,6 +328,9 @@ const headers = `/*
 /*.dc.html
   X-Robots-Tag: noindex, nofollow
 
+/*.dc
+  X-Robots-Tag: noindex, nofollow
+
 /uploads/*
   Cache-Control: public, max-age=31536000, immutable
 

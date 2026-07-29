@@ -124,6 +124,14 @@ if (!sitemap.includes("https://go-senior.fr/")) failures.push("sitemap.xml: accu
 if (sitemap.includes("/projet/")) failures.push("sitemap.xml: page projet ne doit pas être indexée");
 if (!sitemap.includes("/actualites/")) failures.push("sitemap.xml: actualités manquantes");
 
+const headers = await readFile(path.join(dist, "_headers"), "utf8");
+if (!headers.includes("/*.dc.html\n  X-Robots-Tag: noindex, nofollow")) {
+  failures.push("_headers: protection .dc.html manquante");
+}
+if (!headers.includes("/*.dc\n  X-Robots-Tag: noindex, nofollow")) {
+  failures.push("_headers: protection des URL .dc propres manquante");
+}
+
 if (failures.length) {
   console.error(failures.join("\n"));
   process.exitCode = 1;
