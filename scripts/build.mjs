@@ -5,6 +5,15 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 const origin = "https://go-senior.fr";
+const analyticsTag = `<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HBZWTD0J4F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HBZWTD0J4F');
+</script>`;
 
 const pages = [
   ["Accueil.dc.html", "/", true],
@@ -88,6 +97,7 @@ function addProductionHead(source, route, indexed) {
   ].join("\n");
 
   let result = source.replace(/<meta\s+name="robots"\s+content="[^"]*"\s*>/i, "");
+  result = result.replace("</head>", `${analyticsTag}\n</head>`);
   result = result.replace(
     "<helmet>",
     `<helmet>\n<meta name="robots" content="${indexed ? "index,follow" : "noindex,follow"}">\n${social}`

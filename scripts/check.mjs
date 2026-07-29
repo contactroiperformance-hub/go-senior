@@ -38,6 +38,19 @@ for (const file of htmlFiles) {
   if (productionPage && !/<meta name="robots" content="(?:index|noindex),follow">/i.test(source)) {
     failures.push(`${relative}: directive robots manquante`);
   }
+  if (productionPage) {
+    const analyticsLoaderCount = (
+      source.match(/googletagmanager\.com\/gtag\/js\?id=G-HBZWTD0J4F/g) || []
+    ).length;
+    const analyticsConfigCount = (
+      source.match(/gtag\('config', 'G-HBZWTD0J4F'\)/g) || []
+    ).length;
+    if (analyticsLoaderCount !== 1 || analyticsConfigCount !== 1) {
+      failures.push(`${relative}: balise Google Analytics absente ou dupliquée`);
+    }
+  } else if (source.includes("G-HBZWTD0J4F")) {
+    failures.push(`${relative}: balise Google Analytics présente dans un composant`);
+  }
   if (/href="[^"]*\.dc\.html/i.test(source)) failures.push(`${relative}: lien .dc.html restant`);
   if (/src="uploads\//i.test(source)) failures.push(`${relative}: image non absolue`);
   const h1Count = (source.match(/<h1\b/gi) || []).length;
