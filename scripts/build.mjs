@@ -14,6 +14,13 @@ const analyticsTag = `<!-- Google tag (gtag.js) -->
 
   gtag('config', 'G-HBZWTD0J4F');
 </script>`;
+const clarityTag = `<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "xu36kqlw73");
+</script>`;
 
 const pages = [
   ["Accueil.dc.html", "/", true],
@@ -97,7 +104,7 @@ function addProductionHead(source, route, indexed) {
   ].join("\n");
 
   let result = source.replace(/<meta\s+name="robots"\s+content="[^"]*"\s*>/i, "");
-  result = result.replace("</head>", `${analyticsTag}\n</head>`);
+  result = result.replace("</head>", `${analyticsTag}\n${clarityTag}\n</head>`);
   result = result.replace(
     "<helmet>",
     `<helmet>\n<meta name="robots" content="${indexed ? "index,follow" : "noindex,follow"}">\n${social}`

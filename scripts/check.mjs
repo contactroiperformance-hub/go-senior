@@ -48,8 +48,22 @@ for (const file of htmlFiles) {
     if (analyticsLoaderCount !== 1 || analyticsConfigCount !== 1) {
       failures.push(`${relative}: balise Google Analytics absente ou dupliquée`);
     }
-  } else if (source.includes("G-HBZWTD0J4F")) {
-    failures.push(`${relative}: balise Google Analytics présente dans un composant`);
+    const clarityLoaderCount = (
+      source.match(/www\.clarity\.ms\/tag\//g) || []
+    ).length;
+    const clarityConfigCount = (
+      source.match(/"clarity", "script", "xu36kqlw73"/g) || []
+    ).length;
+    if (clarityLoaderCount !== 1 || clarityConfigCount !== 1) {
+      failures.push(`${relative}: balise Microsoft Clarity absente ou dupliquée`);
+    }
+  } else {
+    if (source.includes("G-HBZWTD0J4F")) {
+      failures.push(`${relative}: balise Google Analytics présente dans un composant`);
+    }
+    if (source.includes("xu36kqlw73")) {
+      failures.push(`${relative}: balise Microsoft Clarity présente dans un composant`);
+    }
   }
   if (/href="[^"]*\.dc\.html/i.test(source)) failures.push(`${relative}: lien .dc.html restant`);
   if (/src="uploads\//i.test(source)) failures.push(`${relative}: image non absolue`);
