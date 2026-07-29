@@ -5,6 +5,12 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 const origin = "https://go-senior.fr";
+const organizationId = `${origin}/#organization`;
+const websiteId = `${origin}/#website`;
+const defaultSocialImage = `${origin}/uploads/cover-linkedin-1584x396.png`;
+const fontHead = `<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">`;
 const analyticsTag = `<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HBZWTD0J4F"></script>
 <script>
@@ -21,6 +27,26 @@ const clarityTag = `<script type="text/javascript">
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "xu36kqlw73");
 </script>`;
+
+const missingDescriptions = new Map([
+  ["Accueil.dc.html", "Découvrez les solutions pour adapter votre logement, comprenez les prix et les aides disponibles, puis trouvez des professionnels pouvant intervenir dans votre secteur."],
+  ["Monte-escalier.dc.html", "Comparez les modèles droits, tournants et extérieurs, comprenez les coûts et vérifiez les solutions disponibles dans votre secteur."],
+  ["Douche-senior.dc.html", "Comparez les solutions de douche à accès facilité, les équipements disponibles, les coûts et les possibilités d’intervention près de chez vous."],
+  ["MaPrimeAdapt.dc.html", "MaPrimeAdapt’ est une aide publique destinée à financer une partie des travaux qui rendent un logement plus adapté à la perte d’autonomie ou au handicap."],
+  ["Guides.dc.html", "Des explications claires et indépendantes sur les solutions, les prix et les aides."],
+  ["Formulaire.dc.html", "Décrivez votre projet et indiquez votre code postal pour vérifier les solutions disponibles dans votre secteur."],
+  ["A-propos.dc.html", "Go Senior aide les seniors et leurs proches à préparer l’adaptation de leur logement : comprendre les solutions, situer les coûts et connaître les aides."],
+  ["Methodologie.dc.html", "Des décisions importantes méritent des explications fiables. Voici les règles que nous appliquons à chaque page du site."],
+  ["Contact.dc.html", "Une question sur le service, un guide à corriger, une demande concernant vos données ? Voici comment nous joindre."]
+]);
+
+const sharedComponents = new Set([
+  "BlocProjet.dc.html",
+  "Footer.dc.html",
+  "Header.dc.html",
+  "MiniFormulaire.dc.html",
+  "Simulateur.dc.html"
+]);
 
 const pages = [
   ["Accueil.dc.html", "/", true],
@@ -75,9 +101,118 @@ function titleFrom(source) {
     .trim() || "Go Senior";
 }
 
-function descriptionFrom(source) {
+function descriptionFrom(source, file) {
   return source.match(/<meta\s+name="description"\s+content="([^"]*)"/i)?.[1]
+    || missingDescriptions.get(file)
     || "Go Senior vous aide à comprendre les solutions, les prix et les aides pour adapter votre logement et préserver votre autonomie.";
+}
+
+function cleanTitle(title) {
+  return title
+    .replace(/\s+[—|]\s+Go Senior$/i, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function imageFrom(source) {
+  const match = source.match(/<img\b[^>]*\bsrc="([^"]+)"[^>]*>/i);
+  if (!match) return { url: defaultSocialImage, alt: "Go Senior" };
+  const alt = match[0].match(/\balt="([^"]*)"/i)?.[1] || "Go Senior";
+  return {
+    url: new URL(match[1], origin).href,
+    alt
+  };
+}
+
+function structuredData(route, title, description) {
+  const canonical = `${origin}${route}`;
+  const graph = [
+    {
+      "@type": "Organization",
+      "@id": organizationId,
+      name: "Go Senior",
+      legalName: "DIGITAL NETWORK ACQUISITION (DNA)",
+      url: `${origin}/`,
+      email: "support@go-senior.fr",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "73 rue du Château",
+        postalCode: "92100",
+        addressLocality: "Boulogne-Billancourt",
+        addressCountry: "FR"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": websiteId,
+      url: `${origin}/`,
+      name: "Go Senior",
+      inLanguage: "fr-FR",
+      publisher: { "@id": organizationId }
+    },
+    {
+      "@type": "WebPage",
+      "@id": `${canonical}#webpage`,
+      url: canonical,
+      name: title,
+      description,
+      inLanguage: "fr-FR",
+      isPartOf: { "@id": websiteId },
+      publisher: { "@id": organizationId }
+    }
+  ];
+
+  if (route !== "/") {
+    const parts = route.split("/").filter(Boolean);
+    const items = [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Accueil",
+        item: `${origin}/`
+      }
+    ];
+    if (parts[0] === "guides" && parts.length > 1) {
+      items.push({
+        "@type": "ListItem",
+        position: 2,
+        name: "Guides",
+        item: `${origin}/guides/`
+      });
+    }
+    items.push({
+      "@type": "ListItem",
+      position: items.length + 1,
+      name: cleanTitle(title),
+      item: canonical
+    });
+    graph.push({
+      "@type": "BreadcrumbList",
+      "@id": `${canonical}#breadcrumb`,
+      itemListElement: items
+    });
+    graph[2].breadcrumb = { "@id": `${canonical}#breadcrumb` };
+  }
+
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": graph
+  }).replaceAll("<", "\\u003c");
+}
+
+function stripRuntimeMetadata(source) {
+  return source
+    .replace(/<title>[\s\S]*?<\/title>\s*/i, "")
+    .replace(/<meta\s+name="description"\s+content="[^"]*"\s*>\s*/i, "")
+    .replace(/<meta\s+name="robots"\s+content="[^"]*"\s*>\s*/i, "")
+    .replace(/<link\s+rel="canonical"\s+href="[^"]*"\s*>\s*/i, "");
+}
+
+function stripSharedFontHead(source) {
+  return source
+    .replace(/<link\s+rel="preconnect"\s+href="https:\/\/fonts\.googleapis\.com"\s*>\s*/gi, "")
+    .replace(/<link\s+rel="preconnect"\s+href="https:\/\/fonts\.gstatic\.com"\s+crossorigin(?:="")?\s*>\s*/gi, "")
+    .replace(/<link\s+href="https:\/\/fonts\.googleapis\.com\/css2\?[^"]+"\s+rel="stylesheet"\s*>\s*/gi, "");
 }
 
 function replaceLinks(source) {
@@ -88,31 +223,46 @@ function replaceLinks(source) {
   return result;
 }
 
-function addProductionHead(source, route, indexed) {
+function addProductionHead(source, file, route, indexed) {
   const canonical = `${origin}${route}`;
   const title = titleFrom(source);
-  const description = descriptionFrom(source);
+  const description = descriptionFrom(source, file);
+  const image = imageFrom(source);
+  const robots = indexed
+    ? "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"
+    : "noindex,follow";
   const social = [
+    `<title>${title}</title>`,
+    `<meta name="description" content="${escapeAttribute(description)}">`,
+    `<meta name="robots" content="${robots}">`,
     `<link rel="canonical" href="${canonical}">`,
+    `<link rel="alternate" hreflang="fr-FR" href="${canonical}">`,
     `<meta property="og:locale" content="fr_FR">`,
     `<meta property="og:type" content="website">`,
     `<meta property="og:site_name" content="Go Senior">`,
     `<meta property="og:title" content="${escapeAttribute(title)}">`,
     `<meta property="og:description" content="${escapeAttribute(description)}">`,
     `<meta property="og:url" content="${canonical}">`,
-    `<meta name="twitter:card" content="summary">`
+    `<meta property="og:image" content="${escapeAttribute(image.url)}">`,
+    `<meta property="og:image:alt" content="${escapeAttribute(image.alt)}">`,
+    `<meta name="twitter:card" content="summary_large_image">`,
+    `<meta name="twitter:title" content="${escapeAttribute(title)}">`,
+    `<meta name="twitter:description" content="${escapeAttribute(description)}">`,
+    `<meta name="twitter:image" content="${escapeAttribute(image.url)}">`,
+    `<meta name="author" content="Go Senior">`,
+    `<meta name="theme-color" content="#1F4237">`,
+    `<script type="application/ld+json">${structuredData(route, title, description)}</script>`
   ].join("\n");
 
-  let result = source.replace(/<meta\s+name="robots"\s+content="[^"]*"\s*>/i, "");
-  result = result.replace("</head>", `${analyticsTag}\n${clarityTag}\n</head>`);
+  let result = stripRuntimeMetadata(stripSharedFontHead(source));
   result = result.replace(
-    "<helmet>",
-    `<helmet>\n<meta name="robots" content="${indexed ? "index,follow" : "noindex,follow"}">\n${social}`
+    "</head>",
+    `${social}\n${fontHead}\n${analyticsTag}\n${clarityTag}\n</head>`
   );
   return result;
 }
 
-function transform(source, route = null, indexed = false) {
+function transform(source, file, route = null, indexed = false, stripSharedFonts = false) {
   let result = source
     .replaceAll("\u00a0!important", " !important")
     .replace("<html>", '<html lang="fr">')
@@ -124,7 +274,8 @@ function transform(source, route = null, indexed = false) {
     .replaceAll('href="uploads/', 'href="/uploads/');
 
   result = replaceLinks(result);
-  if (route) result = addProductionHead(result, route, indexed);
+  if (stripSharedFonts) result = stripSharedFontHead(result);
+  if (route) result = addProductionHead(result, file, route, indexed);
   return result;
 }
 
@@ -144,12 +295,15 @@ const designFiles = rootFiles.filter((name) => name.endsWith(".dc.html"));
 
 for (const file of designFiles) {
   const source = await readFile(path.join(root, file), "utf8");
-  await writeFile(path.join(dist, file), transform(source));
+  await writeFile(
+    path.join(dist, file),
+    transform(source, file, null, false, sharedComponents.has(file))
+  );
 }
 
 for (const [file, route, indexed] of pages) {
   const source = await readFile(path.join(root, file), "utf8");
-  await writeRoute(route, transform(source, route, indexed));
+  await writeRoute(route, transform(source, file, route, indexed));
 }
 
 await cp(path.join(root, "uploads"), path.join(dist, "uploads"), { recursive: true });

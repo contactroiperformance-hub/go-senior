@@ -35,10 +35,35 @@ for (const file of htmlFiles) {
   if (productionPage && !/<link rel="canonical" href="https:\/\/go-senior\.fr\//i.test(source)) {
     failures.push(`${relative}: canonical manquant`);
   }
-  if (productionPage && !/<meta name="robots" content="(?:index|noindex),follow">/i.test(source)) {
+  if (productionPage && !/<meta name="robots" content="(?:index|noindex),follow(?:,[^"]+)?">/i.test(source)) {
     failures.push(`${relative}: directive robots manquante`);
   }
   if (productionPage) {
+    const head = source.match(/<head>([\s\S]*?)<\/head>/i)?.[1] || "";
+    const titleCount = (head.match(/<title>/gi) || []).length;
+    const descriptionCount = (head.match(/<meta name="description"/gi) || []).length;
+    const canonicalCount = (head.match(/<link rel="canonical"/gi) || []).length;
+    const structuredDataCount = (head.match(/type="application\/ld\+json"/gi) || []).length;
+    const fontStylesheetCount = (
+      head.match(/fonts\.googleapis\.com\/css2\?/gi) || []
+    ).length;
+    if (titleCount !== 1) failures.push(`${relative}: ${titleCount} balise title dans head`);
+    if (descriptionCount !== 1) failures.push(`${relative}: ${descriptionCount} meta description dans head`);
+    if (canonicalCount !== 1) failures.push(`${relative}: ${canonicalCount} canonical dans head`);
+    if (structuredDataCount !== 1) failures.push(`${relative}: JSON-LD absent ou dupliqué`);
+    if (fontStylesheetCount !== 1) failures.push(`${relative}: police Google absente ou dupliquée`);
+    const jsonLd = head.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/i)?.[1];
+    if (jsonLd) {
+      try {
+        const parsed = JSON.parse(jsonLd);
+        const types = new Set((parsed["@graph"] || []).map((entry) => entry["@type"]));
+        if (!types.has("Organization") || !types.has("WebSite") || !types.has("WebPage")) {
+          failures.push(`${relative}: graphe JSON-LD incomplet`);
+        }
+      } catch {
+        failures.push(`${relative}: JSON-LD invalide`);
+      }
+    }
     const analyticsLoaderCount = (
       source.match(/googletagmanager\.com\/gtag\/js\?id=G-HBZWTD0J4F/g) || []
     ).length;
@@ -68,7 +93,7 @@ for (const file of htmlFiles) {
   if (/href="[^"]*\.dc\.html/i.test(source)) failures.push(`${relative}: lien .dc.html restant`);
   if (/src="uploads\//i.test(source)) failures.push(`${relative}: image non absolue`);
   const h1Count = (source.match(/<h1\b/gi) || []).length;
-  const indexed = /<meta name="robots" content="index,follow">/i.test(source);
+  const indexed = /<meta name="robots" content="index,follow(?:,[^"]+)?">/i.test(source);
   if (productionPage && indexed && h1Count !== 1) failures.push(`${relative}: ${h1Count} H1`);
 
   const references = [...source.matchAll(/(?:href|src)="([^"]+)"/gi)].map((match) => match[1]);
@@ -85,6 +110,13 @@ for (const file of htmlFiles) {
       : path.join(dist, pathname);
     if (!await targetExists(target)) failures.push(`${relative}: cible absente ${reference}`);
   }
+}
+
+for (const entry of await readdir(root)) {
+  if (!entry.endsWith(".dc.html")) continue;
+  const source = await readFile(path.join(root, entry), "utf8");
+  if (!/<meta\s+name="viewport"/i.test(source)) failures.push(`${entry}: meta viewport manquante`);
+  if (!/overflow-x\s*:\s*hidden/i.test(source)) failures.push(`${entry}: blocage horizontal manquant`);
 }
 
 const sitemap = await readFile(path.join(dist, "sitemap.xml"), "utf8");

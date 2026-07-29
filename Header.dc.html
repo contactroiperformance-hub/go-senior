@@ -13,22 +13,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
 <style>
 html,body{overflow-x:hidden;max-width:100%}
+img{max-width:100%;height:auto}
 body{margin:0;background:#FAF7F0;font-family:'Libre Franklin',system-ui,sans-serif;color:#22322B;font-size:19.5px;line-height:1.65}
 a{color:#2E5B4C}a:hover{color:#1F4237}
 :focus-visible{outline:3px solid #C05A2E;outline-offset:2px;border-radius:4px}
 .gsh-desk{display:flex}.gsh-mob{display:none}.gsh-bar{display:none}
 @media(max-width:1060px){.gsh-desk{display:none !important}.gsh-mob{display:flex !important}.gsh-bar{display:flex !important}body{padding-bottom:76px}}
+@media(max-width:480px){.gsh-head{padding-left:16px !important;padding-right:16px !important;gap:12px !important}.gsh-tagline{display:none}}
 </style>
 </helmet>
 <header style="background:#FFFFFF">
   <div style="height:75px"></div>
   <div style="position:fixed;top:0;left:0;right:0;z-index:60;background:#FFFFFF;border-bottom:1px solid #E5DFD2">
-  <div style="max-width:1200px;margin:0 auto;padding:0 24px;height:74px;display:flex;align-items:center;gap:26px">
-    <a href="Accueil.dc.html" aria-label="Go Senior — Accueil" style="display:flex;align-items:center;gap:12px;text-decoration:none;flex-shrink:0">
+  <div class="gsh-head" style="max-width:1200px;margin:0 auto;padding:0 24px;height:74px;display:flex;align-items:center;gap:26px">
+    <a href="Accueil.dc.html" aria-label="Go Senior — Les solutions pour bien vivre chez soi — Accueil" style="display:flex;align-items:center;gap:12px;text-decoration:none;flex-shrink:0">
       <svg width="44" height="44" viewBox="0 0 36 36" aria-hidden="true"><rect width="36" height="36" rx="11" fill="#2E5B4C"></rect><path d="M10.5 26.5 V17.5 a7.5 7.5 0 0 1 15 0 V26.5" fill="none" stroke="#FAF7F0" stroke-width="3.2" stroke-linecap="round"></path><circle cx="18" cy="23" r="2.8" fill="#E9B44C"></circle></svg>
       <span style="display:flex;flex-direction:column;line-height:1.15">
         <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:25px;color:#2E5B4C;letter-spacing:-0.01em">Go Senior</span>
-        <span style="font-size:14.5px;font-weight:600;color:#C05A2E;letter-spacing:0.01em">Les solutions pour bien vivre chez soi</span>
+        <span class="gsh-tagline" style="font-size:14.5px;font-weight:600;color:#C05A2E;letter-spacing:0.01em">Les solutions pour bien vivre chez soi</span>
       </span>
     </a>
     <div class="gsh-desk" style="align-items:center;gap:18px;margin-left:auto">
@@ -40,9 +42,9 @@ a{color:#2E5B4C}a:hover{color:#1F4237}
   </div>
   </div>
   <nav class="gsh-desk" aria-label="Navigation principale" style="border-bottom:1px solid #E5DFD2;background:#FFFFFF">
-    <div style="max-width:1200px;margin:0 auto;padding:0 24px;height:58px;display:flex;align-items:center;gap:16px;width:100%;box-sizing:border-box">
+    <div style="max-width:1200px;margin:0 auto;padding:0 24px;height:58px;display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box">
       <div style="position:relative">
-        <button onClick="{{ toggleDrop }}" aria-expanded="{{ dropOpen }}" style="display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;font-family:'Libre Franklin',system-ui,sans-serif;font-size:18.5px;font-weight:500;color:#22322B;padding:9px 12px;border-radius:9px" style-hover="background:#EBF1E8;color:#1F4237"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 L12 4 l9 7.5"></path><path d="M5.5 10 V20 h13 V10"></path></svg>Adapter son logement <span style="font-size:12px;color:#5A685F">{{ dropArrow }}</span></button>
+        <button onClick="{{ toggleDrop }}" aria-expanded="{{ dropOpen }}" style="display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;font-family:'Libre Franklin',system-ui,sans-serif;font-size:17.5px;line-height:1.2;white-space:nowrap;font-weight:500;color:#22322B;padding:8px 10px;border-radius:9px" style-hover="background:#EBF1E8;color:#1F4237"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 L12 4 l9 7.5"></path><path d="M5.5 10 V20 h13 V10"></path></svg>Adapter son logement <span style="font-size:12px;color:#5A685F">{{ dropArrow }}</span></button>
         <sc-if value="{{ dropOpen }}" hint-placeholder-val="{{ false }}">
           <div style="position:absolute;top:100%;left:-12px;margin-top:8px;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;box-shadow:0 12px 32px rgba(34,50,43,0.14);padding:10px;min-width:290px;display:flex;flex-direction:column;gap:2px;z-index:70">
             <a href="Monte-escalier.dc.html" style="text-decoration:none;color:#22322B;font-size:18px;font-weight:500;padding:11px 14px;border-radius:9px;display:block" style-hover="background:#EBF1E8;color:#1F4237">Monte-escalier</a>
@@ -53,11 +55,11 @@ a{color:#2E5B4C}a:hover{color:#1F4237}
           </div>
         </sc-if>
       </div>
-      <a href="Monte-escalier.dc.html" style="text-decoration:none;font-size:18.5px;font-weight:500;color:{{ cMonte }};padding:9px 12px;border-radius:9px;box-shadow:inset 0 -2px 0 {{ uMonte }};display:flex;align-items:center;gap:9px" style-hover="background:#EBF1E8;color:#1F4237"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20 h4 v-4 h4 v-4 h4 v-4 h4 V5"></path></svg>Monte-escalier</a>
-      <a href="Douche-senior.dc.html" style="text-decoration:none;font-size:18.5px;font-weight:500;color:{{ cDouche }};padding:9px 12px;border-radius:9px;box-shadow:inset 0 -2px 0 {{ uDouche }};display:flex;align-items:center;gap:9px" style-hover="background:#EBF1E8;color:#1F4237"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 20 V7 a3 3 0 0 1 3-3 h1"></path><circle cx="14.5" cy="7.5" r="3"></circle><path d="M12 13 v1.5 M14.5 13.5 v2 M17 13 v1.5"></path></svg>Douche senior</a>
-      <a href="MaPrimeAdapt.dc.html" style="text-decoration:none;font-size:18.5px;font-weight:500;color:{{ cAides }};padding:9px 12px;border-radius:9px;box-shadow:inset 0 -2px 0 {{ uAides }};display:flex;align-items:center;gap:9px" style-hover="background:#EBF1E8;color:#1F4237"><span style="width:21px;height:21px;border:2px solid #2E5B4C;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14.5px;color:#2E5B4C;box-sizing:border-box" aria-hidden="true">€</span>Aides financières</a>
+      <a href="Monte-escalier.dc.html" style="text-decoration:none;font-size:17.5px;line-height:1.2;white-space:nowrap;font-weight:500;color:{{ cMonte }};padding:8px 10px;border-radius:9px;box-shadow:inset 0 -2px 0 {{ uMonte }};display:flex;align-items:center;gap:9px" style-hover="background:#EBF1E8;color:#1F4237"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20 h4 v-4 h4 v-4 h4 v-4 h4 V5"></path></svg>Monte-escalier</a>
+      <a href="Douche-senior.dc.html" style="text-decoration:none;font-size:17.5px;line-height:1.2;white-space:nowrap;font-weight:500;color:{{ cDouche }};padding:8px 10px;border-radius:9px;box-shadow:inset 0 -2px 0 {{ uDouche }};display:flex;align-items:center;gap:9px" style-hover="background:#EBF1E8;color:#1F4237"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 20 V7 a3 3 0 0 1 3-3 h1"></path><circle cx="14.5" cy="7.5" r="3"></circle><path d="M12 13 v1.5 M14.5 13.5 v2 M17 13 v1.5"></path></svg>Douche senior</a>
+      <a href="MaPrimeAdapt.dc.html" style="text-decoration:none;font-size:17.5px;line-height:1.2;white-space:nowrap;font-weight:500;color:{{ cAides }};padding:8px 10px;border-radius:9px;box-shadow:inset 0 -2px 0 {{ uAides }};display:flex;align-items:center;gap:9px" style-hover="background:#EBF1E8;color:#1F4237"><span style="width:21px;height:21px;border:2px solid #2E5B4C;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14.5px;color:#2E5B4C;box-sizing:border-box" aria-hidden="true">€</span>Aides financières</a>
       <div style="position:relative">
-        <button onClick="{{ toggleGuides }}" aria-expanded="{{ guidesOpen }}" style="display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;font-family:'Libre Franklin',system-ui,sans-serif;font-size:18.5px;font-weight:500;color:{{ cGuides }};padding:9px 12px;border-radius:9px;box-shadow:inset 0 -2px 0 {{ uGuides }}" style-hover="background:#EBF1E8;color:#1F4237"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5 V5 a2 2 0 0 1 2-2 h13 v16 H6 a2 2 0 0 0 0 4 h13"></path></svg>Guides <span style="font-size:12px;color:#5A685F">{{ guidesArrow }}</span></button>
+        <button onClick="{{ toggleGuides }}" aria-expanded="{{ guidesOpen }}" style="display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;font-family:'Libre Franklin',system-ui,sans-serif;font-size:17.5px;line-height:1.2;white-space:nowrap;font-weight:500;color:{{ cGuides }};padding:8px 10px;border-radius:9px;box-shadow:inset 0 -2px 0 {{ uGuides }}" style-hover="background:#EBF1E8;color:#1F4237"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5 V5 a2 2 0 0 1 2-2 h13 v16 H6 a2 2 0 0 0 0 4 h13"></path></svg>Guides <span style="font-size:12px;color:#5A685F">{{ guidesArrow }}</span></button>
         <sc-if value="{{ guidesOpen }}" hint-placeholder-val="{{ false }}">
           <div style="position:absolute;top:100%;right:0;margin-top:8px;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;box-shadow:0 12px 32px rgba(34,50,43,0.14);padding:10px;min-width:280px;display:flex;flex-direction:column;gap:2px;z-index:70">
             <a href="Guides.dc.html" style="text-decoration:none;color:#22322B;font-size:18px;font-weight:500;padding:11px 14px;border-radius:9px;display:block" style-hover="background:#EBF1E8;color:#1F4237">Tous les guides</a>
@@ -92,6 +94,20 @@ a{color:#2E5B4C}a:hover{color:#1F4237}
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:420},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;monte-escalier&quot;,&quot;douche&quot;,&quot;aides&quot;,&quot;guides&quot;],&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Navigation&quot;}}">
 class Component extends DCLogic {
   state = { dropOpen: false, menuOpen: false, guidesOpen: false };
+  componentDidMount() {
+    const h = location.hash && location.hash.slice(1);
+    if (!h) return;
+    let essais = 0;
+    const t = setInterval(() => {
+      const el = document.getElementById(h);
+      essais++;
+      if (el) {
+        el.style.scrollMarginTop = "92px";
+        el.scrollIntoView({ block: "start" });
+      }
+      if ((el && essais > 2) || essais > 16) clearInterval(t);
+    }, 300);
+  }
   renderVals() {
     const active = this.props.active ?? "";
     const col = k => (active === k ? "#1F4237" : "#22322B");

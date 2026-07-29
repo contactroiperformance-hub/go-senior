@@ -9,6 +9,7 @@
 <x-dc>
 <helmet>
 <style>html,body{overflow-x:hidden;max-width:100%}
+img{max-width:100%;height:auto}
 body{margin:0;font-family:'Libre Franklin',system-ui,sans-serif}a{color:#2E5B4C}a:hover{color:#1F4237}
 button[aria-pressed="false"]:hover{border-color:#2E5B4C !important;background:#F5F8F3 !important;box-shadow:0 6px 18px rgba(34,50,43,0.14);transform:translateY(-2px)}</style>
 </helmet>
@@ -52,7 +53,7 @@ button[aria-pressed="false"]:hover{border-color:#2E5B4C !important;background:#
         </div>
         <label style="display:flex;gap:12px;align-items:flex-start;background:#FAF7F0;border:1px solid #E5DFD2;border-radius:12px;padding:14px 16px;cursor:pointer">
           <input type="checkbox" checked="{{ consent }}" onChange="{{ toggleConsent }}" style="width:24px;height:24px;margin:2px 0 0;accent-color:#2E5B4C;cursor:pointer;flex-shrink:0">
-          <span style="font-size:17.5px;line-height:1.55;color:#22322B">J’accepte que mes informations soient utilisées par Go Senior et ses <a href="#">partenaires</a> pour le traitement de ma demande (contact par email et téléphone). En cochant cette case, je reconnais avoir lu et accepté la <a href="Politique-confidentialite.dc.html">Politique de confidentialité</a> et les <a href="Conditions-generales.dc.html">CGU</a>.</span>
+          <span style="font-size:17.5px;line-height:1.55;color:#22322B">J’accepte que mes informations soient utilisées par Go Senior et ses <a href="Politique-confidentialite.dc.html">partenaires</a> pour le traitement de ma demande (contact par email et téléphone). En cochant cette case, je reconnais avoir lu et accepté la <a href="Politique-confidentialite.dc.html">Politique de confidentialité</a> et les <a href="Conditions-generales.dc.html">CGU</a>.</span>
         </label>
       </sc-if>
       <sc-if value="{{ estFin }}" hint-placeholder-val="{{ false }}">
@@ -79,9 +80,9 @@ button[aria-pressed="false"]:hover{border-color:#2E5B4C !important;background:#
   </div>
   <div style="display:flex;align-items:flex-start;justify-content:center;gap:0;padding:0 12px">
     <sc-for list="{{ jalons }}" as="j" hint-placeholder-count="4">
-      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;flex:0 0 auto;min-width:90px">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;flex:1 1 0;min-width:0">
         <span style="{{ j.rond }}">{{ j.numero }}</span>
-        <span style="font-size:16.5px;font-weight:600;color:#22322B;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:7px;padding:4px 12px;white-space:nowrap">{{ j.label }}</span>
+        <span style="font-size:16.5px;font-weight:600;color:#22322B;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:7px;padding:4px 8px;text-align:center">{{ j.label }}</span>
       </div>
       <sc-if value="{{ j.trait }}" hint-placeholder-val="{{ true }}"><span style="flex:1;height:2px;background:#D9D2C2;margin-top:19px;max-width:110px"></span></sc-if>
     </sc-for>
@@ -166,7 +167,7 @@ class Component extends DCLogic {
     const options = estQ ? e.opts.map(([v, label, icone]) => {
       const sel = e.cle === "__projet" ? s.projetChoisi === v : s.reponses[e.cle] === v;
       const base = e.texte
-        ? "min-width:180px;padding:20px 22px;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:'Libre Franklin',system-ui,sans-serif;transition:border-color 0.15s;"
+        ? "min-width:0;padding:20px 22px;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:'Libre Franklin',system-ui,sans-serif;transition:border-color 0.15s;"
         : "min-height:240px;padding:12px 12px 16px;border-radius:14px;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:12px;cursor:pointer;font-family:'Libre Franklin',system-ui,sans-serif;transition:border-color 0.15s;";
       return {
         label, icone: icone ?? null, sel,
@@ -209,7 +210,7 @@ class Component extends DCLogic {
       cp: s.cp, cpAffiche: s.cp || "—",
       prenom: s.prenom, nom: s.nom, tel: s.tel, email: s.email, consent: s.consent,
       erreur: s.erreur, aErreur: !!s.erreur,
-      gabaritColonnes: estQ ? (e.texte ? "repeat(auto-fit,minmax(180px,240px))" : (e.opts.length === 4 ? "repeat(2,minmax(200px,280px))" : "repeat(" + Math.min(e.opts.length, 3) + ",minmax(200px,280px))")) : "1fr",
+      gabaritColonnes: estQ ? (e.texte ? "repeat(auto-fit,minmax(min(180px,100%),240px))" : (e.opts.length === 4 ? "repeat(2,minmax(0,280px))" : "repeat(" + Math.min(e.opts.length, 3) + ",minmax(0,280px))")) : "1fr",
       peutRetour: (s.ecran > 0 || !!s.projetChoisi) && !estFin, pasRetour: s.ecran === 0 && !s.projetChoisi,
       labelSuivant: estCoords ? "Voir les solutions disponibles" : "Suivant",
       setCp: ev => this.setState({ cp: ev.target.value.replace(/[^0-9]/g, "").slice(0, 5), erreur: "" }),
