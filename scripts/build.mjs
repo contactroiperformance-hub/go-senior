@@ -287,7 +287,10 @@ function transform(source, file, route = null, indexed = false, stripSharedFonts
     .replace("<html>", '<html lang="fr">')
     .replace(
       '<script src="./support.js"></script>',
-      `<base href="/">\n<script defer src="/support.js?v=${supportVersion}"></script>`
+      `<base href="/">
+<script defer src="/vendor/react-18.3.1.min.js"></script>
+<script defer src="/vendor/react-dom-18.3.1.min.js"></script>
+<script defer src="/support.js?v=${supportVersion}"></script>`
     )
     .replaceAll('src="uploads/', 'src="/uploads/')
     .replaceAll('href="uploads/', 'href="/uploads/');
@@ -327,6 +330,7 @@ for (const [file, route, indexed] of pages) {
 }
 
 await cp(path.join(root, "uploads"), path.join(dist, "uploads"), { recursive: true });
+await cp(path.join(root, "vendor"), path.join(dist, "vendor"), { recursive: true });
 const minifiedSupport = await minifyJavaScript(supportSource, {
   minify: true,
   target: "es2020"
@@ -359,6 +363,9 @@ const headers = `/*
   Cache-Control: public, max-age=31536000, immutable
 
 /support.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/vendor/*
   Cache-Control: public, max-age=31536000, immutable
 `;
 

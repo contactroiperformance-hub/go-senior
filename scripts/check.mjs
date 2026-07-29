@@ -85,6 +85,10 @@ for (const file of htmlFiles) {
     if (clarityLoaderCount !== 1 || clarityConfigCount !== 1) {
       failures.push(`${relative}: balise Microsoft Clarity absente ou dupliquée`);
     }
+    const localReactCount = (
+      source.match(/\/vendor\/react(?:-dom)?-18\.3\.1\.min\.js/g) || []
+    ).length;
+    if (localReactCount !== 2) failures.push(`${relative}: runtime React local absent ou dupliqué`);
   } else {
     if (source.includes("G-HBZWTD0J4F")) {
       failures.push(`${relative}: balise Google Analytics présente dans un composant`);
@@ -136,6 +140,9 @@ if (!headers.includes("/*.dc\n  X-Robots-Tag: noindex, nofollow")) {
 }
 if (!headers.includes("/support.js\n  Cache-Control: public, max-age=31536000, immutable")) {
   failures.push("_headers: cache immuable du runtime manquant");
+}
+if (!headers.includes("/vendor/*\n  Cache-Control: public, max-age=31536000, immutable")) {
+  failures.push("_headers: cache immuable des dépendances manquant");
 }
 
 if (failures.length) {
