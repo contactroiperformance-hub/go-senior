@@ -39,15 +39,23 @@ for (const page of localPages) {
     assert.ok(field in page, `${page.id}: ${field} présent`);
   }
   const publication = effectivePublication(page);
-  assert.equal(publication.status, "draft");
-  assert.equal(publication.indexStatus, "noindex");
-  assert.equal(publication.sitemapStatus, "excluded");
-  assert.ok(publication.reasons.length > 0, `${page.id}: données manquantes documentées`);
+  if (page.id === "monte-escalier-nord") {
+    assert.equal(publication.status, "published");
+    assert.equal(publication.indexStatus, "index");
+    assert.equal(publication.sitemapStatus, "included");
+    assert.deepEqual(publication.reasons, []);
+  } else {
+    assert.equal(publication.status, "draft");
+    assert.equal(publication.indexStatus, "noindex");
+    assert.equal(publication.sitemapStatus, "excluded");
+    assert.ok(publication.reasons.length > 0, `${page.id}: données manquantes documentées`);
+  }
 }
 
+const nord = localPages.find((page) => page.id === "monte-escalier-nord");
 const lille = localPages.find((page) => page.id === "monte-escalier-nord-lille");
 const bordeaux = localPages.find((page) => page.id === "douche-senior-gironde-bordeaux");
-assert.ok(lille && bordeaux);
+assert.ok(nord && lille && bordeaux);
 
 const completePage = structuredClone(lille);
 Object.assign(completePage, {
@@ -205,7 +213,7 @@ assert.ok(showerSpecificRendered.includes('data-local-service-details="douche-se
 assert.ok(showerSpecificRendered.includes("Plomberie"));
 assert.equal(showerSpecificRendered.includes("Type de rail"), false);
 
-for (const page of localPages) {
+for (const page of localPages.filter((item) => item.id !== nord.id)) {
   const route = localPageRoute(page);
   const file = path.join(dist, route.replace(/^\/|\/$/g, ""), "index.html");
   const source = await readFile(file, "utf8");
@@ -226,6 +234,21 @@ for (const page of localPages) {
   assert.equal(/"@(type|id)"\s*:\s*"(?:LocalBusiness|Contractor|Review|AggregateRating)"/.test(source), false);
 }
 
+const nordBuilt = await readFile(path.join(dist, "monte-escalier/nord/index.html"), "utf8");
+assert.ok(nordBuilt.includes('<meta name="robots" content="index,follow,max-image-preview:large'));
+assert.equal(nordBuilt.includes("data-local-draft-banner"), false);
+assert.equal((nordBuilt.match(/data-local-insee-card/g) || []).length, 6);
+assert.equal((nordBuilt.match(/data-local-faq/g) || []).length, 8);
+assert.equal((nordBuilt.match(/data-local-sources/g) || []).length, 1);
+assert.equal((nordBuilt.match(/href="\/projet\/\?projet=monte-escalier&amp;type=/g) || []).length, 4);
+assert.ok(nordBuilt.includes("Monte-escalier debout"));
+assert.ok(nordBuilt.includes("2 500 – 5 500 €"));
+assert.ok(nordBuilt.includes("J’Amén’âge 59"));
+assert.ok(nordBuilt.includes("03 59 73 73 73"));
+assert.ok(nordBuilt.includes("Comment fonctionne la mise en relation ?"));
+assert.equal(nordBuilt.includes("data-local-nearby"), false, "Lille reste masquée tant que sa page est en brouillon");
+assert.equal(containsPublicPlaceholder(nordBuilt), false);
+
 const lilleBuilt = await readFile(path.join(dist, "monte-escalier/nord/lille/index.html"), "utf8");
 const bordeauxBuilt = await readFile(path.join(dist, "douche-senior/gironde/bordeaux/index.html"), "utf8");
 assert.ok(lilleBuilt.includes('cp-exemple="59000"'));
@@ -235,7 +258,11 @@ assert.equal(bordeauxBuilt.includes('cp-exemple="59000"'), false);
 
 const rootSitemap = await readFile(path.join(dist, "sitemap.xml"), "utf8");
 for (const page of localPages) {
-  assert.equal(rootSitemap.includes(`${origin}${localPageRoute(page)}`), false);
+  assert.equal(
+    rootSitemap.includes(`${origin}${localPageRoute(page)}`),
+    page.id === nord.id,
+    `${page.id}: inclusion sitemap conforme au statut`
+  );
 }
 for (const sitemap of [
   "monte-escalier-departements.xml",
@@ -244,7 +271,12 @@ for (const sitemap of [
   "douche-senior-villes.xml"
 ]) {
   const source = await readFile(path.join(dist, "sitemaps", sitemap), "utf8");
-  assert.equal(source.includes("<loc>"), false, `${sitemap}: aucun draft`);
+  if (sitemap === "monte-escalier-departements.xml") {
+    assert.ok(source.includes(`<loc>${origin}/monte-escalier/nord/</loc>`));
+    assert.equal((source.match(/<loc>/g) || []).length, 1);
+  } else {
+    assert.equal(source.includes("<loc>"), false, `${sitemap}: aucun draft`);
+  }
 }
 
 for (const file of [
@@ -257,5 +289,5 @@ for (const file of [
 }
 
 console.log(
-  "Validated local schema, four reusable templates, publication gates, coverage states, dynamic modules, sitemaps, similarity, SEO hierarchy, and draft rendering."
+  "Validated the published Nord department page, remaining drafts, local schema, reusable templates, publication gates, coverage states, dynamic modules, sitemaps, similarity, and SEO hierarchy."
 );

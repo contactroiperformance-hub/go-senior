@@ -13,7 +13,8 @@ const ANSWER_LABELS = {
   type: {
     droit: "Monte-escalier droit",
     tournant: "Monte-escalier tournant",
-    exterieur: "Monte-escalier extérieur"
+    exterieur: "Monte-escalier extérieur",
+    debout: "Monte-escalier debout"
   },
   niveaux: {
     "2": "2 niveaux",

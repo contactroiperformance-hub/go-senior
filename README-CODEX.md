@@ -135,7 +135,15 @@ Le moteur programmatique se trouve dans `local-pages/` :
 - `schema.mjs` applique le modèle commun, les champs propres à chaque service, les règles de publication, les codes postaux de couverture et le contrôle de similarité ;
 - `render.mjs` fournit les quatre templates réutilisables en conservant le design validé et en réutilisant Header, Footer et BlocProjet.
 
-Le build génère les quatre routes de validation en `draft`, `noindex, follow`, hors sitemap, sans aucun placeholder public. Les maquettes `Modele-*.dc.html` restent les références visuelles dans le dépôt mais ne sont plus copiées dans le site public.
+Le build génère les quatre routes de validation sans aucun placeholder public. Depuis le 30/07/2026, `/monte-escalier/nord/` est complète, publiée, indexable et incluse dans le sitemap ; Lille, la Gironde et Bordeaux restent en `draft`, `noindex, follow` et hors sitemap. Les maquettes `Modele-*.dc.html` restent les références visuelles dans le dépôt mais ne sont plus copiées dans le site public.
+
+### Page départementale Nord — complétée le 30/07/2026
+- Hero départemental avec formulaire code postal 59000 et réponse tarifaire immédiate.
+- Quatre familles : droit, tournant, extérieur et debout, avec fourchettes nationales 2026 et parcours projet fonctionnel.
+- Données INSEE RP 2023 du département 59, publiées le 23/07/2026 et récupérées le 30/07/2026 : population, tranches d’âge, maisons, propriétaires occupants et ancienneté du parc.
+- Interprétation éditoriale propre au Nord, aides J’Amén’âge 59, PCH, Fonds départemental de compensation, MaPrimeAdapt’ et contacts Relais Autonomie vérifiés.
+- Huit FAQ, cinq sources officielles cliquables et conclusion départementale unique.
+- L’annuaire ne peut afficher que des pages ville publiées, indexables et présentes dans le sitemap ; Lille demeure donc masquée tant que sa page reste en brouillon.
 
 Sitemaps locaux préparés :
 - `/sitemaps/monte-escalier-departements.xml`

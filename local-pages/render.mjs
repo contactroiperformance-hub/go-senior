@@ -201,9 +201,12 @@ function priceSection(page) {
 }
 
 function inseeCard(datum) {
+  const value = typeof datum.value === "number"
+    ? new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 }).format(datum.value)
+    : datum.value;
   const unit = datum.unit === "%" ? " %" : datum.unit ? ` ${datum.unit}` : "";
   return `<div data-local-insee-card style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:4px">
-    <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:28px;color:#2E5B4C">${escapeHtml(datum.value)}${escapeHtml(unit)}</span>
+    <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:28px;color:#2E5B4C">${escapeHtml(value)}${escapeHtml(unit)}</span>
     <span style="font-size:16.5px;color:#41504A">${escapeHtml(datum.indicator)}</span>
     <span style="font-size:15.5px;color:#6B7A70">${escapeHtml(datum.source)} · ${escapeHtml(datum.vintage)} · ${escapeHtml(datum.geography)} · code INSEE ${escapeHtml(datum.inseeCode)} · récupéré le ${escapeHtml(datum.retrievedAt)}</span>
   </div>`;
@@ -349,8 +352,11 @@ function nearbySection(page, allPages) {
   const nearby = publicNearbyLocations(page, allPages);
   if (!nearby.length) return "";
   const links = nearby.map((item) => `<a href="${escapeAttribute(localPageRoute(item))}" style="border:1px solid #C9C2B2;border-radius:999px;padding:9px 18px;text-decoration:none;font-weight:600">${escapeHtml(item.cityName || item.departmentName)}</a>`).join("");
+  const heading = page.pageLevel === "department"
+    ? `Villes du ${page.departmentName} déjà publiées`
+    : "Villes voisines";
   return section(
-    "Villes voisines",
+    heading,
     `<div data-local-nearby style="display:flex;flex-wrap:wrap;gap:12px">${links}</div>`
   );
 }
