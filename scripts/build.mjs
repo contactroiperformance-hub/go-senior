@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { transform as minifyJavaScript } from "esbuild";
 import { localPages } from "../local-pages/data.mjs";
 import {
+  containsPublicPlaceholder,
   effectivePublication,
   isPublicLocalPage,
   localSitemapUrls,
@@ -13,11 +14,12 @@ import {
   sitemapXml,
   validateLocalPage
 } from "../local-pages/schema.mjs";
-import { breadcrumbData, renderLocalPage } from "../local-pages/render.mjs";
+import { breadcrumbData, renderDepartmentDirectory, renderLocalPage } from "../local-pages/render.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 const origin = "https://go-senior.fr";
+const departmentDirectoryRoute = "/monte-escalier/departements/";
 const organizationId = `${origin}/#organization`;
 const websiteId = `${origin}/#website`;
 const defaultSocialImage = `${origin}/uploads/cover-linkedin-1584x396.png`;
@@ -101,7 +103,9 @@ const pages = [
   ["Guide-plafonds-ressources.dc.html", "/guides/plafonds-ressources/", true],
   ["Guide-apa-pch.dc.html", "/guides/apa-pch/", true],
   ["Formulaire.dc.html", "/projet/", false],
-  ["Actualites.dc.html", "/actualites/", true],
+  // Les contenus actuels sont des fixtures éditoriales : la route reste
+  // consultable, mais ne doit entrer dans l'index qu'avec de vrais articles.
+  ["Actualites.dc.html", "/actualites/", false],
   ["A-propos.dc.html", "/a-propos/", true],
   ["Methodologie.dc.html", "/methodologie-editoriale/", true],
   ["Contact.dc.html", "/contact/", true],
@@ -381,9 +385,30 @@ for (const [file, route, indexed] of pages) {
   await writeRoute(route, transform(source, file, route, indexed));
 }
 
+await writeRoute(
+  departmentDirectoryRoute,
+  transform(
+    renderDepartmentDirectory(localPages),
+    "monte-escalier-departements.generated.html",
+    departmentDirectoryRoute,
+    true,
+    false,
+    {
+      breadcrumbs: [
+        { name: "Accueil", route: "/" },
+        { name: "Monte-escalier", route: "/monte-escalier/" },
+        { name: "Départements", route: departmentDirectoryRoute }
+      ]
+    }
+  )
+);
+
 for (const page of localPages) {
   const publication = effectivePublication(page);
   const source = renderLocalPage(page, localPages);
+  if (publication.status === "published" && containsPublicPlaceholder(source)) {
+    throw new Error(`${page.id}: placeholder ou instruction éditoriale détecté dans le contenu public rendu`);
+  }
   await writeRoute(
     localPageRoute(page),
     transform(
@@ -416,6 +441,7 @@ const sitemap = [
   ...pages
     .filter(([, , indexed]) => indexed)
     .map(([, route]) => `  <url><loc>${origin}${route}</loc></url>`),
+  `  <url><loc>${origin}${departmentDirectoryRoute}</loc></url>`,
   ...localPages
     .filter(isPublicLocalPage)
     .map((page) => `  <url><loc>${origin}${localPageRoute(page)}</loc></url>`),
@@ -503,4 +529,4 @@ await Promise.all([
   )
 ]);
 
-console.log(`Built ${pages.length + localPages.length} production routes and ${designFiles.length} design components.`);
+console.log(`Built ${pages.length + localPages.length + 1} production routes and ${designFiles.length} design components.`);

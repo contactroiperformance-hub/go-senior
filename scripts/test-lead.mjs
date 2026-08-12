@@ -55,7 +55,13 @@ try {
 
   const acceptedResponse = await onRequestPost({ request: leadRequest(validLead) });
   assert.equal(acceptedResponse.status, 200);
-  assert.deepEqual(await acceptedResponse.json(), { ok: true });
+  assert.deepEqual(await acceptedResponse.json(), {
+    ok: true,
+    validPostalCode: true,
+    coverageStatus: "nationwide",
+    covered: true,
+    routingStatus: "active"
+  });
 
   const submitted = new URLSearchParams(postedBody);
   assert.equal(
@@ -101,9 +107,21 @@ try {
   globalThis.fetch = async () => Response.json({ code: -2, response: "Rejected" });
   const rejectedResponse = await onRequestPost({ request: leadRequest(validLead) });
   assert.equal(rejectedResponse.status, 422);
-  assert.deepEqual(await rejectedResponse.json(), { ok: false, error: "submission_rejected" });
+  assert.deepEqual(await rejectedResponse.json(), {
+    ok: false,
+    error: "submission_rejected",
+    validPostalCode: true,
+    coverageStatus: "nationwide",
+    covered: true,
+    routingStatus: "technical_error"
+  });
 } finally {
   globalThis.fetch = originalFetch;
 }
 
-console.log("Validated LeadByte mapping, validation, success, and rejection handling without submitting a lead.");
+const invalidPostalCode = await onRequestPost({
+  request: leadRequest({ ...validLead, postcode: "00000" })
+});
+assert.equal(invalidPostalCode.status, 400);
+
+console.log("Validated LeadByte mapping, French postcode validation, nationwide coverage, routing status separation, success, and rejection handling without submitting a lead.");

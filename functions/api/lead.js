@@ -1,3 +1,5 @@
+import { projectAvailability } from "../../local-pages/schema.mjs";
+
 const LEADBYTE_URL = "https://roiperformance.leadbyte.co.uk/api/submit.php?campid=GO-SENIOR&returnjson=yes";
 const MAX_REQUEST_BYTES = 16 * 1024;
 const MAX_RESPONSE_BYTES = 16 * 1024;
@@ -14,7 +16,8 @@ const ANSWER_LABELS = {
     droit: "Monte-escalier droit",
     tournant: "Monte-escalier tournant",
     exterieur: "Monte-escalier extérieur",
-    debout: "Monte-escalier debout"
+    debout: "Monte-escalier assis-debout",
+    "assis-debout": "Monte-escalier assis-debout"
   },
   niveaux: {
     "2": "2 niveaux",
@@ -106,7 +109,7 @@ function parseLead(input) {
 
   if (
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-    || !/^\d{5}$/.test(postcode)
+    || !projectAvailability(project, postcode).validPostalCode
     || !firstname
     || !lastname
     || !/^0[1-9]\d{8}$/.test(phone1)
@@ -227,7 +230,8 @@ export async function onRequestPost(context) {
     });
   } catch {
     console.error(JSON.stringify({ event: "leadbyte_submission", outcome: "network_error" }));
-    return json({ ok: false, error: "submission_failed" }, 502);
+    const availability = projectAvailability(parsed.value.project, parsed.value.postcode, "technical_error");
+    return json({ ok: false, error: "submission_failed", ...availability }, 502);
   }
 
   let upstreamPayload;
@@ -241,7 +245,8 @@ export async function onRequestPost(context) {
       outcome: "invalid_response",
       status: upstream.status
     }));
-    return json({ ok: false, error: "submission_failed" }, 502);
+    const availability = projectAvailability(parsed.value.project, parsed.value.postcode, "technical_error");
+    return json({ ok: false, error: "submission_failed", ...availability }, 502);
   }
 
   if (!upstream.ok || !leadByteAccepted(upstreamPayload)) {
@@ -251,11 +256,15 @@ export async function onRequestPost(context) {
       status: upstream.status,
       code: typeof upstreamPayload.code === "number" ? upstreamPayload.code : null
     }));
-    return json({ ok: false, error: "submission_rejected" }, 422);
+    const availability = projectAvailability(parsed.value.project, parsed.value.postcode, "technical_error");
+    return json({ ok: false, error: "submission_rejected", ...availability }, 422);
   }
 
   console.log(JSON.stringify({ event: "leadbyte_submission", outcome: "accepted" }));
-  return json({ ok: true });
+  return json({
+    ok: true,
+    ...projectAvailability(parsed.value.project, parsed.value.postcode, "active")
+  });
 }
 
 export function onRequest() {

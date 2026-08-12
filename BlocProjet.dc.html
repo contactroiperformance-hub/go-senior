@@ -29,16 +29,20 @@ body{margin:0;font-family:'Libre Franklin',system-ui,sans-serif}a{color:#2E5B4C}
     </label>
     <label style="flex:1;min-width:150px;display:flex;flex-direction:column;gap:7px">
       <span style="font-size:17px;font-weight:600;color:#22322B">Votre code postal</span>
-      <input type="text" inputMode="numeric" maxLength="5" placeholder="ex. {{ cpExemple }}" value="{{ cp }}" onChange="{{ setCp }}" style="height:58px;border:1.5px solid #C9C2B2;border-radius:10px;padding:0 14px;font-family:'Libre Franklin',system-ui,sans-serif;font-size:19px;color:#22322B;box-sizing:border-box">
+      <input type="text" inputMode="numeric" autoComplete="postal-code" maxLength="5" aria-describedby="bloc-projet-postal-message" placeholder="ex. {{ cpExemple }}" value="{{ cp }}" onChange="{{ setCp }}" style="height:58px;border:1.5px solid #C9C2B2;border-radius:10px;padding:0 14px;font-family:'Libre Franklin',system-ui,sans-serif;font-size:19px;color:#22322B;box-sizing:border-box">
     </label>
   </div>
   <button type="submit" style="height:58px;background:#C05A2E;color:#FFFFFF;border:none;border-radius:10px;font-family:'Libre Franklin',system-ui,sans-serif;font-weight:600;font-size:19.5px;cursor:pointer" style-hover="background:#A84D24">{{ cta }}</button>
-  <span style="font-size:16.5px;color:#5A685F;text-align:center">Demande gratuite et sans engagement. La disponibilité dépend du projet et du secteur.</span>
+  <span style="font-size:16.5px;color:#5A685F;text-align:center">{{ reassurance }}</span>
+  <sc-if value="{{ showPostalMessage }}" hint-placeholder-val="{{ false }}"><p id="bloc-projet-postal-message" aria-live="polite" role="status" style="margin:0;font-size:16.5px;font-weight:600;color:{{ postalMessageColor }};text-align:center">{{ postalMessage }}</p></sc-if>
 </form>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:560,&quot;height&quot;:330},&quot;projet&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;monte-escalier&quot;,&quot;baignoire-douche&quot;,&quot;douche-senior&quot;,&quot;salle-de-bain&quot;],&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;},&quot;title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Vérifiez les solutions dans votre secteur&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;},&quot;cta&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Voir les solutions disponibles&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;},&quot;cpExemple&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;59000&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;,&quot;description&quot;:&quot;Exemple de code postal du placeholder — alimenté dynamiquement par la localité&quot;},&quot;ville&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;,&quot;description&quot;:&quot;Nom de la ville transmis au formulaire (pages locales)&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:560,&quot;height&quot;:350},&quot;projet&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;monte-escalier&quot;,&quot;baignoire-douche&quot;,&quot;douche-senior&quot;,&quot;salle-de-bain&quot;],&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;},&quot;title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Vérifiez les solutions dans votre secteur&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;},&quot;cta&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Voir les solutions disponibles&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;},&quot;cpExemple&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;59000&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;,&quot;description&quot;:&quot;Exemple de code postal du placeholder — alimenté dynamiquement par la localité&quot;},&quot;ville&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;,&quot;description&quot;:&quot;Nom de la ville transmis au formulaire (pages locales)&quot;},&quot;coverageStatus&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;configurable&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;},&quot;reassurance&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Demande gratuite et sans engagement.&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;},&quot;validMessage&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;}}">
 class Component extends DCLogic {
-  state = { cp: "", projet: null };
+  state = { cp: "", projet: null, postalMessage: "", postalValid: false };
+  isValidFrenchPostalCode(value) {
+    return /^(?:0[1-9]|[1-8]\d|9[0-8])\d{3}$/.test(value);
+  }
   renderVals() {
     const projet = this.state.projet ?? this.props.projet ?? "";
     return {
@@ -48,10 +52,32 @@ class Component extends DCLogic {
       title: this.props.title ?? "Vérifiez les solutions dans votre secteur",
       showTitle: (this.props.title ?? "x") !== "",
       cta: this.props.cta ?? "Voir les solutions disponibles",
-      setCp: e => this.setState({ cp: e.target.value.replace(/[^0-9]/g, "").slice(0, 5) }),
+      reassurance: this.props.reassurance ?? "Demande gratuite et sans engagement.",
+      postalMessage: this.state.postalMessage,
+      postalMessageColor: this.state.postalValid ? "#2E5B4C" : "#A8442A",
+      showPostalMessage: !!this.state.postalMessage,
+      setCp: e => {
+        const cp = e.target.value.replace(/[^0-9]/g, "").slice(0, 5);
+        const valid = this.isValidFrenchPostalCode(cp);
+        const message = cp.length === 5
+          ? valid
+            ? (this.props.coverageStatus === "nationwide"
+              ? this.props.validMessage || "Votre secteur est couvert. Continuez pour nous préciser votre projet et vos coordonnées."
+              : "Continuez pour nous préciser votre projet et vos coordonnées.")
+            : "Saisissez un code postal français valide à cinq chiffres."
+          : "";
+        this.setState({ cp, postalMessage: message, postalValid: valid });
+      },
       setProjet: e => this.setState({ projet: e.target.value }),
       go: e => {
         e.preventDefault();
+        if (!this.isValidFrenchPostalCode(this.state.cp)) {
+          this.setState({
+            postalMessage: "Saisissez un code postal français valide à cinq chiffres.",
+            postalValid: false
+          });
+          return;
+        }
         const q = new URLSearchParams();
         if (projet) q.set("projet", projet);
         if (this.state.cp) q.set("cp", this.state.cp);

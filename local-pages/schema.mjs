@@ -7,6 +7,7 @@ export const LOCAL_PAGE_FIELDS = Object.freeze([
   "departmentName",
   "departmentSlug",
   "departmentCode",
+  "locationPhrase",
   "cityName",
   "citySlug",
   "inseeCode",
@@ -26,9 +27,12 @@ export const LOCAL_PAGE_FIELDS = Object.freeze([
   "coownershipConsiderations",
   "localAssistancePrograms",
   "usefulLocalContacts",
-  "professionalCoverageStatus",
+  "coverageStatus",
+  "routingStatus",
+  "leadDistributionMode",
   "coveredPostalCodes",
   "nearbyLocations",
+  "localPlaces",
   "faq",
   "officialSources",
   "conclusion",
@@ -43,17 +47,25 @@ export const LOCAL_PAGE_FIELDS = Object.freeze([
 
 export const SERVICES = Object.freeze(["monte-escalier", "douche-senior"]);
 export const PAGE_LEVELS = Object.freeze(["department", "city"]);
-export const COVERAGE_STATUSES = Object.freeze([
-  "coverage_available",
-  "coverage_partial",
-  "coverage_unavailable"
+export const SERVICE_COVERAGE = Object.freeze({
+  monteEscalier: "nationwide",
+  doucheSenior: "configurable",
+  futureServices: "configurable"
+});
+export const COVERAGE_STATUSES = Object.freeze(["nationwide", "configurable"]);
+export const ROUTING_STATUSES = Object.freeze([
+  "active",
+  "capped",
+  "paused",
+  "technical_error"
 ]);
+export const LEAD_DISTRIBUTION_MODES = Object.freeze(["exclusive", "shared", "configurable"]);
 export const CONTENT_STATUSES = Object.freeze(["draft", "published"]);
 export const INDEX_STATUSES = Object.freeze(["noindex", "index"]);
 export const SITEMAP_STATUSES = Object.freeze(["excluded", "included"]);
 
 const PLACEHOLDER_PATTERN =
-  /\[(?:x(?:\s|%|hab|\.)|année|url|date|introduction|question|réponse|conclusion|source|dispositif|adresse|configuration|commune|facteur)[^\]]*\]|\{\{[^}]+\}\}|lorem ipsum/i;
+  /\[(?:x(?:\s|%|hab|\.)|année|url|date|introduction|question|réponse|conclusion|source|dispositif|adresse|configuration|commune|facteur)[^\]]*\]|\{\{[^}]+\}\}|lorem ipsum|liste vide|en production|jamais générée|contenu rédigé|champ insee|parcours opérationnel/i;
 
 const SERVICE_FIELDS = Object.freeze({
   "monte-escalier": [
@@ -109,6 +121,23 @@ export function containsPublicPlaceholder(value) {
   return collectStringValues(value).some((text) => PLACEHOLDER_PATTERN.test(text));
 }
 
+export function isValidFrenchPostalCode(value) {
+  return /^(?:0[1-9]|[1-8]\d|9[0-8])\d{3}$/.test(String(value || ""));
+}
+
+export function projectAvailability(service, postalCode, routingStatus = "active") {
+  const validPostalCode = isValidFrenchPostalCode(postalCode);
+  const coverageStatus = service === "monte-escalier"
+    ? SERVICE_COVERAGE.monteEscalier
+    : SERVICE_COVERAGE.futureServices;
+  return {
+    validPostalCode,
+    coverageStatus,
+    covered: validPostalCode && coverageStatus === "nationwide",
+    routingStatus: ROUTING_STATUSES.includes(routingStatus) ? routingStatus : "technical_error"
+  };
+}
+
 export function localPageRoute(page) {
   const base = `/${page.service}/${page.departmentSlug}/`;
   return page.pageLevel === "city" ? `${base}${page.citySlug}/` : base;
@@ -126,8 +155,20 @@ export function validateLocalPage(page) {
   }
   if (!SERVICES.includes(page.service)) errors.push(`service invalide: ${page.service}`);
   if (!PAGE_LEVELS.includes(page.pageLevel)) errors.push(`niveau invalide: ${page.pageLevel}`);
-  if (!COVERAGE_STATUSES.includes(page.professionalCoverageStatus)) {
-    errors.push(`couverture invalide: ${page.professionalCoverageStatus}`);
+  if (!COVERAGE_STATUSES.includes(page.coverageStatus)) {
+    errors.push(`couverture invalide: ${page.coverageStatus}`);
+  }
+  if (!ROUTING_STATUSES.includes(page.routingStatus)) {
+    errors.push(`routing invalide: ${page.routingStatus}`);
+  }
+  if (!LEAD_DISTRIBUTION_MODES.includes(page.leadDistributionMode)) {
+    errors.push(`distribution invalide: ${page.leadDistributionMode}`);
+  }
+  const expectedCoverage = page.service === "monte-escalier"
+    ? SERVICE_COVERAGE.monteEscalier
+    : SERVICE_COVERAGE.futureServices;
+  if (page.coverageStatus !== expectedCoverage) {
+    errors.push(`couverture ${page.service} attendue: ${expectedCoverage}`);
   }
   if (!CONTENT_STATUSES.includes(page.status)) errors.push(`statut invalide: ${page.status}`);
   if (!INDEX_STATUSES.includes(page.indexStatus)) errors.push(`indexStatus invalide: ${page.indexStatus}`);
@@ -146,6 +187,7 @@ export function validateLocalPage(page) {
     "usefulLocalContacts",
     "coveredPostalCodes",
     "nearbyLocations",
+    "localPlaces",
     "faq",
     "officialSources"
   ]) {
@@ -167,32 +209,8 @@ export function validateLocalPage(page) {
   ) {
     errors.push("coveredPostalCodes contient un code hors du périmètre déclaré");
   }
-  if (
-    page.professionalCoverageStatus === "coverage_unavailable"
-    && coveredPostalCodes.size
-  ) {
-    errors.push("couverture indisponible incompatible avec des codes postaux actifs");
-  }
-  if (
-    ["coverage_available", "coverage_partial"].includes(page.professionalCoverageStatus)
-    && !coveredPostalCodes.size
-  ) {
-    errors.push("une couverture disponible ou partielle exige des codes postaux actifs");
-  }
-  if (
-    page.pageLevel === "city"
-    && page.professionalCoverageStatus === "coverage_available"
-    && [...declaredPostalCodes].some((code) => !coveredPostalCodes.has(code))
-  ) {
-    errors.push("couverture ville disponible exige tous les codes postaux déclarés");
-  }
-  if (
-    page.pageLevel === "city"
-    && page.professionalCoverageStatus === "coverage_partial"
-    && declaredPostalCodes.size
-    && [...declaredPostalCodes].every((code) => coveredPostalCodes.has(code))
-  ) {
-    errors.push("couverture ville partielle incohérente: tous les codes sont actifs");
+  if (page.coverageStatus === "nationwide" && page.service !== "monte-escalier") {
+    errors.push("couverture nationale réservée au monte-escalier sans configuration explicite");
   }
 
   for (const field of ["id", "departmentName", "departmentSlug", "seoTitle", "metaDescription", "h1"]) {
@@ -239,11 +257,42 @@ function isStructuredInseeDatum(datum) {
 function isStructuredSource(source) {
   return source
     && isNonEmptyString(source.organization)
-    && isNonEmptyString(source.title)
-    && isNonEmptyString(source.supports)
-    && isNonEmptyString(source.dataDate)
+    && isNonEmptyString(source.exactTitle)
+    && Array.isArray(source.supportedClaims)
+    && source.supportedClaims.length > 0
+    && source.dataYear !== null
+    && source.dataYear !== undefined
+    && Object.hasOwn(source, "publishedAt")
     && isNonEmptyString(source.checkedAt)
-    && /^https:\/\/[^ ]+$/i.test(source.url || "");
+    && /^https:\/\/[^ ]+$/i.test(source.officialUrl || "");
+}
+
+function isStructuredPrice(price) {
+  return price
+    && isNonEmptyString(price.productType)
+    && Number.isFinite(price.amountMin)
+    && Number.isFinite(price.amountMax)
+    && price.amountMin <= price.amountMax
+    && isNonEmptyString(price.currency)
+    && Array.isArray(price.includedItems)
+    && Array.isArray(price.excludedItems)
+    && Number.isInteger(price.dataYear)
+    && isNonEmptyString(price.sourceTitle)
+    && /^https:\/\/[^ ]+$/i.test(price.sourceUrl || "")
+    && /^\d{4}-\d{2}-\d{2}$/.test(price.sourceCheckedAt || "");
+}
+
+function isStructuredResource(resource) {
+  return resource
+    && isNonEmptyString(resource.programName)
+    && isNonEmptyString(resource.programType)
+    && isNonEmptyString(resource.description)
+    && isNonEmptyString(resource.eligibilitySummary)
+    && isNonEmptyString(resource.officialOrganization)
+    && isNonEmptyString(resource.officialTitle)
+    && /^https:\/\/[^ ]+$/i.test(resource.officialUrl || "")
+    && /^\d{4}-\d{2}-\d{2}$/.test(resource.sourceCheckedAt || "")
+    && isNonEmptyString(resource.status);
 }
 
 export function publicationReadiness(page) {
@@ -276,9 +325,30 @@ export function publicationReadiness(page) {
   if (!page.localAssistancePrograms?.length && !page.usefulLocalContacts?.length) {
     reasons.push("aides ou ressources locales vérifiées manquantes");
   }
+  const resources = [...(page.localAssistancePrograms || []), ...(page.usefulLocalContacts || [])];
+  if (resources.some((resource) => !isStructuredResource(resource))) {
+    reasons.push("aide ou ressource incomplètement structurée");
+  }
+  if (page.service === "monte-escalier") {
+    if (page.nationalPriceReference?.length !== 4) {
+      reasons.push("quatre fourchettes nationales monte-escalier requises");
+    } else if (page.nationalPriceReference.some((price) => !isStructuredPrice(price))) {
+      reasons.push("fourchette nationale sans source ou date de vérification");
+    }
+  }
 
   const faqCount = page.faq?.length || 0;
   if (faqCount < 6 || faqCount > 10) reasons.push("FAQ requise: 6 à 10 questions");
+  if (page.pageLevel === "department" && (page.faq || []).filter((item) => item.local === true).length < 5) {
+    reasons.push("FAQ département requise: au moins 5 questions locales");
+  }
+  if (page.pageLevel === "department" && (page.localPlaces || []).length < 3) {
+    reasons.push("au moins 3 lieux locaux nommés sont requis");
+  }
+  const editorialWordCount = normalizeEditorialText(page).length;
+  if (page.pageLevel === "department" && editorialWordCount < 350) {
+    reasons.push(`profondeur éditoriale insuffisante: ${editorialWordCount}/350 mots`);
+  }
   if (page.pageLevel === "city" && (page.faq || []).filter((item) => item.local === true).length < 3) {
     reasons.push("FAQ ville requise: au moins 3 questions locales");
   }
@@ -352,15 +422,22 @@ function normalizeEditorialText(page) {
 }
 
 export function editorialSimilarity(left, right) {
-  const leftTokens = new Set(normalizeEditorialText(left));
-  const rightTokens = new Set(normalizeEditorialText(right));
+  const phraseSize = 6;
+  const shingles = (page) => {
+    const words = normalizeEditorialText(page);
+    return new Set(words
+      .slice(0, Math.max(0, words.length - phraseSize + 1))
+      .map((_, index) => words.slice(index, index + phraseSize).join(" ")));
+  };
+  const leftTokens = shingles(left);
+  const rightTokens = shingles(right);
   if (leftTokens.size < 20 || rightTokens.size < 20) return 0;
   const intersection = [...leftTokens].filter((token) => rightTokens.has(token)).length;
   const union = new Set([...leftTokens, ...rightTokens]).size;
   return union ? intersection / union : 0;
 }
 
-export function similarityReport(pages, threshold = 0.72) {
+export function similarityReport(pages, threshold = 0.65) {
   const issues = [];
   for (let i = 0; i < pages.length; i += 1) {
     for (let j = i + 1; j < pages.length; j += 1) {

@@ -8,12 +8,12 @@ Maquette haute-fidélité complète du site. Chaque fichier .dc.html est une pag
 
 ## Pages locales programmatiques — spécification (handoff)
 
-Quatre modèles, un par combinaison service × échelon. Les exemples Nord/Lille/Gironde/Bordeaux servent uniquement à valider le design : ils ne sont PAS publiables tant que leurs données et sources ne sont pas réellement intégrées.
+Quatre modèles, un par combinaison service × échelon. Les fichiers `Modele-*.dc.html` servent uniquement à valider le design ; les routes publiques sont produites à partir des données contrôlées dans `local-pages/data.mjs`.
 
 ### Composants communs aux 4 modèles (à implémenter une fois)
 - Header.dc.html / Footer.dc.html
 - BlocProjet.dc.html — formulaire code postal (props `projet`, `title`) ; présent 2× par page : hero + CTA final
-- Breadcrumb (nav aria-label="Fil d’Ariane") — national → département (→ ville)
+- Breadcrumb (nav aria-label="Fil d’Ariane") — national → annuaire des départements → département (→ ville)
 - Cartes statistiques INSEE (fond blanc, bordure #E5DFD2, chiffre Source Serif 28px #2E5B4C, millésime gris)
 - Lignes de prix nationaux (libellé + fourchette, jamais présentées comme devis)
 - Bandeau « Comment fonctionne la mise en relation ? » (3 étapes, mention un-à-un)
@@ -93,7 +93,7 @@ Un seul H1 par page · hiérarchie H2/H3 stricte · corps ≥ 18px · breadcrumb
 | Guide-plafonds-ressources.dc.html | /guides/plafonds-ressources/ | index |
 | Guide-apa-pch.dc.html | /guides/apa-pch/ | index |
 | Formulaire.dc.html | /projet/ | noindex |
-| Actualites.dc.html | /actualites/ | index (fixtures de démo à remplacer) |
+| Actualites.dc.html | /actualites/ | noindex, follow tant que les fixtures de démo ne sont pas remplacées |
 | Actualite-modele.dc.html | /actualites/[slug]/ | modèle |
 | A-propos.dc.html | /a-propos/ | index |
 | Methodologie.dc.html | /methodologie-editoriale/ | index |
@@ -131,19 +131,22 @@ Header.dc.html (navigation + menu mobile + barre CTA fixe), Footer.dc.html, Bloc
 ## Moteur de pages locales — implémenté
 
 Le moteur programmatique se trouve dans `local-pages/` :
-- `data.mjs` contient les quatre exemples de développement Nord, Lille, Gironde et Bordeaux ;
+- `data.mjs` orchestre les 101 départements publiés et trois brouillons de validation (Lille, Gironde, Bordeaux) ;
 - `schema.mjs` applique le modèle commun, les champs propres à chaque service, les règles de publication, les codes postaux de couverture et le contrôle de similarité ;
 - `render.mjs` fournit les quatre templates réutilisables en conservant le design validé et en réutilisant Header, Footer et BlocProjet.
 
-Le build génère les quatre routes de validation sans aucun placeholder public. Depuis le 30/07/2026, `/monte-escalier/nord/` est complète, publiée, indexable et incluse dans le sitemap ; Lille, la Gironde et Bordeaux restent en `draft`, `noindex, follow` et hors sitemap. Les maquettes `Modele-*.dc.html` restent les références visuelles dans le dépôt mais ne sont plus copiées dans le site public.
+Le build génère le hub indexable `/monte-escalier/departements/`, les 101 départements et les trois routes de validation sans aucun placeholder public. Les départements sont en `published`, `index` et `included` ; Lille, la Gironde et Bordeaux restent en brouillon, `noindex, follow` et hors sitemap. Les maquettes `Modele-*.dc.html` restent les références visuelles dans le dépôt mais ne sont plus copiées dans le site public.
 
-### Page départementale Nord — complétée le 30/07/2026
-- Hero départemental avec formulaire code postal 59000 et réponse tarifaire immédiate.
-- Quatre familles : droit, tournant, extérieur et debout, avec fourchettes nationales 2026 et parcours projet fonctionnel.
-- Données INSEE RP 2023 du département 59, publiées le 23/07/2026 et récupérées le 30/07/2026 : population, tranches d’âge, maisons, propriétaires occupants et ancienneté du parc.
-- Interprétation éditoriale propre au Nord, aides J’Amén’âge 59, PCH, Fonds départemental de compensation, MaPrimeAdapt’ et contacts Relais Autonomie vérifiés.
-- Huit FAQ, cinq sources officielles cliquables et conclusion départementale unique.
-- L’annuaire ne peut afficher que des pages ville publiées, indexables et présentes dans le sitemap ; Lille demeure donc masquée tant que sa page reste en brouillon.
+### Déploiement départemental préparé le 12/08/2026
+- Hub `/monte-escalier/departements/` inspiré de la hiérarchie de Cadastre France : page nationale → annuaire régional → pages départementales.
+- Couverture d’intention inspirée de Bonjour Senior sans reprise de texte : prix, types d’appareil, aides, critères techniques, FAQ et formulaire projet.
+- Les 101 départements disposent de données officielles avec millésime explicite, d’un commentaire habitat original, de ressources locales, de FAQ propres et d’un maillage entre pages publiées.
+- Hero départemental avec exemple de code postal local et réponse tarifaire immédiate.
+- Quatre familles : droit, tournant, extérieur et assis-debout, avec fourchettes nationales 2026 structurées et parcours projet fonctionnel.
+- Données INSEE RP 2023 et sources officielles structurées ; Mayotte conserve des millésimes 2017/2026 explicitement documentés.
+- FAQ, conclusion et facteurs de coût locaux validés par le schéma et le contrôle de similarité.
+- Couverture nationale de la verticale monte-escalier séparée des états de routing `active`, `capped`, `paused` et `technical_error`.
+- Le hub et les liens de proximité ne peuvent afficher que des pages publiées, indexables et présentes dans le sitemap ; les trois brouillons demeurent masqués.
 
 Sitemaps locaux préparés :
 - `/sitemaps/monte-escalier-departements.xml`
@@ -168,7 +171,11 @@ Sitemaps locaux préparés :
 - Bannière cookies : blocage des traceurs avant consentement, clé gs-consent versionnée, réouverture via « Vos choix en matière de confidentialité »
 - Accessibilité AA : corps 18px min, cibles 44px min, focus visible, details natifs
 
-## À compléter avant mise en ligne
-Hébergeur (mentions légales), numéro de téléphone validé, remplacement des fixtures Actualités par de vraies publications, vérification de la liste des services tiers dans les politiques (Clarity, Ionos, Cloudflare…).
+## Contrôles de mise en ligne
+- Hébergeur et identité de l’éditeur : renseignés dans les mentions légales.
+- Téléphone commercial : volontairement absent tant qu’il n’est pas validé.
+- Actualités : route conservée en `noindex, follow` et exclue du sitemap tant que les fixtures ne sont pas remplacées par de vraies publications.
+- Services tiers : Cloudflare, IONOS, Google Analytics et Microsoft Clarity sont documentés. Revalider les politiques avant d’activer tout nouveau prestataire ou traceur.
+- Avant production : exécuter `npm run deploy:preview`, contrôler les pages représentatives et tester une vraie demande LeadByte, puis lancer `npm run deploy:production`.
 
 ⚠️ Cloudflare : désactiver « Email Address Obfuscation » (Scrape Shield) ou exclure son script de décodage du blocage des traceurs — sinon support@go-senior.fr s'affiche « [email protected] » sur le site en production.
