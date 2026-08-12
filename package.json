@@ -4,11 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "data:departments": "node scripts/fetch-department-data.mjs",
     "build": "node scripts/build.mjs",
     "check": "node scripts/check.mjs",
     "test": "node scripts/test-lead.mjs && node scripts/test-smart-form.mjs && node scripts/test-local-pages.mjs",
+    "verify": "npm run build && npm run check && npm test",
     "dev": "wrangler pages dev dist",
-    "deploy": "wrangler pages deploy --branch main"
+    "deploy:preview": "npm run verify && wrangler pages deploy dist --project-name go-senior",
+    "deploy:production": "npm run verify && wrangler pages deploy dist --project-name go-senior --branch main",
+    "deploy": "npm run deploy:production"
   },
   "devDependencies": {
     "esbuild": "^0.28.1",

@@ -117,18 +117,22 @@ class Component extends DCLogic {
     const cp = q.get("cp");
     if (cp && /^[0-9]{1,5}$/.test(cp)) {
       patch.cp = cp;
-      if (cp.length === 5) patch.cpFourni = true;
+      if (/^(?:0[1-9]|[1-8]\d|9[0-8])\d{3}$/.test(cp)) patch.cpFourni = true;
     }
     const ville = q.get("ville");
     if (ville) patch.ville = ville.trim().replace(/\s+/g, " ").slice(0, 40);
     const reponses = {};
-    ["type", "niveaux", "installation", "souhait", "delai", "proprio"].forEach(k => { const v = q.get(k); if (v) reponses[k] = v; });
+    ["type", "niveaux", "installation", "souhait", "delai", "proprio"].forEach(k => {
+      const raw = q.get(k);
+      const value = k === "type" && raw === "debout" ? "assis-debout" : raw;
+      if (value) reponses[k] = value;
+    });
     if (Object.keys(reponses).length) patch.reponses = reponses;
     if (Object.keys(patch).length) this.setState(patch, () => this.allerAuProchain(0));
   }
   ecranDejaRenseigne(ecran) {
     if (ecran.q && ecran.cle !== "__projet") return !!this.state.reponses[ecran.cle];
-    return ecran.type === "cp" && this.state.cpFourni && /^[0-9]{5}$/.test(this.state.cp);
+    return ecran.type === "cp" && this.state.cpFourni && /^(?:0[1-9]|[1-8]\d|9[0-8])\d{3}$/.test(this.state.cp);
   }
   allerAuProchain(debut) {
     const ecrans = this.ecrans();
@@ -158,7 +162,7 @@ class Component extends DCLogic {
       droit: this.img("uploads/monte-escalier-droit.webp", "Monte-escalier droit"),
       tournant: this.img("uploads/monte-escalier-tournant-interieur.webp", "Monte-escalier tournant"),
       exterieur: this.img("uploads/monte-escalier-exterieur-perron.webp", "Monte-escalier extérieur"),
-      debout: this.centre(this.svg([p("M12 4 a2.2 2.2 0 1 0 0 4.4 a2.2 2.2 0 1 0 0-4.4"), p("M12 9 v5"), p("M8.5 12 h7"), p("M10 14 l-1 6"), p("M14 14 l1 6"), p("M6 10 v10"), p("M6 15 h3")])),
+      assisDebout: this.centre(this.svg([p("M12 4 a2.2 2.2 0 1 0 0 4.4 a2.2 2.2 0 1 0 0-4.4"), p("M12 9 v5"), p("M8.5 12 h7"), p("M10 14 l-1 6"), p("M14 14 l1 6"), p("M6 10 v10"), p("M6 15 h3")])),
       monteEscalier: this.img("uploads/monte-escalier-en-situation.webp", "Monte-escalier en situation"),
       nsp: this.glyphe("?"),
       m1: this.centre(this.svg([p("M4 12 L12 5 l8 7"), p("M6 11 V20 h12 V11"), p("M10.5 20 v-5 h3 v5")])),
@@ -177,7 +181,7 @@ class Component extends DCLogic {
     const projet = this.projet();
     if (!projet) e.push({ q: "Quel projet souhaitez-vous réaliser ?", sous: "", cle: "__projet", opts: [["monte-escalier", "Installer un monte-escalier", ic.monteEscalier], ["baignoire-douche", "Remplacer une baignoire par une douche", ic.baignoire], ["douche-senior", "Installer une douche adaptée", ic.douche], ["salle-de-bain", "Adapter une salle de bain", ic.sdb]] });
     if (projet === "monte-escalier") {
-      e.push({ q: "Quel type de monte-escalier recherchez-vous ?", sous: "Afin de vous orienter vers la solution la plus adaptée.", cle: "type", opts: [["droit", "Monte-escalier droit", ic.droit], ["tournant", "Monte-escalier tournant", ic.tournant], ["exterieur", "Monte-escalier extérieur", ic.exterieur], ["debout", "Monte-escalier debout", ic.debout]] });
+      e.push({ q: "Quel type de monte-escalier recherchez-vous ?", sous: "Afin de vous orienter vers la solution la plus adaptée.", cle: "type", opts: [["droit", "Monte-escalier droit", ic.droit], ["tournant", "Monte-escalier tournant", ic.tournant], ["exterieur", "Monte-escalier extérieur", ic.exterieur], ["assis-debout", "Monte-escalier assis-debout", ic.assisDebout]] });
       e.push({ q: "De combien de niveaux est composé votre logement ?", sous: "Afin d’évaluer la configuration de l’escalier.", cle: "niveaux", opts: [["2", "2 niveaux", ic.m1], ["3", "3 niveaux", ic.m2], ["4+", "Plus de 3 niveaux", ic.m3]] });
     } else if (["baignoire-douche", "douche-senior", "salle-de-bain"].includes(projet)) {
       e.push({ q: "Quelle est votre installation actuelle ?", sous: "Afin de comprendre le point de départ des travaux.", cle: "installation", opts: [["baignoire", "Une baignoire", ic.baignoire], ["douche", "Une douche à adapter", ic.douche]] });
@@ -277,7 +281,7 @@ class Component extends DCLogic {
           const ok = e.cle === "__projet" ? !!s.projetChoisi : !!s.reponses[e.cle];
           if (!ok) return this.setState({ erreur: "Veuillez choisir une réponse pour continuer." });
         }
-        if (estCp && s.cp.length !== 5) return this.setState({ erreur: "Veuillez saisir un code postal à 5 chiffres." });
+        if (estCp && !/^(?:0[1-9]|[1-8]\d|9[0-8])\d{3}$/.test(s.cp)) return this.setState({ erreur: "Saisissez un code postal français valide à cinq chiffres." });
         if (estCoords) {
           if (!s.prenom.trim() || !s.nom.trim() || !s.tel.trim() || !s.email.trim()) return this.setState({ erreur: "Veuillez renseigner votre prénom, votre nom, votre téléphone et votre email." });
           if (!s.consent) return this.setState({ erreur: "Merci de cocher la case de consentement pour transmettre votre demande." });
@@ -299,10 +303,19 @@ class Component extends DCLogic {
               })
             });
             const result = await response.json();
-            if (!response.ok || !result.ok) throw new Error("submission_failed");
+            if (!response.ok || !result.ok) {
+              const message = this.projet() === "monte-escalier"
+                ? "Votre secteur reste couvert. Un problème technique empêche momentanément l’orientation de votre demande. Merci de réessayer."
+                : "Votre demande n’a pas pu être transmise. Merci de réessayer.";
+              this.setState({ envoi: false, erreur: message });
+              return;
+            }
             this.setState({ ecran: s.ecran + 1, envoi: false, erreur: "" });
           } catch {
-            this.setState({ envoi: false, erreur: "Votre demande n’a pas pu être transmise. Merci de réessayer." });
+            const message = this.projet() === "monte-escalier"
+              ? "Votre secteur reste couvert. Un problème technique empêche momentanément l’orientation de votre demande. Merci de réessayer."
+              : "Votre demande n’a pas pu être transmise. Merci de réessayer.";
+            this.setState({ envoi: false, erreur: message });
           }
           return;
         }

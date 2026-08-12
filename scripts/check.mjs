@@ -129,7 +129,12 @@ for (const entry of await readdir(root)) {
 const sitemap = await readFile(path.join(dist, "sitemap.xml"), "utf8");
 if (!sitemap.includes("https://go-senior.fr/")) failures.push("sitemap.xml: accueil manquant");
 if (sitemap.includes("/projet/")) failures.push("sitemap.xml: page projet ne doit pas être indexée");
-if (!sitemap.includes("/actualites/")) failures.push("sitemap.xml: actualités manquantes");
+if (sitemap.includes("/actualites/")) failures.push("sitemap.xml: fixtures actualités ne doivent pas être indexées");
+
+const newsPage = await readFile(path.join(dist, "actualites", "index.html"), "utf8");
+if (!newsPage.includes('<meta name="robots" content="noindex,follow">')) {
+  failures.push("actualites/index.html: fixtures éditoriales non protégées de l’indexation");
+}
 
 const headers = await readFile(path.join(dist, "_headers"), "utf8");
 if (!headers.includes("/*.dc.html\n  X-Robots-Tag: noindex, nofollow")) {

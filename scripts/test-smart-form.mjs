@@ -73,6 +73,9 @@ const partialPostcode = await miniForm(
 screen = partialPostcode.ecrans()[partialPostcode.state.ecran];
 assert.equal(screen.type, "cp");
 
+const legacyStanding = await miniForm("?projet=monte-escalier&type=debout");
+assert.equal(legacyStanding.state.reponses.type, "assis-debout");
+
 const blockLocation = { search: "", href: "" };
 const blockFactory = await componentFrom(path.join(root, "dist", "BlocProjet.dc.html"));
 const BlockComponent = blockFactory(MockDCLogic, React, blockLocation);
@@ -80,15 +83,32 @@ const block = new BlockComponent();
 block.props = {
   projet: "monte-escalier",
   cpExemple: "59000",
-  ville: "Lille"
+  ville: "Lille",
+  coverageStatus: "nationwide",
+  validMessage: "Votre secteur est couvert. Continuez pour nous préciser la configuration de votre escalier et vos coordonnées."
 };
-block.state.cp = "59000";
-const blockValues = block.renderVals();
+let blockValues = block.renderVals();
 assert.equal(blockValues.cpExemple, "59000");
+blockValues.setCp({ target: { value: "59000" } });
+blockValues = block.renderVals();
+assert.equal(blockValues.postalMessage, block.props.validMessage);
 blockValues.go({ preventDefault() {} });
 assert.equal(
   blockLocation.href,
   "/projet/?projet=monte-escalier&cp=59000&ville=Lille"
 );
 
-console.log("Validated smart-form URL prefill, answer skipping, city title, recap, postcode editing, and local CTA handoff.");
+const outsideNord = new BlockComponent();
+outsideNord.props = block.props;
+outsideNord.renderVals().setCp({ target: { value: "75015" } });
+assert.equal(outsideNord.state.postalValid, true);
+outsideNord.renderVals().go({ preventDefault() {} });
+assert.equal(blockLocation.href, "/projet/?projet=monte-escalier&cp=75015&ville=Lille");
+
+const invalid = new BlockComponent();
+invalid.props = block.props;
+invalid.renderVals().setCp({ target: { value: "00000" } });
+invalid.renderVals().go({ preventDefault() {} });
+assert.equal(invalid.renderVals().postalMessage, "Saisissez un code postal français valide à cinq chiffres.");
+
+console.log("Validated smart-form URL prefill, answer skipping, city title, recap, nationwide postcode handling, invalid postcode errors, and local CTA handoff.");
