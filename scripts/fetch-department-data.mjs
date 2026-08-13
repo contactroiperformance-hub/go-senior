@@ -112,7 +112,7 @@ const records = await mapLimit(
   8,
   async (department) => {
     const communes = await get(`https://geo.api.gouv.fr/communes?codeDepartement=${encodeURIComponent(department.code)}&fields=nom,code,population,codesPostaux&format=json`);
-    const topCommunes = communes
+    const topCommuneSummaries = communes
       .filter((commune) => Number.isFinite(commune.population))
       .sort((a, b) => b.population - a.population)
       .slice(0, 5)
@@ -122,6 +122,16 @@ const records = await mapLimit(
         population: commune.population,
         postalCode: commune.codesPostaux?.[0] || ""
       }));
+    const topCommunes = await Promise.all(topCommuneSummaries.map(async (commune) => {
+      if (department.code === "976") return commune;
+      try {
+        const cityHtml = await get(`https://www.insee.fr/fr/statistiques/2011101?geo=COM-${commune.inseeCode}`, "text");
+        return { ...commune, statistics: parseInsee(cityHtml) };
+      } catch (error) {
+        process.stderr.write(`\nDonnées communales indisponibles pour ${commune.name} (${commune.inseeCode}): ${error.message}\n`);
+        return { ...commune, statistics: null };
+      }
+    }));
     if (department.code === "976") {
       return {
         code: department.code,

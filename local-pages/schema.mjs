@@ -366,6 +366,9 @@ export function publicationReadiness(page) {
   if (page.pageLevel === "department" && editorialWordCount < 350) {
     reasons.push(`profondeur éditoriale insuffisante: ${editorialWordCount}/350 mots`);
   }
+  if (page.pageLevel === "city" && editorialWordCount < 300) {
+    reasons.push(`profondeur éditoriale ville insuffisante: ${editorialWordCount}/300 mots`);
+  }
   if (page.pageLevel === "city" && (page.faq || []).filter((item) => item.local === true).length < 3) {
     reasons.push("FAQ ville requise: au moins 3 questions locales");
   }
@@ -438,27 +441,37 @@ function normalizeEditorialText(page) {
     .filter((word) => word.length >= 4);
 }
 
-export function editorialSimilarity(left, right) {
+function editorialShingles(page) {
   const phraseSize = 6;
-  const shingles = (page) => {
-    const words = normalizeEditorialText(page);
-    return new Set(words
-      .slice(0, Math.max(0, words.length - phraseSize + 1))
-      .map((_, index) => words.slice(index, index + phraseSize).join(" ")));
-  };
-  const leftTokens = shingles(left);
-  const rightTokens = shingles(right);
+  const words = normalizeEditorialText(page);
+  return new Set(words
+    .slice(0, Math.max(0, words.length - phraseSize + 1))
+    .map((_, index) => words.slice(index, index + phraseSize).join(" ")));
+}
+
+function shingleSimilarity(leftTokens, rightTokens) {
   if (leftTokens.size < 20 || rightTokens.size < 20) return 0;
-  const intersection = [...leftTokens].filter((token) => rightTokens.has(token)).length;
-  const union = new Set([...leftTokens, ...rightTokens]).size;
+  const [smallest, largest] = leftTokens.size <= rightTokens.size
+    ? [leftTokens, rightTokens]
+    : [rightTokens, leftTokens];
+  let intersection = 0;
+  for (const token of smallest) {
+    if (largest.has(token)) intersection += 1;
+  }
+  const union = leftTokens.size + rightTokens.size - intersection;
   return union ? intersection / union : 0;
+}
+
+export function editorialSimilarity(left, right) {
+  return shingleSimilarity(editorialShingles(left), editorialShingles(right));
 }
 
 export function similarityReport(pages, threshold = 0.65) {
   const issues = [];
+  const tokenSets = pages.map(editorialShingles);
   for (let i = 0; i < pages.length; i += 1) {
     for (let j = i + 1; j < pages.length; j += 1) {
-      const similarity = editorialSimilarity(pages[i], pages[j]);
+      const similarity = shingleSimilarity(tokenSets[i], tokenSets[j]);
       if (similarity >= threshold) {
         issues.push({
           left: pages[i].id,

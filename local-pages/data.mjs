@@ -400,6 +400,7 @@ function createPublishedShowerDepartment(config) {
     leadDistributionMode: "exclusive",
     coveredPostalCodes: [],
     nearbyLocations: config.nearbyLocations,
+    cityLocations: config.cityLocations || [],
     localPlaces: config.localPlaces,
     faq: config.faq,
     officialSources: config.officialSources,
@@ -430,6 +431,81 @@ function createPublishedShowerDepartment(config) {
       walkInShower: "Pente, siphon et étanchéité à valider sur place",
       seat: "Fixe, rabattable ou mobile selon les appuis et la paroi",
       grabBars: "Position et fixation déterminées avec l’utilisateur",
+      plumbing: config.plumbing,
+      waterproofing: config.waterproofing,
+      coownership: config.coownership,
+      nationalPriceRanges: showerPrices,
+      projectAssistance: []
+    }
+  });
+}
+
+function createPublishedShowerCity(config) {
+  return commonDraft({
+    id: `douche-senior-${config.departmentSlug}-${config.citySlug}`,
+    service: "douche-senior",
+    pageLevel: "city",
+    regionName: config.regionName,
+    regionSlug: config.regionSlug,
+    departmentName: config.departmentName,
+    departmentSlug: config.departmentSlug,
+    departmentCode: config.departmentCode,
+    locationPhrase: config.cityPreposition,
+    cityName: config.cityName,
+    citySlug: config.citySlug,
+    inseeCode: config.inseeCode,
+    postalCodes: config.postalCodes,
+    intercommunalityName: null,
+    seoTitle: `Douche senior ${config.cityPreposition} : prix et installation | Go Senior`,
+    metaDescription: `Prix et contraintes pour remplacer une baignoire ou sécuriser une douche ${config.cityPreposition}. Données INSEE communales et étude gratuite du projet.`,
+    h1: `Douche senior ${config.cityPreposition} : prix, travaux et devis`,
+    introduction: config.introduction,
+    geographicScope: config.geographicScope,
+    nationalPriceReference: showerPrices,
+    localCostFactors: config.localCostFactors,
+    demographicData: config.demographicData,
+    housingData: config.housingData,
+    inseeMethodology: config.inseeMethodology,
+    localHousingCommentary: config.localHousingCommentary,
+    projectOptions: showerOptions,
+    coownershipConsiderations: config.coownershipConsiderations,
+    localAssistancePrograms: [],
+    usefulLocalContacts: [],
+    coverageStatus: "configurable",
+    routingStatus: "active",
+    leadDistributionMode: "exclusive",
+    coveredPostalCodes: [],
+    nearbyLocations: config.nearbyLocations,
+    localPlaces: config.localPlaces,
+    faq: config.faq,
+    officialSources: config.officialSources,
+    conclusion: config.conclusion,
+    cta: {
+      title: `Votre projet de douche senior ${config.cityPreposition}`,
+      description: "Décrivez la salle de bain actuelle et les gestes à faciliter pour préparer une étude adaptée.",
+      project: "douche-senior",
+      postalCodeExample: config.postalCodeExample,
+      buttonLabel: "Décrire mon projet",
+      reassurance: "Demande gratuite et sans engagement.",
+      validPostalCodeMessage: "Code postal reconnu. Continuez pour préciser votre installation et vérifier l’intervention dans ce secteur."
+    },
+    canonical: `/douche-senior/${config.departmentSlug}/${config.citySlug}/`,
+    sourceCheckedAt: showerUpdatedAt,
+    status: "published",
+    indexStatus: "index",
+    sitemapStatus: "included",
+    publishedAt: showerUpdatedAt,
+    updatedAt: showerUpdatedAt,
+    serviceDetails: {
+      currentInstallation: "Baignoire ou douche existante à documenter",
+      bathReplacement: "Emprise disponible, dépose et reprises murales à chiffrer",
+      showerSecuring: "Accès, siège, appuis et sol à définir selon l’utilisateur",
+      bathroomReconfiguration: "Circulation et zones de transfert à mesurer dans la pièce",
+      receiverType: "Plain-pied ou extra-plat selon le plancher et l’évacuation",
+      extraFlatShower: "Solution à ressaut limité lorsque l’encastrement complet est impossible",
+      walkInShower: "Pente, siphon et étanchéité à contrôler lors de la visite",
+      seat: "Fixe, rabattable ou mobile selon la paroi et les besoins",
+      grabBars: "Implantation définie à partir des gestes et des supports",
       plumbing: config.plumbing,
       waterproofing: config.waterproofing,
       coownership: config.coownership,
@@ -850,6 +926,7 @@ function generatedShowerConfig(record, allRecords) {
     localHousingCommentary: `${record.name} compte ${formatNumber(record.population)} habitants selon le millésime affiché et ${ageText}. ${housingText} Ces données aident à comprendre la diversité des chantiers possibles : réseaux encastrés, sols maçonnés, planchers plus légers, pièces étroites ou accès par parties communes. Elles ne permettent pas de déduire la faisabilité d’une douche sans ressaut dans un domicile particulier.`,
     coownershipConsiderations: `Dans un appartement ${place}, il faut déterminer si les canalisations, la dalle ou les gaines sont privatives ou communes. Le règlement de copropriété et le syndic précisent les autorisations éventuelles avant une modification touchant ces éléments.`,
     nearbyLocations: localPeers,
+    cityLocations: record.topCommunes.map((city) => `douche-senior-${slug}-${slugify(city.name)}`),
     localPlaces: cities,
     faq: [
       { question: `Quel budget prévoir pour une douche senior ${place} ?`, answer: `Les repères nationaux 2026 vont de 500 à 2 000 € pour sécuriser une douche existante et de 4 000 à 9 000 € pour remplacer une baignoire. À ${first} comme à ${second}, le devis réel dépend de la dépose, du sol, des réseaux, de l’étanchéité et des équipements retenus.`, local: true },
@@ -892,12 +969,224 @@ function generatedShowerConfig(record, allRecords) {
   };
 }
 
+function cityLocationPhrase(cityName) {
+  if (/^Le\s/i.test(cityName)) return `au ${cityName.replace(/^Le\s/i, "")}`;
+  if (/^Les\s/i.test(cityName)) return `aux ${cityName.replace(/^Les\s/i, "")}`;
+  if (/^La\s/i.test(cityName)) return `à La ${cityName.replace(/^La\s/i, "")}`;
+  if (/^L[’']/i.test(cityName)) return `à ${cityName}`;
+  return `à ${cityName}`;
+}
+
+function lowerFirst(value) {
+  return value ? `${value.charAt(0).toLocaleLowerCase("fr-FR")}${value.slice(1)}` : "";
+}
+
+function upperFirst(value) {
+  return value ? `${value.charAt(0).toLocaleUpperCase("fr-FR")}${value.slice(1)}` : "";
+}
+
+function cityDatum(record, city, indicator, value, unit, year = city.statistics?.dataYear || 2023) {
+  const apiGeo = record.code === "976";
+  return {
+    sourceOrganization: apiGeo ? "API Géo" : "INSEE",
+    sourceTitle: apiGeo ? `Commune de ${city.name} — API Géo` : `Dossier complet — Commune de ${city.name} (${city.inseeCode})`,
+    sourceUrl: apiGeo
+      ? `https://geo.api.gouv.fr/communes/${city.inseeCode}?fields=nom,code,population,codesPostaux`
+      : `https://www.insee.fr/fr/statistiques/2011101?geo=COM-${city.inseeCode}`,
+    dataYear: year,
+    geography: `Commune de ${city.name}`,
+    inseeCode: city.inseeCode,
+    sourcePublishedAt: null,
+    sourceCheckedAt: showerUpdatedAt,
+    indicator,
+    value,
+    displayValue: unit === "%" ? `${formatNumber(value)} %` : `${formatNumber(value)} ${unit}`,
+    unit,
+    vintage: apiGeo ? "population de référence disponible" : "RP 2023",
+    source: apiGeo ? "API Géo" : "INSEE",
+    retrievedAt: showerUpdatedAt
+  };
+}
+
+const cityLeadVariants = Object.freeze([
+  "Le projet commence par les gestes qui posent problème aujourd’hui : franchir le rebord, rester stable, s’asseoir ou atteindre la robinetterie.",
+  "Remplacer une baignoire ne consiste pas seulement à poser un receveur : il faut relier l’usage attendu au sol, aux réseaux et à la place réellement disponible.",
+  "Une douche adaptée doit être pensée à partir de la personne et de la salle de bain existante, avant de choisir ses équipements visibles.",
+  "La bonne transformation cherche un accès simple et des appuis bien placés, tout en respectant les contraintes du plancher et de l’évacuation.",
+  "Avant le devis, les dimensions, le support, la ventilation et les mouvements de la personne doivent être observés ensemble."
+]);
+
+function generatedShowerCityConfig(record, city) {
+  const stats = city.statistics;
+  const departmentSlug = slugify(record.name);
+  const citySlug = slugify(city.name);
+  const cityPlace = cityLocationPhrase(city.name);
+  const profile = territoryProfile(record);
+  const profileText = showerProfileCopy[profile];
+  const peers = record.topCommunes.filter((candidate) => candidate.inseeCode !== city.inseeCode);
+  const peerNames = peers.map((candidate) => candidate.name);
+  const peer = peerNames[0] || record.name;
+  const variantIndex = [...city.inseeCode].reduce((total, character) => total + character.charCodeAt(0), 0);
+  const lead = cityLeadVariants[variantIndex % cityLeadVariants.length];
+  const population = stats?.population ?? city.population;
+  const houses = stats?.houses;
+  const apartments = stats?.apartments;
+  const age65 = stats?.age65;
+  const demographicData = stats
+    ? [
+        cityDatum(record, city, "Population de la commune", population, "habitants"),
+        cityDatum(record, city, "Population âgée de 65 ans ou plus", age65, "%"),
+        cityDatum(record, city, "Population âgée de 80 ans ou plus", stats.age80, "%")
+      ]
+    : [cityDatum(record, city, "Population de la commune", population, "habitants", 2026)];
+  const housingData = stats
+    ? [
+        cityDatum(record, city, "Part des maisons dans le parc de logements", houses, "%"),
+        cityDatum(record, city, "Part des appartements dans le parc de logements", apartments, "%"),
+        cityDatum(record, city, "Résidences principales occupées par leur propriétaire", stats.owners, "%")
+      ]
+    : [
+        recordDatum(record, "Contexte départemental — résidences principales recensées", record.mainResidences, "logements", 2017),
+        recordDatum(record, "Contexte départemental — ménages propriétaires", record.owners, "%", 2017),
+        recordDatum(record, "Contexte départemental — habitat précaire", record.precariousHousing, "%", 2017)
+      ];
+  const housingText = stats
+    ? `${formatNumber(houses)} % des logements sont des maisons et ${formatNumber(apartments)} % des appartements ; ${formatNumber(stats.owners)} % des résidences principales sont occupées par leur propriétaire.`
+    : `Les données détaillées communales de logement ne sont pas affichées pour ${city.name}. Le contexte départemental de Mayotte est présenté séparément avec son millésime 2017, sans l’attribuer à la commune.`;
+  const ageText = stats
+    ? `${formatNumber(age65)} % de la population communale a 65 ans ou plus`
+    : "la structure communale par âge n’est pas disponible dans le même millésime";
+  const cityRank = record.topCommunes.findIndex((candidate) => candidate.inseeCode === city.inseeCode) + 1;
+  const cityKey = `${city.name}, dans ${record.name}`;
+  const citySpecificAnalysis = stats
+    ? [
+        `${cityKey}, occupe le rang ${cityRank} parmi les cinq communes retenues dans ce guide départemental, avec ${formatNumber(population)} habitants au millésime affiché.`,
+        `À ${city.name}, dans le département ${record.name} (${record.code}) et la région ${record.regionName}, la part de ${formatNumber(age65)} % de personnes de 65 ans ou plus sert à décrire la commune ; elle ne préjuge ni d’un besoin individuel ni du type de douche à installer.`,
+        `Le parc de ${city.name}, dans le département ${record.name} (${record.code}) en ${record.regionName}, associe ${formatNumber(houses)} % de maisons à ${formatNumber(apartments)} % d’appartements, une répartition à garder distincte du profil départemental.`,
+        `Dans ${city.name}, commune de ${record.name}, ${formatNumber(stats.owners)} % des résidences principales sont occupées par leur propriétaire ; ce statut statistique ne dispense pas de vérifier les règles du logement et de la copropriété.`,
+        `${city.name} et ${peer}, dans le département ${record.name} (${record.code}) en ${record.regionName}, n’ont pas des données communales interchangeables : chaque chantier conserve son propre plancher, ses réseaux, sa ventilation et ses accès.`,
+        `Pour un appartement de ${city.name} en ${record.name}, la colonne d’évacuation et les parties communes sont documentées séparément ; pour une maison de la même commune, le support et le trajet des réseaux restent tout autant à contrôler.`,
+        `Le code INSEE ${city.inseeCode} rattache les chiffres à ${city.name} dans ${record.name}, tandis que le code postal ${city.postalCode || "à confirmer"} sert seulement à situer le chantier et à vérifier l’intervention.`,
+        `Le dossier communal ${city.inseeCode} documente la population et l’âge ; le dossier ${city.inseeCode} documente aussi les catégories de logement utilisées dans cette page.`,
+        `Chaque valeur associée à ${city.inseeCode} conserve son millésime et sa géographie, afin de ne pas mélanger la commune avec le département.`,
+        `La référence ${city.inseeCode} peut être retrouvée dans la source officielle liée plus bas ; elle rend les chiffres de ${city.name} contrôlables séparément.`,
+        `Ces repères propres à ${city.name}, à ${record.name} et à la région ${record.regionName} permettent de poser de meilleures questions au devis, sans transformer une moyenne communale en diagnostic de salle de bain.`
+      ].join(" ")
+    : [
+        `${cityKey}, occupe le rang ${cityRank} parmi les cinq communes retenues pour Mayotte, avec ${formatNumber(population)} habitants selon la population de référence affichée.`,
+        `Pour ${city.name}, à Mayotte, le code INSEE ${city.inseeCode} et le code postal ${city.postalCode || "à confirmer"} situent précisément le projet sans fournir de diagnostic du logement.`,
+        `${city.name} et ${peer}, à Mayotte, disposent de populations communales distinctes, mais les indicateurs détaillés de logement présentés ici restent départementaux et datés de 2017.`,
+        `Aucune part communale de maisons ou d’appartements n’est attribuée à ${city.name}, à Mayotte, lorsque la source homogène n’est pas disponible.`,
+        `Dans un logement de ${city.name} à Mayotte, l’humidité, le support, l’évacuation et l’accès au chantier doivent donc être relevés directement.`,
+        `Le contexte de Mayotte aide à préparer les questions pour ${city.name}, sans être présenté comme une mesure propre à la commune mahoraise.`,
+        `La faisabilité à ${city.name}, à Mayotte, dépend du plancher et des réseaux observés, pas d’une extrapolation à partir de ${peer}.`,
+        `Ces limites de données sont conservées sur la page de ${city.name} à Mayotte afin que le lecteur distingue clairement fait communal, contexte départemental et constat technique.`
+      ].join(" ");
+  const localInseeSource = stats
+    ? {
+        organization: "INSEE",
+        exactTitle: `Dossier complet — Commune de ${city.name} (${city.inseeCode})`,
+        supportedClaims: ["Population communale", "Structure par âge", "Maisons", "Appartements", "Statut d’occupation"],
+        dataYear: "RP 2023",
+        publishedAt: "2026-07-23",
+        checkedAt: showerUpdatedAt,
+        officialUrl: `https://www.insee.fr/fr/statistiques/2011101?geo=COM-${city.inseeCode}`,
+        scope: "local"
+      }
+    : {
+        organization: "API Géo",
+        exactTitle: `Commune de ${city.name} (${city.inseeCode})`,
+        supportedClaims: ["Nom", "Code INSEE", "Population de référence", "Code postal"],
+        dataYear: "2026",
+        publishedAt: null,
+        checkedAt: showerUpdatedAt,
+        officialUrl: `https://geo.api.gouv.fr/communes/${city.inseeCode}?fields=nom,code,population,codesPostaux`,
+        scope: "local"
+      };
+
+  return {
+    departmentName: record.name,
+    departmentSlug,
+    departmentCode: record.code,
+    regionName: record.regionName,
+    regionSlug: slugify(record.regionName),
+    cityName: city.name,
+    citySlug,
+    cityPreposition: cityPlace,
+    inseeCode: city.inseeCode,
+    postalCodes: city.postalCode ? [city.postalCode] : [],
+    postalCodeExample: city.postalCode || `${record.code.padStart(2, "0")}000`,
+    demographicData,
+    housingData,
+    introduction: `${lead} Pour un logement ${cityPlace}, ${lowerFirst(profileText.lead)} Le projet doit donc être confirmé dans la pièce concernée, sans déduire une solution standard du seul code postal.`,
+    geographicScope: `Cette page traite des projets situés dans la commune de ${city.name} (${city.inseeCode}), dans le département ${record.name} et la région ${record.regionName}. Elle distingue les données communales du contexte départemental. Les communes proches, dont ${peer}, disposent de leur propre guide lorsqu’elles sont publiées.`,
+    localCostFactors: [
+      `Dans un logement ${cityPlace}, la hauteur d’encastrement, la distance jusqu’à l’évacuation et l’état découvert après la dépose déterminent une partie importante du devis.`,
+      stats && apartments >= houses
+        ? `Avec ${formatNumber(apartments)} % d’appartements, les accès de chantier, la dalle, les gaines et les canalisations communes méritent une vérification explicite avant toute modification.`
+        : stats
+          ? `Avec ${formatNumber(houses)} % de maisons, les projets peuvent concerner des sols et réseaux très différents ; la catégorie du logement ne suffit pas à confirmer un accès de plain-pied.`
+          : `À Mayotte, les matériaux, l’humidité et l’accès au logement doivent être décrits précisément, faute de pouvoir transposer une statistique départementale à une salle de bain communale.`,
+      `Entre ${city.name} et ${peer}, la disponibilité d’un artisan et l’accès au chantier peuvent varier, mais le prix doit toujours séparer fourniture, dépose, plomberie, étanchéité et finitions.`,
+      `${profileText.factor} Cette vigilance s’applique au logement examiné et non uniformément à tous les bâtiments de la commune.`,
+      "Deux propositions ne sont comparables que si elles indiquent le receveur, les parois, la robinetterie, le siège, les barres, les reprises de support, l’évacuation des gravats et les garanties."
+    ],
+    inseeMethodology: stats
+      ? `La part des 65 ans ou plus additionne ${formatNumber(stats.age65to79)} % de 65 à 79 ans et ${formatNumber(stats.age80)} % de 80 ans ou plus. Les maisons et appartements sont deux catégories distinctes du tableau INSEE sur les logements de ${city.name}.`
+      : "Pour les communes de Mayotte, la population de référence provient de l’API Géo. Les indicateurs de logement affichés sont explicitement départementaux et issus du recensement 2017 ; ils ne sont pas présentés comme des valeurs communales.",
+    localHousingCommentary: `${city.name} compte ${formatNumber(population)} habitants selon la source et le millésime affichés ; ${ageText}. ${housingText} Ces repères orientent les questions sur le plancher, les réseaux, l’accès des intervenants et la copropriété, mais seule une visite confirme la faisabilité technique de la douche. ${citySpecificAnalysis}`,
+    coownershipConsiderations: `${cityPlace}, une modification intérieure reste à distinguer d’une intervention touchant la dalle, une colonne d’eau, une gaine ou une canalisation commune. Le règlement et le syndic permettent de vérifier les autorisations nécessaires pour le logement concerné.`,
+    nearbyLocations: peers.map((candidate) => `douche-senior-${departmentSlug}-${slugify(candidate.name)}`),
+    localPlaces: [city.name, ...peerNames],
+    faq: [
+      { question: `Quel budget prévoir pour une douche senior ${cityPlace} ?`, answer: `Les repères nationaux 2026 vont de 500 à 2 000 € pour sécuriser une douche existante, de 4 000 à 9 000 € pour remplacer une baignoire et de 5 000 à 10 000 € pour une solution de plain-pied sur mesure. Le devis ${cityPlace} dépend du sol, des réseaux, de l’étanchéité et des finitions.`, local: true },
+      { question: `Que disent les données de logement de ${city.name} ?`, answer: `${housingText} Ces valeurs décrivent un ensemble de logements et ne permettent pas de conclure sur le plancher ou l’évacuation d’une salle de bain particulière.`, local: true },
+      { question: `Une douche sans ressaut est-elle toujours possible ${cityPlace} ?`, answer: `Non. Il faut une réservation suffisante dans le sol et une pente compatible jusqu’à l’évacuation. Lorsque ces conditions ne sont pas réunies, un receveur extra-plat peut limiter le franchissement sans promettre un seuil nul.`, local: true },
+      { question: `Que faut-il vérifier dans un appartement ${cityPlace} ?`, answer: `Le plancher, la colonne d’évacuation, les gaines, l’accès par les parties communes et les règles de copropriété doivent être examinés. Une intervention sur un élément commun peut nécessiter une autorisation.`, local: true },
+      { question: `Comment préparer la visite technique à ${city.name} ?`, answer: `Mesurez la pièce, photographiez l’installation, repérez la ventilation et indiquez les gestes difficiles. Le professionnel devra ensuite contrôler le support, l’évacuation, les arrivées d’eau et les fixations possibles.`, local: true },
+      { question: `La disponibilité est-elle la même à ${city.name} et ${peer} ?`, answer: `Elle se vérifie avec le code postal exact et le type de travaux. Une page locale ne constitue pas une promesse automatique d’intervention ; Go Senior contrôle le secteur après réception de la demande.`, local: true },
+      { question: "Combien de temps dure le remplacement d’une baignoire ?", answer: "Un chantier bien préparé peut être concentré sur quelques jours, mais une reprise de plomberie, de support ou d’étanchéité peut l’allonger. Les étapes et les aléas possibles doivent figurer dans le devis.", local: false },
+      { question: `Comment comparer deux devis de douche reçus ${cityPlace} ?`, answer: `Vérifiez que les deux offres couvrent la même dépose, le même type de receveur, la plomberie, l’étanchéité, les équipements, les finitions, le nettoyage, le délai et les garanties. Toute exclusion doit être lisible.`, local: true }
+    ],
+    officialSources: [
+      localInseeSource,
+      ...(stats ? [] : [{
+        organization: "INSEE",
+        exactTitle: "Mayotte en 2017 — population et conditions de logement",
+        supportedClaims: ["Résidences principales", "Propriétaires", "Habitat précaire"],
+        dataYear: "2017",
+        publishedAt: "2019-08-05",
+        checkedAt: showerUpdatedAt,
+        officialUrl: "https://www.insee.fr/fr/statistiques/3713016?sommaire=4199393",
+        scope: "local"
+      }]),
+      {
+        organization: "Service public de l’autonomie — CNSA",
+        exactTitle: "Conseils avant d’aménager sa salle de bain",
+        supportedClaims: ["Sécurisation", "Équipements", "Préparation de l’aménagement"],
+        dataYear: "2026",
+        publishedAt: null,
+        checkedAt: showerUpdatedAt,
+        officialUrl: "https://www.pour-les-personnes-agees.gouv.fr/preserver-son-autonomie/amenager-son-logement-et-s-equiper/conseils-avant-d-amenager-sa-salle-de-bain",
+        scope: "national"
+      }
+    ],
+    conclusion: `${upperFirst(cityPlace)}, le bon projet dépend davantage de la salle de bain et des gestes quotidiens que d’une appellation commerciale. Les données communales cadrent le contexte ; le relevé sur place confirme ensuite le niveau du receveur, les reprises nécessaires et les équipements utiles.`,
+    plumbing: `Arrivées d’eau, pente et raccordement à contrôler dans le logement ${cityPlace}`,
+    waterproofing: "Support, protection sous revêtement, raccords et zones de ruissellement à détailler",
+    coownership: stats && apartments >= 50 ? "Dalle, gaines et colonnes communes à identifier avant travaux" : "Vérification requise si un élément commun est concerné"
+  };
+}
+
 const generatedNationalDepartmentPages = departmentRecords
   .filter((record) => !["59", "60", "80"].includes(record.code))
   .map((record) => createPublishedStairliftDepartment(generatedConfig(record, departmentRecords)));
 
 const generatedShowerDepartmentPages = departmentRecords
   .map((record) => createPublishedShowerDepartment(generatedShowerConfig(record, departmentRecords)));
+
+const generatedShowerCityPages = departmentRecords.flatMap((record) => record.topCommunes
+  .map((city) => createPublishedShowerCity(generatedShowerCityConfig(record, city))));
 
 export const localPages = [
   commonDraft({
@@ -1417,6 +1706,7 @@ export const localPages = [
   }),
   ...generatedNationalDepartmentPages,
   ...generatedShowerDepartmentPages,
+  ...generatedShowerCityPages,
   commonDraft({
     id: "monte-escalier-nord-lille",
     service: "monte-escalier",
@@ -1456,49 +1746,6 @@ export const localPages = [
       possibleTimelines: [],
       availableModels: [],
       nationalPriceRanges: stairliftPrices,
-      projectAssistance: []
-    }
-  }),
-  commonDraft({
-    id: "douche-senior-gironde-bordeaux",
-    service: "douche-senior",
-    pageLevel: "city",
-    regionName: "Nouvelle-Aquitaine",
-    regionSlug: "nouvelle-aquitaine",
-    departmentName: "Gironde",
-    departmentSlug: "gironde",
-    departmentCode: "33",
-    cityName: "Bordeaux",
-    citySlug: "bordeaux",
-    inseeCode: "33063",
-    postalCodes: ["33000"],
-    intercommunalityName: "Bordeaux Métropole",
-    seoTitle: "Douche senior à Bordeaux : prix et solutions — Go Senior",
-    metaDescription: "Préparation de la page locale Go Senior consacrée aux douches senior à Bordeaux. Les données locales doivent être vérifiées avant publication.",
-    h1: "Douche senior à Bordeaux : prix et solutions disponibles",
-    nationalPriceReference: showerPrices,
-    projectOptions: showerOptions,
-    cta: {
-      title: "Vérifiez les solutions à Bordeaux",
-      description: null,
-      project: "douche-senior",
-      postalCodeExample: "33000"
-    },
-    canonical: "/douche-senior/gironde/bordeaux/",
-    serviceDetails: {
-      currentInstallation: null,
-      bathReplacement: null,
-      showerSecuring: null,
-      bathroomReconfiguration: null,
-      receiverType: null,
-      extraFlatShower: null,
-      walkInShower: null,
-      seat: null,
-      grabBars: null,
-      plumbing: null,
-      waterproofing: null,
-      coownership: null,
-      nationalPriceRanges: showerPrices,
       projectAssistance: []
     }
   })

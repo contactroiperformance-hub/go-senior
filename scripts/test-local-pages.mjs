@@ -24,7 +24,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 const origin = "https://go-senior.fr";
 
-assert.equal(localPages.length, 204, "202 pages départementales publiées et deux pages ville en brouillon");
+assert.equal(localPages.length, 704, "202 pages départementales, 501 pages ville douche et un brouillon ville monte-escalier");
 assert.deepEqual(
   new Set(localPages.map((page) => `${page.service}-${page.pageLevel}`)),
   new Set([
@@ -41,7 +41,7 @@ for (const page of localPages) {
     assert.ok(field in page, `${page.id}: ${field} présent`);
   }
   const publication = effectivePublication(page);
-  if (page.pageLevel === "department") {
+  if (page.pageLevel === "department" || page.service === "douche-senior") {
     assert.equal(publication.ready, true);
     assert.equal(publication.status, "published");
     assert.equal(publication.indexStatus, "index");
@@ -55,7 +55,7 @@ for (const page of localPages) {
   }
 }
 
-for (const page of localPages.filter((item) => item.service === "douche-senior" && item.pageLevel === "department")) {
+for (const page of localPages.filter((item) => item.service === "douche-senior")) {
   assert.equal(page.localAssistancePrograms.length, 0, `${page.id}: aucun bloc d’aides mis en avant`);
   assert.equal(page.usefulLocalContacts.length, 0, `${page.id}: aucun bloc de financement local`);
   assert.equal(page.serviceDetails.projectAssistance.length, 0, `${page.id}: aucune aide dans les arguments service`);
@@ -74,6 +74,10 @@ const showerParis = localPages.find((page) => page.id === "douche-senior-paris")
 const showerMayotte = localPages.find((page) => page.id === "douche-senior-mayotte");
 assert.ok(nord && oise && somme && lille && bordeaux && showerGironde && showerParis && showerMayotte);
 assert.ok(mayotte);
+assert.equal(localPages.filter((page) => page.service === "douche-senior" && page.pageLevel === "city").length, 501);
+assert.equal(effectivePublication(bordeaux).status, "published");
+assert.equal(effectivePublication(bordeaux).indexStatus, "index");
+assert.equal(effectivePublication(bordeaux).sitemapStatus, "included");
 
 const completePage = structuredClone(lille);
 Object.assign(completePage, {
@@ -121,7 +125,8 @@ Object.assign(completePage, {
       retrievedAt: "2026-07-29"
     }
   ],
-  localHousingCommentary: "Le commentaire de test relie explicitement les données structurées aux vérifications techniques nécessaires pour le projet, sans produire d’affirmation publique.",
+  localHousingCommentary: "Le commentaire de test relie explicitement les données structurées aux vérifications techniques nécessaires pour le projet, sans produire d’affirmation publique. Il rappelle aussi que les statistiques d’une commune ne décrivent pas un escalier particulier : la largeur, les marches, les virages, les paliers, les portes et les accès doivent être relevés séparément. Le devis de test distingue enfin l’équipement, le rail, la pose, les options et les travaux complémentaires.",
+  coownershipConsiderations: "Le scénario de test distingue les parties privatives, les accès partagés et les éventuelles autorisations à contrôler avant une intervention.",
   localAssistancePrograms: [
     {
       programName: "Ressource locale de test",
@@ -137,7 +142,7 @@ Object.assign(completePage, {
   ],
   faq: Array.from({ length: 6 }, (_, index) => ({
     question: `Question éditoriale locale de test numéro ${index + 1} ?`,
-    answer: `Réponse distincte du jeu de test numéro ${index + 1}, suffisamment explicite pour valider le rendu dynamique de la FAQ.`,
+    answer: `Réponse distincte du jeu de test numéro ${index + 1}, suffisamment explicite pour valider le rendu dynamique de la FAQ. Elle précise que la mesure, les dégagements, la fixation, l’alimentation, le passage restant et le périmètre du devis doivent être vérifiés pour le logement concerné.`,
     local: index < 4
   })),
   officialSources: [
@@ -152,7 +157,7 @@ Object.assign(completePage, {
       scope: "local"
     }
   ],
-  conclusion: "Cette conclusion de test confirme que les données locales, les sources et les contrôles doivent être validés avant toute publication.",
+  conclusion: "Cette conclusion de test confirme que les données locales, les sources et les contrôles doivent être validés avant toute publication. Elle documente également la couverture géographique, la disponibilité professionnelle, les garanties contractuelles et les responsabilités de chaque intervenant.",
   cta: {
     title: "Vérifiez les solutions à Toulouse",
     description: null,
@@ -168,7 +173,7 @@ Object.assign(completePage, {
 });
 
 assert.deepEqual(validateLocalPage(completePage), []);
-assert.equal(publicationReadiness(completePage).ready, true);
+assert.equal(publicationReadiness(completePage).ready, true, publicationReadiness(completePage).reasons.join(" | "));
 assert.equal(effectivePublication(completePage).status, "published");
 assert.deepEqual(
   localSitemapUrls([completePage], origin, "monte-escalier", "city"),
@@ -275,21 +280,22 @@ assert.equal(nordBuilt.includes("data-local-draft-banner"), false);
 assert.equal((nordBuilt.match(/data-local-insee-card/g) || []).length, 6);
 assert.equal((nordBuilt.match(/data-local-faq/g) || []).length, 10);
 assert.equal((nordBuilt.match(/data-local-sources/g) || []).length, 1);
-assert.equal((nordBuilt.match(/href="\/projet\/\?projet=monte-escalier&amp;type=/g) || []).length, 4);
+assert.equal((nordBuilt.match(/href="\/projet\/\?projet=monte-escalier&amp;type=/g) || []).length, 8);
 assert.ok(nordBuilt.includes("Monte-escalier assis-debout"));
 assert.equal(nordBuilt.includes("plateforme d’appui"), false);
 assert.ok(nordBuilt.includes("2 500 – 5 500 €"));
 assert.ok(nordBuilt.includes("J’Amén’Âge 59"));
 assert.ok(nordBuilt.includes("03 59 73 73 73"));
 assert.ok(nordBuilt.includes("Un accompagnement simple, du premier échange au devis"));
-assert.ok(nordBuilt.includes("Ce que le professionnel étudie avec vous"));
+assert.ok(nordBuilt.includes("Ce que le professionnel relève ensuite"));
 assert.ok(nordBuilt.includes("Rail rectiligne pour un escalier sans virage"));
 assert.equal((nordBuilt.match(/class="local-project-card"/g) || []).length, 4);
 assert.ok(nordBuilt.includes("/uploads/monte-escalier-droit.webp"));
 assert.ok(nordBuilt.includes("/uploads/monte-escalier-tournant-interieur.webp"));
 assert.ok(nordBuilt.includes("/uploads/monte-escalier-exterieur-perron.webp"));
 assert.ok(nordBuilt.includes("/uploads/siege-monte-escalier-replie.webp"));
-assert.ok(nordBuilt.includes(".local-hero-grid>figure{order:1}"));
+assert.ok(nordBuilt.includes("grid-column:1/-1;order:2;aspect-ratio:1340/560"));
+assert.ok(nordBuilt.includes(".local-hero-visual{grid-column:auto;aspect-ratio:4/3;max-height:340px}"));
 assert.equal(nordBuilt.includes("date de publication non communiquée"), false);
 assert.equal((nordBuilt.match(/data-local-essentials/g) || []).length, 1);
 assert.equal((nordBuilt.match(/data-local-daily-life/g) || []).length, 1);
@@ -360,6 +366,16 @@ assert.ok(showerGirondeBuilt.includes('data-coverage="configurable"'));
 assert.ok(showerGirondeBuilt.includes('data-routing="active"'));
 assert.ok(showerGirondeBuilt.includes("/douche-senior/departements/"));
 assert.ok(showerGirondeBuilt.includes("/uploads/douche-plain-pied-siege-rabattable.webp"));
+assert.equal((showerGirondeBuilt.match(/data-local-city-guides/g) || []).length, 1);
+for (const route of [
+  "/douche-senior/gironde/bordeaux/",
+  "/douche-senior/gironde/merignac/",
+  "/douche-senior/gironde/pessac/",
+  "/douche-senior/gironde/talence/",
+  "/douche-senior/gironde/villenave-dornon/"
+]) {
+  assert.ok(showerGirondeBuilt.includes(`href="${route}"`), `maillage département vers ${route}`);
+}
 assert.equal(/Aides locales|Aides nationales|MaPrimeAdapt|APA —/i.test(showerGirondeBuilt), false);
 assert.equal(/prix et aides|aides et professionnels/i.test(showerGirondeBuilt), false);
 assert.equal(containsPublicPlaceholder(showerGirondeBuilt), false);
@@ -377,6 +393,14 @@ assert.ok(lilleBuilt.includes('cp-exemple="59000"'));
 assert.equal(lilleBuilt.includes('cp-exemple="33000"'), false);
 assert.ok(bordeauxBuilt.includes('cp-exemple="33000"'));
 assert.equal(bordeauxBuilt.includes('cp-exemple="59000"'), false);
+assert.ok(bordeauxBuilt.includes('href="/douche-senior/gironde/bordeaux/#budget"'));
+assert.ok(bordeauxBuilt.includes('href="/douche-senior/gironde/bordeaux/#faisabilite"'));
+assert.ok(bordeauxBuilt.includes('<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">'));
+assert.equal(bordeauxBuilt.includes("data-local-draft-banner"), false);
+assert.equal((bordeauxBuilt.match(/data-local-insee-card/g) || []).length, 6);
+assert.equal((bordeauxBuilt.match(/<details data-local-faq/g) || []).length, 8);
+assert.ok(bordeauxBuilt.includes("Commune de Bordeaux"));
+assert.equal(/Aides locales|Aides nationales|MaPrimeAdapt|APA —/i.test(bordeauxBuilt), false);
 
 const rootSitemap = await readFile(path.join(dist, "sitemap.xml"), "utf8");
 for (const page of localPages) {
@@ -403,13 +427,11 @@ assert.equal(
   101,
   "les 101 pages douche senior sont incluses dans leur sitemap dédié"
 );
-for (const sitemap of [
-  "monte-escalier-villes.xml",
-  "douche-senior-villes.xml"
-]) {
-  const source = await readFile(path.join(dist, "sitemaps", sitemap), "utf8");
-  assert.equal(source.includes("<loc>"), false, `${sitemap}: aucun draft`);
-}
+const stairCitySitemap = await readFile(path.join(dist, "sitemaps/monte-escalier-villes.xml"), "utf8");
+assert.equal(stairCitySitemap.includes("<loc>"), false, "le brouillon ville monte-escalier reste hors sitemap");
+const showerCitySitemap = await readFile(path.join(dist, "sitemaps/douche-senior-villes.xml"), "utf8");
+assert.equal((showerCitySitemap.match(/<loc>/g) || []).length, 501, "les 501 pages ville douche sont incluses");
+assert.ok(showerCitySitemap.includes(`${origin}/douche-senior/gironde/bordeaux/`));
 
 const directoryBuilt = await readFile(path.join(dist, "monte-escalier/departements/index.html"), "utf8");
 assert.ok(directoryBuilt.includes('<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">'));
@@ -461,5 +483,5 @@ for (const file of [
 }
 
 console.log(
-  "Validated 202 indexable department pages, two national hubs, remaining city drafts, local schema, coverage rules, structured prices, INSEE calculations, Mayotte exceptions, dynamic modules, sitemaps, similarity, and SEO hierarchy."
+  "Validated 202 indexable department pages, 501 indexable shower city pages, two national hubs, one remaining stairlift city draft, local schema, coverage rules, structured prices, INSEE calculations, Mayotte exceptions, dynamic modules, sitemaps, similarity, and SEO hierarchy."
 );

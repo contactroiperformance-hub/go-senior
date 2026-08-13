@@ -76,6 +76,7 @@ const sharedComponents = new Set([
   "Footer.dc.html",
   "Header.dc.html",
   "MiniFormulaire.dc.html",
+  "EstimateurBudget.dc.html",
   "Simulateur.dc.html"
 ]);
 const localModelFiles = new Set([

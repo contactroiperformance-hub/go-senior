@@ -5,7 +5,9 @@ production réutilisables, sans créer de variante visuelle. Le rendu réutilise
 les composants existants `Header`, `Footer` et `BlocProjet`.
 
 Le moteur publie 202 guides départementaux : 101 pour le monte-escalier et
-101 pour la douche senior. Le snapshot
+101 pour la douche senior. Il publie aussi 501 guides communaux douche senior,
+soit les cinq communes les plus peuplées de chaque département (Paris étant
+à la fois commune et département). Le snapshot
 `department-records.mjs` est construit depuis l’API Géo et les dossiers INSEE
 avec `npm run data:departments`. Mayotte conserve des millésimes 2017/2026
 explicites, car les tableaux RP 2023 homogènes n’y sont pas encore disponibles.
@@ -75,7 +77,14 @@ tous les sitemaps et n’est lié depuis aucun répertoire public.
   en avant des aides.
 - `/douche-senior/{departement}/` : 101 guides `published`, `index` et
   `included`, avec données séparées maisons/appartements, contraintes de sol,
-  plomberie, étanchéité, copropriété, prix et maillage régional.
+  plomberie, étanchéité, copropriété, prix, maillage régional et liens vers
+  les cinq principaux guides communaux.
+- `/douche-senior/{departement}/{ville}/` : 501 guides `published`, `index` et
+  `included`, avec statistiques communales INSEE, contexte logement, facteurs
+  de chantier, FAQ et sources propres à la ville. Pour les cinq communes de
+  Mayotte, la population communale de l’API Géo est complétée par un contexte
+  logement départemental 2017 explicitement signalé, sans inventer de chiffre
+  communal indisponible.
 
 Pour chaque service, la page nationale et le hub forment le chemin national →
 annuaire régionalisé → département.
@@ -83,10 +92,9 @@ annuaire régionalisé → département.
 ## Brouillons de validation
 
 - `/monte-escalier/nord/lille/`
-- `/douche-senior/gironde/bordeaux/`
 
-Ces deux pages restent volontairement en draft, en `noindex, follow` et hors
-sitemap. Elles masquent les modules dont les données vérifiées ne sont pas intégrées.
+Cette page reste volontairement en draft, en `noindex, follow` et hors sitemap.
+Elle masque les modules dont les données vérifiées ne sont pas intégrées.
 
 ## Premier lot publiable
 
