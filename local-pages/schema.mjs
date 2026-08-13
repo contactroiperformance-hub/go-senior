@@ -129,7 +129,7 @@ export function projectAvailability(service, postalCode, routingStatus = "active
   const validPostalCode = isValidFrenchPostalCode(postalCode);
   const coverageStatus = service === "monte-escalier"
     ? SERVICE_COVERAGE.monteEscalier
-    : SERVICE_COVERAGE.futureServices;
+    : SERVICE_COVERAGE.doucheSenior;
   return {
     validPostalCode,
     coverageStatus,
@@ -166,7 +166,7 @@ export function validateLocalPage(page) {
   }
   const expectedCoverage = page.service === "monte-escalier"
     ? SERVICE_COVERAGE.monteEscalier
-    : SERVICE_COVERAGE.futureServices;
+    : SERVICE_COVERAGE.doucheSenior;
   if (page.coverageStatus !== expectedCoverage) {
     errors.push(`couverture ${page.service} attendue: ${expectedCoverage}`);
   }
@@ -282,6 +282,17 @@ function isStructuredPrice(price) {
     && /^\d{4}-\d{2}-\d{2}$/.test(price.sourceCheckedAt || "");
 }
 
+function isStructuredShowerPrice(price) {
+  return price
+    && isNonEmptyString(price.label)
+    && isNonEmptyString(price.descriptor)
+    && isNonEmptyString(price.range)
+    && Number.isInteger(price.dataYear)
+    && isNonEmptyString(price.sourceTitle)
+    && /^https:\/\/[^ ]+$/i.test(price.sourceUrl || "")
+    && /^\d{4}-\d{2}-\d{2}$/.test(price.sourceCheckedAt || "");
+}
+
 function isStructuredResource(resource) {
   return resource
     && isNonEmptyString(resource.programName)
@@ -322,7 +333,7 @@ export function publicationReadiness(page) {
   if (!page.officialSources?.some((source) => source.scope === "local")) {
     reasons.push("source locale obligatoire manquante");
   }
-  if (!page.localAssistancePrograms?.length && !page.usefulLocalContacts?.length) {
+  if (page.service === "monte-escalier" && !page.localAssistancePrograms?.length && !page.usefulLocalContacts?.length) {
     reasons.push("aides ou ressources locales vérifiées manquantes");
   }
   const resources = [...(page.localAssistancePrograms || []), ...(page.usefulLocalContacts || [])];
@@ -334,6 +345,12 @@ export function publicationReadiness(page) {
       reasons.push("quatre fourchettes nationales monte-escalier requises");
     } else if (page.nationalPriceReference.some((price) => !isStructuredPrice(price))) {
       reasons.push("fourchette nationale sans source ou date de vérification");
+    }
+  } else if (page.service === "douche-senior") {
+    if (page.nationalPriceReference?.length !== 5) {
+      reasons.push("cinq fourchettes nationales douche senior requises");
+    } else if (page.nationalPriceReference.some((price) => !isStructuredShowerPrice(price))) {
+      reasons.push("fourchette douche senior sans source ou date de vérification");
     }
   }
 

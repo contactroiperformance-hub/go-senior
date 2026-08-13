@@ -102,8 +102,8 @@ function breadcrumb(page) {
     { label: "Accueil", href: "/" },
     { label: serviceLabel, href: guides.national }
   ];
-  if (page.service === "monte-escalier") {
-    items.push({ label: "Départements", href: "/monte-escalier/departements/" });
+  if (page.pageLevel === "department" || page.pageLevel === "city") {
+    items.push({ label: "Départements", href: `/${page.service}/departements/` });
   }
   if (page.pageLevel === "city") {
     items.push({
@@ -130,8 +130,8 @@ export function breadcrumbData(page) {
     { name: "Accueil", route: "/" },
     { name: SERVICE_LABELS[page.service], route: guides.national }
   ];
-  if (page.service === "monte-escalier") {
-    items.push({ name: "Départements", route: "/monte-escalier/departements/" });
+  if (page.pageLevel === "department" || page.pageLevel === "city") {
+    items.push({ name: "Départements", route: `/${page.service}/departements/` });
   }
   if (page.pageLevel === "city") {
     items.push({
@@ -195,7 +195,22 @@ function hero(page) {
 }
 
 function essentialsSection(page) {
-  if (page.service !== "monte-escalier" || page.pageLevel !== "department") return "";
+  if (page.pageLevel !== "department") return "";
+  if (page.service === "douche-senior") {
+    const replacement = page.nationalPriceReference?.find((item) => /Remplacement d’une baignoire/i.test(item.label));
+    const apartments = (page.housingData || []).find((item) => /Part des appartements/i.test(item.indicator));
+    const age = (page.demographicData || []).find((item) => /65 ans ou plus/i.test(item.indicator));
+    const cards = [
+      ["Projet fréquent", "Baignoire → douche", "dépose, accès, parois et réseaux à contrôler"],
+      ["Budget indicatif", replacement?.range || "Sur devis", "repère national, selon l’état de la pièce"],
+      ["Repère logement", apartments?.displayValue || "Parc local", apartments ? "d’appartements dans le département" : "données disponibles selon le millésime"],
+      ["Repère population", age?.displayValue || "Tout âge", age ? "de personnes âgées de 65 ans ou plus" : "usage évalué avec la personne"]
+    ];
+    return `<section data-local-essentials class="local-essentials" aria-labelledby="local-essentials-title">
+      <div class="local-essentials-heading"><p>L’essentiel</p><h2 id="local-essentials-title">Le projet en un coup d’œil</h2></div>
+      <div class="local-essentials-grid">${cards.map(([label, value, detail]) => `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong><small>${escapeHtml(detail)}</small></div>`).join("")}</div>
+    </section>`;
+  }
   const straight = page.nationalPriceReference?.find((item) => item.productType === "Monte-escalier droit");
   const curved = page.nationalPriceReference?.find((item) => item.productType === "Monte-escalier tournant");
   const houses = (page.housingData || []).find((item) => /Part des maisons/i.test(item.indicator));
@@ -218,8 +233,18 @@ function essentialsSection(page) {
 }
 
 function dailyLifeSection(page) {
-  if (page.service !== "monte-escalier" || page.pageLevel !== "department") return "";
+  if (page.pageLevel !== "department") return "";
   const firstPlace = page.localPlaces?.[0] || page.departmentName;
+  if (page.service === "douche-senior") {
+    return `<section data-local-daily-life class="local-daily-life">
+      <div><p class="local-kicker">Les gestes avant le modèle</p><h2>Rendre la toilette plus simple au quotidien</h2><p>${escapeHtml(page.introduction)}</p></div>
+      <ul>
+        <li><span aria-hidden="true">01</span><div><strong>Réduire le franchissement</strong><p>La hauteur d’accès doit être compatible avec le plancher, la pente d’évacuation et la stabilité recherchée.</p></div></li>
+        <li><span aria-hidden="true">02</span><div><strong>Placer les bons appuis</strong><p>Siège, barres et robinetterie se choisissent selon les gestes réels, pas comme une liste d’options automatique.</p></div></li>
+        <li><span aria-hidden="true">03</span><div><strong>Protéger durablement la pièce</strong><p>À ${escapeHtml(firstPlace)} comme ailleurs dans le département, plomberie, ventilation et étanchéité doivent être vérifiées avant le devis final.</p></div></li>
+      </ul>
+    </section>`;
+  }
   return `<section data-local-daily-life class="local-daily-life">
     <div>
       <p class="local-kicker">Votre quotidien d’abord</p>
@@ -399,6 +424,7 @@ function resourceCard(item) {
 }
 
 function resourcesSection(page) {
+  if (page.service === "douche-senior") return "";
   const aids = page.localAssistancePrograms || [];
   const national = aids.filter((item) => String(item.programType || "").startsWith("aide_nationale"));
   const local = [
@@ -429,9 +455,9 @@ function coverageSection(page) {
   }
   const place = page.pageLevel === "city" ? `à ${page.cityName}` : departmentLocation(page);
   return section(
-    `Professionnels intervenant ${place}`,
+    `Vérifier l’intervention ${place}`,
     `<div data-coverage="configurable" data-routing="${escapeAttribute(page.routingStatus)}" style="background:#FCF6E8;border:1px solid #E6D8AE;border-radius:14px;padding:18px 22px">
-      <p style="margin:0;font-size:17.5px;color:#5C4E22">Indiquez votre code postal pour que votre demande soit orientée selon la configuration de ce service.</p>
+      <p style="margin:0;font-size:17.5px;color:#5C4E22">Indiquez le code postal du chantier et décrivez l’installation actuelle. Go Senior vérifie ensuite si un professionnel indépendant prenant en charge ce type de transformation intervient dans votre secteur.</p>
     </div>`
   );
 }
@@ -668,9 +694,13 @@ export function renderLocalPage(page, allPages) {
   return template(page, allPages);
 }
 
-export function renderDepartmentDirectory(allPages) {
+export function renderDepartmentDirectory(allPages, service = "monte-escalier") {
+  const shower = service === "douche-senior";
+  const serviceLabel = shower ? "Douche senior" : "Monte-escalier";
+  const route = `/${service}/departements/`;
+  const cardSubtitle = shower ? "Prix, travaux et données logement" : "Prix, aides et données locales";
   const departments = allPages
-    .filter((page) => page.service === "monte-escalier" && page.pageLevel === "department")
+    .filter((page) => page.service === service && page.pageLevel === "department")
     .filter(isPublicLocalPage)
     .sort((a, b) => a.departmentName.localeCompare(b.departmentName, "fr"));
   const regions = new Map();
@@ -683,7 +713,7 @@ export function renderDepartmentDirectory(allPages) {
       <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-size:clamp(25px,3vw,32px);color:#1F2E27">${escapeHtml(region)}</h2>
       <div data-department-directory style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
         ${pages.map((page) => `<a href="${escapeAttribute(localPageRoute(page))}" style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px;text-decoration:none;display:flex;align-items:center;justify-content:space-between;gap:16px" style-hover="border-color:#2E5B4C;transform:translateY(-1px)">
-          <span style="display:flex;flex-direction:column;gap:3px"><strong style="font-size:20px;color:#1F2E27">${escapeHtml(page.departmentName)}</strong><span style="font-size:16px;color:#6B7A70">Prix, aides et données locales</span></span>
+          <span style="display:flex;flex-direction:column;gap:3px"><strong style="font-size:20px;color:#1F2E27">${escapeHtml(page.departmentName)}</strong><span style="font-size:16px;color:#6B7A70">${escapeHtml(cardSubtitle)}</span></span>
           <span aria-label="Département ${escapeAttribute(page.departmentCode)}" style="width:42px;height:42px;border-radius:50%;background:#EBF1E8;color:#2E5B4C;font-weight:700;display:flex;align-items:center;justify-content:center">${escapeHtml(page.departmentCode)}</span>
         </a>`).join("")}
       </div>
@@ -693,7 +723,7 @@ export function renderDepartmentDirectory(allPages) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Trouvez les guides Go Senior consacrés au monte-escalier par département : prix, aides, données INSEE et ressources officielles locales.">
+<meta name="description" content="${escapeAttribute(shower ? "Trouvez les guides Go Senior consacrés à la douche senior par département : prix, contraintes techniques, données logement et préparation du devis." : "Trouvez les guides Go Senior consacrés au monte-escalier par département : prix, aides, données INSEE et ressources officielles locales.")}">
 <script src="./support.js"></script>
 </head>
 <body>
@@ -705,27 +735,27 @@ export function renderDepartmentDirectory(allPages) {
 <style>
 html,body{overflow-x:hidden;max-width:100%}body{margin:0;background:#FAF7F0;font-family:'Libre Franklin',system-ui,sans-serif;color:#22322B;font-size:19px;line-height:1.65}a{color:#2E5B4C}:focus-visible{outline:3px solid #C05A2E;outline-offset:2px;border-radius:4px}
 </style>
-<title>Monte-escalier par département : prix et aides | Go Senior</title>
+<title>${escapeHtml(shower ? "Douche senior par département : prix et travaux | Go Senior" : "Monte-escalier par département : prix et aides | Go Senior")}</title>
 </helmet>
-<dc-import name="Header" active="monte-escalier" hint-size="100%,78px"></dc-import>
+<dc-import name="Header" active="${escapeAttribute(service)}" hint-size="100%,78px"></dc-import>
 <main>
   <section style="background:linear-gradient(180deg,#F3EFE4 0%,#FAF7F0 100%);border-bottom:1px solid #E5DFD2">
     <div style="max-width:1200px;margin:0 auto;padding:40px 24px 52px;display:flex;flex-direction:column;gap:18px">
-      <nav aria-label="Fil d’Ariane" style="font-size:17px;color:#6B7A70"><a href="/" style="text-decoration:none">Accueil</a> <span aria-hidden="true">›</span> <a href="/monte-escalier/" style="text-decoration:none">Monte-escalier</a> <span aria-hidden="true">›</span> <a href="/monte-escalier/departements/" aria-current="page" style="text-decoration:none">Départements</a></nav>
+      <nav aria-label="Fil d’Ariane" style="font-size:17px;color:#6B7A70"><a href="/" style="text-decoration:none">Accueil</a> <span aria-hidden="true">›</span> <a href="/${escapeAttribute(service)}/" style="text-decoration:none">${escapeHtml(serviceLabel)}</a> <span aria-hidden="true">›</span> <a href="${escapeAttribute(route)}" aria-current="page" style="text-decoration:none">Départements</a></nav>
       <p style="margin:0;color:#C05A2E;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:15px">Guides locaux vérifiés</p>
-      <h1 style="margin:0;max-width:850px;font-family:'Source Serif 4',Georgia,serif;font-size:clamp(34px,4.5vw,52px);line-height:1.12;color:#1F2E27">Le monte-escalier dans votre département</h1>
-      <p style="margin:0;max-width:820px;font-size:20px;color:#41504A">Chaque guide réunit des repères de prix nationaux, des données INSEE 2023, les aides et contacts officiels du département, puis un accès direct à l’étude de votre projet.</p>
+      <h1 style="margin:0;max-width:850px;font-family:'Source Serif 4',Georgia,serif;font-size:clamp(34px,4.5vw,52px);line-height:1.12;color:#1F2E27">${escapeHtml(shower ? "La douche senior dans votre département" : "Le monte-escalier dans votre département")}</h1>
+      <p style="margin:0;max-width:820px;font-size:20px;color:#41504A">${escapeHtml(shower ? "Chaque guide met en regard les prix nationaux, les données locales sur les logements et les contraintes concrètes à vérifier avant de remplacer une baignoire ou de sécuriser une douche." : "Chaque guide réunit des repères de prix nationaux, des données INSEE 2023, les aides et contacts officiels du département, puis un accès direct à l’étude de votre projet.")}</p>
     </div>
   </section>
   <div style="max-width:1200px;margin:0 auto;padding:56px 24px 88px;display:flex;flex-direction:column;gap:54px">
     <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
-      <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px"><h2 style="margin:0 0 8px;font-size:21px;color:#1F2E27">Des prix comparables</h2><p style="margin:0;color:#41504A">Les mêmes quatre fourchettes nationales sont distinguées des facteurs propres au logement.</p></div>
-      <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px"><h2 style="margin:0 0 8px;font-size:21px;color:#1F2E27">Un contexte réellement local</h2><p style="margin:0;color:#41504A">Population, âge du parc et type de logement proviennent des dossiers complets INSEE.</p></div>
-      <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px"><h2 style="margin:0 0 8px;font-size:21px;color:#1F2E27">Des ressources officielles</h2><p style="margin:0;color:#41504A">Aides et contacts sont publiés avec leur organisme, leur lien et leur date de vérification.</p></div>
+      <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px"><h2 style="margin:0 0 8px;font-size:21px;color:#1F2E27">Des prix comparables</h2><p style="margin:0;color:#41504A">${escapeHtml(shower ? "Cinq niveaux de travaux sont séparés des contraintes propres à chaque salle de bain." : "Les mêmes quatre fourchettes nationales sont distinguées des facteurs propres au logement.")}</p></div>
+      <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px"><h2 style="margin:0 0 8px;font-size:21px;color:#1F2E27">Un contexte réellement local</h2><p style="margin:0;color:#41504A">${escapeHtml(shower ? "Maisons, appartements et structure par âge proviennent des dossiers complets INSEE." : "Population, âge du parc et type de logement proviennent des dossiers complets INSEE.")}</p></div>
+      <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px"><h2 style="margin:0 0 8px;font-size:21px;color:#1F2E27">Une étude concrète</h2><p style="margin:0;color:#41504A">${escapeHtml(shower ? "Sol, évacuation, étanchéité, appuis et copropriété sont traités avant le devis." : "Les ressources officielles sont publiées avec leur organisme, leur lien et leur date de vérification.")}</p></div>
     </section>
     ${groups || `<p>Aucun guide départemental n’est encore publié.</p>`}
     <section style="background:#EBF1E8;border:1px solid #D7E2D2;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:8px">
-      <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-size:27px;color:#1F2E27">Une couverture nationale contrôlée</h2>
+      <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-size:27px;color:#1F2E27">101 guides contrôlés</h2>
       <p style="margin:0;color:#41504A">Les 101 départements disposent d’un guide. Chaque page n’apparaît ici qu’après validation de ses sources, de ses données, de sa profondeur éditoriale et de sa différence avec les autres contenus locaux.</p>
     </section>
   </div>

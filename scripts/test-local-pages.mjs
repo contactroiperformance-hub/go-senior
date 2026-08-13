@@ -24,7 +24,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 const origin = "https://go-senior.fr";
 
-assert.equal(localPages.length, 104, "101 départements publiés et trois pages de validation en brouillon");
+assert.equal(localPages.length, 204, "202 pages départementales publiées et deux pages ville en brouillon");
 assert.deepEqual(
   new Set(localPages.map((page) => `${page.service}-${page.pageLevel}`)),
   new Set([
@@ -41,7 +41,7 @@ for (const page of localPages) {
     assert.ok(field in page, `${page.id}: ${field} présent`);
   }
   const publication = effectivePublication(page);
-  if (page.service === "monte-escalier" && page.pageLevel === "department") {
+  if (page.pageLevel === "department") {
     assert.equal(publication.ready, true);
     assert.equal(publication.status, "published");
     assert.equal(publication.indexStatus, "index");
@@ -55,13 +55,24 @@ for (const page of localPages) {
   }
 }
 
+for (const page of localPages.filter((item) => item.service === "douche-senior" && item.pageLevel === "department")) {
+  assert.equal(page.localAssistancePrograms.length, 0, `${page.id}: aucun bloc d’aides mis en avant`);
+  assert.equal(page.usefulLocalContacts.length, 0, `${page.id}: aucun bloc de financement local`);
+  assert.equal(page.serviceDetails.projectAssistance.length, 0, `${page.id}: aucune aide dans les arguments service`);
+  assert.equal(/\baides?\b/i.test(`${page.seoTitle} ${page.metaDescription} ${page.h1} ${page.introduction} ${page.conclusion}`), false, `${page.id}: aides absentes des zones SEO et principales`);
+  assert.equal(page.nationalPriceReference.length, 5, `${page.id}: cinq fourchettes de prix structurées`);
+}
+
 const nord = localPages.find((page) => page.id === "monte-escalier-nord");
 const oise = localPages.find((page) => page.id === "monte-escalier-oise");
 const somme = localPages.find((page) => page.id === "monte-escalier-somme");
 const lille = localPages.find((page) => page.id === "monte-escalier-nord-lille");
 const bordeaux = localPages.find((page) => page.id === "douche-senior-gironde-bordeaux");
 const mayotte = localPages.find((page) => page.id === "monte-escalier-mayotte");
-assert.ok(nord && oise && somme && lille && bordeaux);
+const showerGironde = localPages.find((page) => page.id === "douche-senior-gironde");
+const showerParis = localPages.find((page) => page.id === "douche-senior-paris");
+const showerMayotte = localPages.find((page) => page.id === "douche-senior-mayotte");
+assert.ok(nord && oise && somme && lille && bordeaux && showerGironde && showerParis && showerMayotte);
 assert.ok(mayotte);
 
 const completePage = structuredClone(lille);
@@ -207,6 +218,12 @@ for (const postalCode of ["59000", "75015", "97100", "98000"]) {
   assert.equal(availability.coverageStatus, "nationwide");
   assert.equal(availability.covered, true);
 }
+for (const postalCode of ["33000", "75015", "97100"]) {
+  const availability = projectAvailability("douche-senior", postalCode, "active");
+  assert.equal(availability.validPostalCode, true);
+  assert.equal(availability.coverageStatus, "configurable");
+  assert.equal(availability.covered, false);
+}
 for (const postalCode of ["", "5900", "00000", "99000", "ABCDE"]) {
   assert.equal(isValidFrenchPostalCode(postalCode), false);
 }
@@ -327,6 +344,33 @@ assert.ok(sommeBuilt.includes("49,0 %"));
 assert.ok(sommeBuilt.includes("Aide départementale à l’adaptation du logement"));
 assert.equal(sommeBuilt.includes("data-local-draft-banner"), false);
 
+const showerGirondeBuilt = await readFile(path.join(dist, "douche-senior/gironde/index.html"), "utf8");
+assert.ok(showerGirondeBuilt.includes('<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">'));
+assert.equal(showerGirondeBuilt.includes("data-local-draft-banner"), false);
+assert.equal((showerGirondeBuilt.match(/data-local-insee-card/g) || []).length, 6);
+assert.equal((showerGirondeBuilt.match(/<details data-local-faq/g) || []).length, 8);
+assert.equal((showerGirondeBuilt.match(/class="local-project-card"/g) || []).length, 3);
+assert.ok(showerGirondeBuilt.includes("Part des appartements dans le parc de logements"));
+assert.ok(showerGirondeBuilt.includes("Plomberie"));
+assert.ok(showerGirondeBuilt.includes("Étanchéité"));
+assert.ok(showerGirondeBuilt.includes("Copropriété"));
+assert.ok(showerGirondeBuilt.includes("4 000 – 9 000 €"));
+assert.ok(showerGirondeBuilt.includes("Remplacement d’une baignoire"));
+assert.ok(showerGirondeBuilt.includes('data-coverage="configurable"'));
+assert.ok(showerGirondeBuilt.includes('data-routing="active"'));
+assert.ok(showerGirondeBuilt.includes("/douche-senior/departements/"));
+assert.ok(showerGirondeBuilt.includes("/uploads/douche-plain-pied-siege-rabattable.webp"));
+assert.equal(/Aides locales|Aides nationales|MaPrimeAdapt|APA —/i.test(showerGirondeBuilt), false);
+assert.equal(/prix et aides|aides et professionnels/i.test(showerGirondeBuilt), false);
+assert.equal(containsPublicPlaceholder(showerGirondeBuilt), false);
+
+const showerPillarBuilt = await readFile(path.join(dist, "douche-senior/index.html"), "utf8");
+assert.ok(showerPillarBuilt.includes("Douche senior : prix, modèles, travaux et installation"));
+assert.ok(showerPillarBuilt.includes('id="contraintes"'));
+assert.ok(showerPillarBuilt.includes('href="/douche-senior/departements/"'));
+assert.equal(showerPillarBuilt.includes('id="aides"'), false);
+assert.equal(showerPillarBuilt.includes("MaPrimeAdapt"), false);
+
 const lilleBuilt = await readFile(path.join(dist, "monte-escalier/nord/lille/index.html"), "utf8");
 const bordeauxBuilt = await readFile(path.join(dist, "douche-senior/gironde/bordeaux/index.html"), "utf8");
 assert.ok(lilleBuilt.includes('cp-exemple="59000"'));
@@ -340,6 +384,7 @@ for (const page of localPages) {
   assert.equal(rootSitemap.includes(`${origin}${localPageRoute(page)}`), expected, `${page.id}: présence sitemap cohérente`);
 }
 assert.ok(rootSitemap.includes(`${origin}/monte-escalier/departements/`));
+assert.ok(rootSitemap.includes(`${origin}/douche-senior/departements/`));
 const departmentSitemap = await readFile(path.join(dist, "sitemaps/monte-escalier-departements.xml"), "utf8");
 for (const page of [nord, oise, somme]) {
   assert.ok(departmentSitemap.includes(`${origin}${localPageRoute(page)}`));
@@ -349,9 +394,17 @@ assert.equal(
   101,
   "les 101 départements sont inclus dans le sitemap dédié"
 );
+const showerDepartmentSitemap = await readFile(path.join(dist, "sitemaps/douche-senior-departements.xml"), "utf8");
+for (const page of [showerGironde, showerParis, showerMayotte]) {
+  assert.ok(showerDepartmentSitemap.includes(`${origin}${localPageRoute(page)}`));
+}
+assert.equal(
+  (showerDepartmentSitemap.match(/<loc>/g) || []).length,
+  101,
+  "les 101 pages douche senior sont incluses dans leur sitemap dédié"
+);
 for (const sitemap of [
   "monte-escalier-villes.xml",
-  "douche-senior-departements.xml",
   "douche-senior-villes.xml"
 ]) {
   const source = await readFile(path.join(dist, "sitemaps", sitemap), "utf8");
@@ -374,6 +427,23 @@ assert.equal(
   101,
   "l’annuaire national affiche 101 guides départementaux"
 );
+const showerDirectoryBuilt = await readFile(path.join(dist, "douche-senior/departements/index.html"), "utf8");
+assert.ok(showerDirectoryBuilt.includes('<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">'));
+assert.equal((showerDirectoryBuilt.match(/<h1\b/g) || []).length, 1);
+assert.equal(
+  (showerDirectoryBuilt.match(/data-department-directory/g) || []).length,
+  new Set(localPages.filter((page) => page.service === "douche-senior" && page.pageLevel === "department").map((page) => page.regionName)).size,
+  "un annuaire douche est rendu pour chaque région"
+);
+for (const route of ["/douche-senior/gironde/", "/douche-senior/paris/", "/douche-senior/mayotte/"]) {
+  assert.ok(showerDirectoryBuilt.includes(`href="${route}"`));
+}
+assert.equal(
+  (showerDirectoryBuilt.match(/Prix, travaux et données logement/g) || []).length,
+  101,
+  "l’annuaire douche affiche 101 guides départementaux"
+);
+assert.equal(/Aides locales|Aides nationales|prix et aides/i.test(showerDirectoryBuilt), false);
 const mayotteBuilt = await readFile(path.join(dist, "monte-escalier/mayotte/index.html"), "utf8");
 assert.ok(mayotteBuilt.includes("323 153 habitants"));
 assert.ok(mayotteBuilt.includes("millésime 2017"));
@@ -391,5 +461,5 @@ for (const file of [
 }
 
 console.log(
-  "Validated 101 indexable department pages, the national hub, remaining drafts, local schema, nationwide coverage, structured prices, INSEE calculations, Mayotte exception, dynamic modules, sitemaps, similarity, and SEO hierarchy."
+  "Validated 202 indexable department pages, two national hubs, remaining city drafts, local schema, coverage rules, structured prices, INSEE calculations, Mayotte exceptions, dynamic modules, sitemaps, similarity, and SEO hierarchy."
 );

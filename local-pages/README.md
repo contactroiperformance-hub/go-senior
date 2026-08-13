@@ -4,7 +4,8 @@ Ce dossier transforme les quatre maquettes Claude Design en templates de
 production réutilisables, sans créer de variante visuelle. Le rendu réutilise
 les composants existants `Header`, `Footer` et `BlocProjet`.
 
-Le moteur publie les 101 guides départementaux monte-escalier. Le snapshot
+Le moteur publie 202 guides départementaux : 101 pour le monte-escalier et
+101 pour la douche senior. Le snapshot
 `department-records.mjs` est construit depuis l’API Géo et les dossiers INSEE
 avec `npm run data:departments`. Mayotte conserve des millésimes 2017/2026
 explicites, car les tableaux RP 2023 homogènes n’y sont pas encore disponibles.
@@ -43,8 +44,10 @@ les sources officielles ont leurs propres sous-schémas structurés.
 
 Une page demandée comme `published` est automatiquement ramenée à `draft` si
 une condition manque : introduction, périmètre, données INSEE complètes,
-millésime, sources officielles dont une locale, aide ou ressource vérifiée,
-FAQ dynamique, conclusion, CTA, canonical ou contrôle des placeholders.
+millésime, sources officielles dont une locale, FAQ dynamique, conclusion,
+CTA, canonical ou contrôle des placeholders. Une aide ou ressource locale
+vérifiée reste requise pour le monte-escalier, pas pour la douche senior :
+les pages douche privilégient les travaux, les contraintes techniques et le devis.
 
 Un département publié exige au moins 350 mots éditoriaux, 5 FAQ locales et 3
 lieux nommés. Une ville publiée exige 6 à 10 FAQ, dont au moins 3 locales. Les
@@ -68,17 +71,21 @@ tous les sitemaps et n’est lié depuis aucun répertoire public.
 - `/monte-escalier/{departement}/` : 101 guides `published`, `index` et
   `included`, alimentés par les données INSEE, des ressources officielles CNSA,
   cinq communes ou secteurs repères et un maillage régional.
+- `/douche-senior/departements/` : hub national généré et indexable, sans mise
+  en avant des aides.
+- `/douche-senior/{departement}/` : 101 guides `published`, `index` et
+  `included`, avec données séparées maisons/appartements, contraintes de sol,
+  plomberie, étanchéité, copropriété, prix et maillage régional.
 
-Le hub et la page nationale `/monte-escalier/` forment le chemin national →
+Pour chaque service, la page nationale et le hub forment le chemin national →
 annuaire régionalisé → département.
 
 ## Brouillons de validation
 
 - `/monte-escalier/nord/lille/`
-- `/douche-senior/gironde/`
 - `/douche-senior/gironde/bordeaux/`
 
-Ces trois pages restent volontairement en draft, en `noindex, follow` et hors
+Ces deux pages restent volontairement en draft, en `noindex, follow` et hors
 sitemap. Elles masquent les modules dont les données vérifiées ne sont pas intégrées.
 
 ## Premier lot publiable
