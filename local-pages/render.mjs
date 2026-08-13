@@ -169,6 +169,9 @@ function hero(page) {
   const imageAlt = page.service === "monte-escalier"
     ? "Une personne utilise un monte-escalier dans son logement"
     : "Douche adaptée avec siège et barres d’appui";
+  const imageCaption = page.service === "monte-escalier"
+    ? "Retrouver l’accès à toute sa maison, à son rythme."
+    : "Rendre la toilette plus simple et plus sereine au quotidien.";
   return `<section class="local-hero" style="background:linear-gradient(180deg,#F3EFE4 0%,#FAF7F0 100%);border-bottom:1px solid #E5DFD2">
     <div style="max-width:1240px;margin:0 auto;padding:34px 24px 48px">
       ${breadcrumb(page)}
@@ -183,7 +186,7 @@ function hero(page) {
         </div>
         <figure class="local-hero-visual">
           <img src="${escapeAttribute(image)}" alt="${escapeAttribute(imageAlt)}" width="800" height="600" loading="eager" fetchpriority="high">
-          <figcaption>Retrouver l’accès à toute sa maison, à son rythme.</figcaption>
+          <figcaption>${escapeHtml(imageCaption)}</figcaption>
         </figure>
         ${blocProjet(page, page.cta.title)}
       </div>
@@ -276,8 +279,8 @@ function priceSection(page) {
       ? `${formatEuro(item.amountMin)} – ${formatEuro(item.amountMax)} €`
       : item.range;
     return `
-        <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:16px 22px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:baseline;justify-content:space-between">
-          <span style="font-size:17.5px;font-weight:600;color:#1F2E27">${escapeHtml(label)}</span>
+        <div style="background:#FFFFFF;border:1px solid #EADFC9;border-radius:14px;padding:16px 22px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;justify-content:space-between">
+          <span style="display:flex;flex:1 1 280px;flex-direction:column;gap:2px"><strong style="font-size:17.5px;font-weight:700;color:#1F2E27">${escapeHtml(label)}</strong>${item.descriptor ? `<small style="font-size:15.5px;line-height:1.45;color:#6B7A70">${escapeHtml(item.descriptor)}</small>` : ""}</span>
           <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:21px;color:#2E5B4C">${escapeHtml(range)}</span>
         </div>`;
   }).join("");
@@ -298,7 +301,7 @@ function inseeCard(datum) {
     : datum.value;
   const unit = datum.unit === "%" ? " %" : datum.unit ? ` ${datum.unit}` : "";
   const value = datum.displayValue || `${computedValue}${unit}`;
-  return `<div data-local-insee-card style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:4px">
+  return `<div data-local-insee-card style="background:#FFFFFF;border:1px solid #EADFC9;border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:4px">
     <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:28px;color:#2E5B4C">${escapeHtml(value)}</span>
     <span style="font-size:16.5px;color:#41504A">${escapeHtml(datum.indicator)}</span>
     <span style="font-size:15.5px;color:#6B7A70">INSEE, ${escapeHtml(datum.vintage)}</span>
@@ -331,10 +334,13 @@ function projectOptionsSection(page) {
   const heading = page.pageLevel === "city"
     ? SERVICE_GUIDES[page.service].projectHeadingCity
     : SERVICE_GUIDES[page.service].projectHeadingDepartment;
-  const cards = page.projectOptions.map((option) => `<a href="${escapeAttribute(option.href)}" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:8px" style-hover="border-color:#2E5B4C;box-shadow:0 6px 18px rgba(34,50,43,0.10)">
-          <h3 style="margin:0;font-size:19px;font-weight:600;color:#1F2E27">${escapeHtml(option.title)}</h3>
-          <p style="margin:0;font-size:16.5px;color:#41504A">${escapeHtml(option.description)}</p>
-          <span style="margin-top:auto;font-weight:600;font-size:16.5px;color:#2E5B4C">Décrire ce projet ›</span>
+  const cards = page.projectOptions.map((option) => `<a href="${escapeAttribute(option.href)}" class="local-project-card" style="text-decoration:none;background:#FFFFFF;border:1px solid #EADFC9;border-radius:16px;overflow:hidden;display:flex;flex-direction:column" style-hover="border-color:#2E5B4C;box-shadow:0 8px 22px rgba(34,50,43,0.12);transform:translateY(-2px)">
+          ${option.image ? `<img src="${escapeAttribute(option.image)}" alt="${escapeAttribute(option.imageAlt || option.title)}" width="720" height="420" loading="lazy" decoding="async">` : ""}
+          <span style="padding:20px 22px 22px;display:flex;flex:1;flex-direction:column;gap:8px">
+            <strong style="font-size:19px;font-weight:700;color:#1F2E27">${escapeHtml(option.title)}</strong>
+            <span style="font-size:16.5px;color:#41504A">${escapeHtml(option.description)}</span>
+            <span style="margin-top:auto;font-weight:700;font-size:16.5px;color:#B04E20">Décrire ce projet ›</span>
+          </span>
         </a>`).join("");
   const coownership = page.service === "douche-senior" && page.coownershipConsiderations
     ? `<div style="background:#EBF1E8;border:1px solid #D7E2D2;border-radius:14px;padding:18px 22px"><p style="margin:0;font-size:17px;color:#2C463B"><strong>En copropriété</strong> — ${escapeHtml(page.coownershipConsiderations)}</p></div>`
@@ -362,14 +368,11 @@ function serviceSpecificSection(page) {
     }))
     .filter((item) => item.value);
   if (!details.length) return "";
-  const heading = page.service === "monte-escalier"
-    ? "Caractéristiques du monte-escalier à étudier"
-    : "Éléments de la douche à étudier";
+  const heading = "Ce que le professionnel étudie avec vous";
   return section(
     heading,
-    `<div data-local-service-details="${escapeAttribute(page.service)}" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">${details.map((item) => `<div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:6px">
-      <h3 style="margin:0;font-size:18.5px;font-weight:600;color:#1F2E27">${escapeHtml(item.label)}</h3>
-      <p style="margin:0;font-size:16.5px;color:#41504A">${escapeHtml(item.value)}</p>
+    `<div data-local-service-details="${escapeAttribute(page.service)}" class="local-service-checklist">${details.map((item) => `<div>
+      <span aria-hidden="true">✓</span><p><strong>${escapeHtml(item.label)}</strong><small>${escapeHtml(item.value)}</small></p>
     </div>`).join("")}</div>`,
     18
   );
@@ -388,7 +391,7 @@ function resourceCard(item) {
   const title = item.programName || item.title;
   const organization = item.officialOrganization || item.organization;
   const checkedAt = item.sourceCheckedAt || item.checkedAt;
-  return `<a href="${escapeAttribute(url)}" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:4px" style-hover="border-color:#2E5B4C">
+  return `<a href="${escapeAttribute(url)}" style="text-decoration:none;background:#FFFFFF;border:1px solid #EADFC9;border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:4px" style-hover="border-color:#2E5B4C">
     <span style="font-weight:600;font-size:18px;color:#1F2E27">${escapeHtml(title)}</span>
     ${item.description ? `<span style="font-size:16.5px;color:#41504A">${escapeHtml(item.description)}</span>` : ""}
     <span style="font-size:16.5px;color:#6B7A70">${escapeHtml(organization)} · consulté le ${escapeHtml(formatFrenchDate(checkedAt))}</span>
@@ -465,8 +468,8 @@ function processSection(page) {
 function faqSection(page) {
   if (!page.faq?.length) return "";
   const place = page.pageLevel === "city" ? ` à ${page.cityName}` : ` ${departmentLocation(page)}`;
-  const items = page.faq.map((item) => `<details data-local-faq style-hover="border-color:#2E5B4C;background:#FDFCF9" style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:0 22px">
-        <summary style="cursor:pointer;font-weight:600;font-size:19px;color:#1F2E27;padding:17px 0;list-style:none;display:flex;justify-content:space-between;gap:12px">${escapeHtml(item.question)}<span style="color:#2E5B4C" aria-hidden="true">+</span></summary>
+  const items = page.faq.map((item) => `<details data-local-faq style-hover="border-color:#2E5B4C;background:#FDFCF9" style="background:#FFFFFF;border:1px solid #EADFC9;border-radius:14px;padding:0 22px">
+        <summary style="cursor:pointer;font-weight:700;font-size:19px;color:#1F2E27;padding:17px 0;list-style:none;display:flex;justify-content:space-between;gap:12px">${escapeHtml(item.question)}<span style="color:#B04E20" aria-hidden="true">+</span></summary>
         <p style="margin:0;padding:0 0 17px;font-size:18px;color:#41504A">${escapeHtml(item.answer)}</p>
       </details>`).join("");
   return section(
@@ -479,7 +482,7 @@ function faqSection(page) {
 function nearbySection(page, allPages) {
   const nearby = publicNearbyLocations(page, allPages);
   if (!nearby.length) return "";
-  const links = nearby.map((item) => `<a href="${escapeAttribute(localPageRoute(item))}" style="border:1px solid #C9C2B2;border-radius:999px;padding:9px 18px;text-decoration:none;font-weight:600">${escapeHtml(item.cityName || item.departmentName)}</a>`).join("");
+  const links = nearby.map((item) => `<a href="${escapeAttribute(localPageRoute(item))}" style="background:#FFFFFF;border:1px solid #EADFC9;border-radius:999px;padding:9px 18px;text-decoration:none;font-weight:600">${escapeHtml(item.cityName || item.departmentName)}</a>`).join("");
   const heading = page.pageLevel === "department"
     ? "Autres départements"
     : "Villes voisines";
@@ -498,9 +501,9 @@ function sourcesSection(page) {
     const url = source.officialUrl || source.url;
     const published = source.publishedAt
       ? ` · publié le ${formatFrenchDate(source.publishedAt)}`
-      : " · date de publication non communiquée";
+      : "";
     const extraLinks = (source.additionalOfficialUrls || []).map((extraUrl, index) => `<a href="${escapeAttribute(extraUrl)}" style="font-size:16px;color:#2E5B4C">Source officielle complémentaire ${index + 1}</a>`).join("");
-    return `<div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:4px">
+    return `<div style="background:#FFFFFF;border:1px solid #EADFC9;border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:4px">
       <a href="${escapeAttribute(url)}" style="text-decoration:none;font-weight:600;font-size:18px;color:#1F2E27">${escapeHtml(source.organization)} — ${escapeHtml(title)}</a>
       <span style="font-size:16.5px;color:#41504A">${escapeHtml(claims)} · données ${escapeHtml(year)}${escapeHtml(published)}</span>
       <span style="font-size:16.5px;color:#6B7A70">Consulté le ${escapeHtml(formatFrenchDate(source.checkedAt))}</span>
@@ -570,6 +573,7 @@ function renderDocument(page, allPages, template) {
 <style>
 html,body{overflow-x:hidden;max-width:100%}
 img{max-width:100%;height:auto}
+[id]{scroll-margin-top:94px}
 .local-hero-grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(250px,.7fr) minmax(350px,.92fr);gap:24px;align-items:center}
 .local-hero-grid>*{min-width:0}.local-hero-grid>dc-import{min-width:0;max-width:100%}
 .local-hero-visual{position:relative;margin:0;min-height:370px;border-radius:22px;overflow:hidden;box-shadow:0 16px 38px rgba(34,50,43,.15)}
@@ -577,6 +581,13 @@ img{max-width:100%;height:auto}
 .local-hero-visual figcaption{position:absolute;left:14px;right:14px;bottom:14px;padding:10px 13px;border-radius:10px;background:rgba(31,66,55,.9);color:#fff;font-size:14.5px;line-height:1.35}
 .local-trust-pills{display:flex;flex-wrap:wrap;gap:8px}
 .local-trust-pills span{padding:7px 10px;border-radius:999px;background:#fff;border:1px solid #DDD4C5;color:#2E5B4C;font-size:14.5px;font-weight:600}
+.local-project-card{transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+.local-project-card>img{width:100%;height:190px;object-fit:cover;display:block}
+.local-service-checklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 28px;padding:clamp(24px,3vw,34px);background:#F7E7DC;border:1px solid #E8CDBB;border-radius:18px}
+.local-service-checklist>div{display:grid;grid-template-columns:30px 1fr;gap:10px;padding:14px 0;border-top:1px solid rgba(183,88,49,.18)}
+.local-service-checklist>div:nth-child(-n+2){border-top:0}
+.local-service-checklist>div>span{width:25px;height:25px;margin-top:2px;border-radius:50%;background:#C05A2E;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.local-service-checklist p{margin:0;display:flex;flex-direction:column;gap:2px}.local-service-checklist strong{font-size:17px;color:#1F2E27}.local-service-checklist small{font-size:15.5px;line-height:1.45;color:#5D5A54}
 .local-essentials{display:grid;grid-template-columns:minmax(190px,.7fr) minmax(0,2.3fr);gap:24px;padding:28px;border-radius:20px;background:#1F4237;color:#fff;box-shadow:0 12px 30px rgba(31,66,55,.12)}
 .local-essentials-heading{display:flex;flex-direction:column;gap:6px;justify-content:center}
 .local-essentials-heading p,.local-kicker{margin:0;color:#D98A5D;font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:14px}
@@ -598,18 +609,18 @@ img{max-width:100%;height:auto}
 .local-editorial-mark{width:44px;height:44px;border-radius:50%;background:#EBF1E8;color:#2E5B4C;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center}
 .local-editorial>div:not(.local-editorial-mark){display:flex;flex-direction:column;gap:2px}
 .local-editorial strong{font-size:16.5px;color:#1F2E27}.local-editorial span{font-size:14.5px;color:#6B7A70}.local-editorial a{font-size:15.5px;font-weight:600;text-decoration:none}
-.local-process{display:grid;grid-template-columns:minmax(300px,.85fr) minmax(0,1.15fr);border-radius:22px;overflow:hidden;background:#fff;border:1px solid #E5DFD2;box-shadow:0 12px 30px rgba(34,50,43,.08)}
+.local-process{display:grid;grid-template-columns:minmax(300px,.85fr) minmax(0,1.15fr);border-radius:22px;overflow:hidden;background:#fff;border:1px solid #EADFC9;box-shadow:0 12px 30px rgba(34,50,43,.08)}
 .local-process-visual{min-height:520px}.local-process-visual img{width:100%;height:100%;object-fit:cover}
 .local-process-copy{padding:clamp(28px,4vw,46px);display:flex;flex-direction:column;justify-content:center;gap:10px}
 .local-process-steps{display:flex;flex-direction:column;margin-top:12px}
 .local-process-steps>div{display:grid;grid-template-columns:38px 1fr;gap:13px;padding:14px 0;border-top:1px solid #E8E1D5}
-.local-process-steps>div>span{width:34px;height:34px;border-radius:50%;background:#C0643D;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px}
+.local-process-steps>div>span{width:34px;height:34px;border-radius:50%;background:#C05A2E;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px}
 .local-process-steps h3{margin:0;font-size:18px;color:#1F2E27}.local-process-steps p{margin:3px 0 0;color:#41504A;font-size:16px}
 .gsh-desk{display:flex}.gsh-mob{display:none}.gsh-bar{display:none}
 @media(max-width:1180px){.local-hero-grid{grid-template-columns:minmax(0,1fr) minmax(280px,.72fr)}.local-hero-grid>dc-import{grid-column:1/-1}.local-essentials{grid-template-columns:1fr}.local-essentials-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:1060px){.gsh-desk{display:none !important}.gsh-mob{display:flex !important}.gsh-bar{display:flex !important}body{padding-bottom:76px}.local-editorial{grid-template-columns:auto 1fr}.local-editorial>a{grid-column:2}.local-process{grid-template-columns:1fr}.local-process-visual{min-height:340px}}
-@media(max-width:820px){.local-hero-grid{grid-template-columns:minmax(0,1fr)}.local-daily-life{grid-template-columns:1fr}.local-hero-grid>dc-import{grid-column:auto}.local-hero-visual{min-height:280px}.local-essentials{padding:22px}.local-essentials-grid{grid-template-columns:1fr}.local-process-visual{min-height:280px}}
-@media(max-width:520px){.local-editorial{grid-template-columns:1fr}.local-editorial>a{grid-column:auto}.local-hero-visual{min-height:240px}.local-daily-life{padding:24px}.local-daily-life li{grid-template-columns:38px 1fr}.local-daily-life li>span{width:36px;height:36px}.local-process-copy{padding:25px 22px}}
+@media(max-width:820px){.local-hero-grid{grid-template-columns:minmax(0,1fr)}.local-daily-life{grid-template-columns:1fr}.local-hero-grid>dc-import{grid-column:auto}.local-hero-grid>figure{order:1}.local-hero-visual{min-height:280px}.local-essentials{padding:22px}.local-essentials-grid{grid-template-columns:1fr}.local-service-checklist{grid-template-columns:1fr}.local-service-checklist>div:nth-child(2){border-top:1px solid rgba(183,88,49,.18)}.local-process-visual{min-height:280px}}
+@media(max-width:520px){.local-editorial{grid-template-columns:1fr}.local-editorial>a{grid-column:auto}.local-hero-visual{min-height:240px}.local-project-card>img{height:175px}.local-daily-life{padding:24px}.local-daily-life li{grid-template-columns:38px 1fr}.local-daily-life li>span{width:36px;height:36px}.local-process-copy{padding:25px 22px}}
 body{margin:0;background:#FAF7F0;font-family:'Libre Franklin',system-ui,sans-serif;color:#22322B;font-size:19.5px;line-height:1.65}
 a{color:#2E5B4C}a:hover{color:#1F4237}
 :focus-visible{outline:3px solid #C05A2E;outline-offset:2px;border-radius:4px}

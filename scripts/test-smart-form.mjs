@@ -75,6 +75,15 @@ assert.equal(screen.type, "cp");
 
 const legacyStanding = await miniForm("?projet=monte-escalier&type=debout");
 assert.equal(legacyStanding.state.reponses.type, "assis-debout");
+assert.equal(
+  legacyStanding.icones().assisDebout.props.src,
+  "uploads/siege-monte-escalier-replie.webp",
+  "l’option assis-debout utilise la photo optimisée sans modifier la valeur transmise"
+);
+
+const miniFormSource = await readFile(path.join(root, "dist", "MiniFormulaire.dc.html"), "utf8");
+assert.ok(miniFormSource.includes('fetch("/api/lead"'), "la soumission LeadByte réelle reste branchée");
+assert.ok(miniFormSource.includes("Saisissez un code postal français valide à cinq chiffres."));
 
 const blockLocation = { search: "", href: "" };
 const blockFactory = await componentFrom(path.join(root, "dist", "BlocProjet.dc.html"));

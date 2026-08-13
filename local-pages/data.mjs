@@ -5,6 +5,7 @@ const updatedAt = "2026-08-12";
 const stairliftPrices = Object.freeze([
   {
     productType: "Monte-escalier droit",
+    descriptor: "Rail rectiligne pour un escalier sans virage",
     amountMin: 2500,
     amountMax: 5500,
     currency: "EUR",
@@ -17,6 +18,7 @@ const stairliftPrices = Object.freeze([
   },
   {
     productType: "Monte-escalier tournant",
+    descriptor: "Rail sur mesure pour courbes, paliers ou plusieurs volées",
     amountMin: 6000,
     amountMax: 12000,
     currency: "EUR",
@@ -29,6 +31,7 @@ const stairliftPrices = Object.freeze([
   },
   {
     productType: "Monte-escalier extérieur",
+    descriptor: "Équipement adapté à un perron ou à un accès extérieur",
     amountMin: 4000,
     amountMax: 10000,
     currency: "EUR",
@@ -41,6 +44,7 @@ const stairliftPrices = Object.freeze([
   },
   {
     productType: "Monte-escalier assis-debout",
+    descriptor: "Siège-perche ou appui haut selon les capacités de l’utilisateur",
     amountMin: 4000,
     amountMax: 9000,
     currency: "EUR",
@@ -67,30 +71,35 @@ const nordInseeMetadata = Object.freeze({
 const showerPrices = Object.freeze([
   {
     label: "Adaptation d’une douche existante",
+    descriptor: "Sécurisation ciblée de l’installation en place",
     range: "500 – 2 000 €",
     scope: "Repère national 2026",
     sourcePath: "/guides/prix-douche-senior/"
   },
   {
     label: "Remplacement d’une baignoire",
+    descriptor: "Dépose de la baignoire et création d’un accès plus simple",
     range: "4 000 – 9 000 €",
     scope: "Repère national 2026",
     sourcePath: "/guides/prix-douche-senior/"
   },
   {
     label: "Douche extra-plate ou préfabriquée adaptée",
+    descriptor: "Receveur à ressaut réduit et équipements de sécurité",
     range: "3 000 – 6 000 €",
     scope: "Repère national 2026",
     sourcePath: "/guides/prix-douche-senior/"
   },
   {
     label: "Douche de plain-pied ou sur mesure",
+    descriptor: "Projet adapté aux contraintes du sol et de l’évacuation",
     range: "5 000 – 10 000 €",
     scope: "Repère national 2026",
     sourcePath: "/guides/prix-douche-senior/"
   },
   {
     label: "Adaptation complète de la salle de bain",
+    descriptor: "Réagencement global de la circulation et des équipements",
     range: "8 000 – 15 000 €",
     scope: "Repère national 2026",
     sourcePath: "/guides/prix-salle-de-bain-adaptee/"
@@ -101,21 +110,29 @@ const stairliftOptions = Object.freeze([
   {
     title: "Monte-escalier droit",
     description: "Rail rectiligne adapté à un escalier sans virage ni palier intermédiaire. La configuration est généralement plus simple que celle d’un rail courbe.",
+    image: "/uploads/monte-escalier-droit.webp",
+    imageAlt: "Monte-escalier installé sur un escalier droit",
     href: "/projet/?projet=monte-escalier&type=droit"
   },
   {
     title: "Monte-escalier tournant",
     description: "Rail conçu sur mesure lorsque l’escalier comporte un virage, un palier, plusieurs volées ou un changement de pente.",
+    image: "/uploads/monte-escalier-tournant-interieur.webp",
+    imageAlt: "Monte-escalier suivant la courbe d’un escalier tournant",
     href: "/projet/?projet=monte-escalier&type=tournant"
   },
   {
     title: "Monte-escalier extérieur",
     description: "Équipement conçu pour un perron, un accès de jardin ou un escalier extérieur, avec des composants adaptés à l’exposition selon les caractéristiques du fabricant.",
+    image: "/uploads/monte-escalier-exterieur-perron.webp",
+    imageAlt: "Monte-escalier extérieur installé sur un perron",
     href: "/projet/?projet=monte-escalier&type=exterieur"
   },
   {
     title: "Monte-escalier assis-debout",
     description: "Équipement avec siège-perche ou appui haut permettant une position semi-assise lorsque la configuration et les capacités de l’utilisateur s’y prêtent.",
+    image: "/uploads/siege-monte-escalier-replie.webp",
+    imageAlt: "Siège de monte-escalier replié pour libérer le passage",
     href: "/projet/?projet=monte-escalier&type=assis-debout"
   }
 ]);
@@ -124,16 +141,22 @@ const showerOptions = Object.freeze([
   {
     title: "Baignoire à remplacer",
     description: "Douche installée dans l’emplacement existant, avec des travaux souvent concentrés sur quelques jours selon la configuration.",
+    image: "/uploads/baignoire-a-remplacer.webp",
+    imageAlt: "Baignoire existante à remplacer par une douche adaptée",
     href: "/projet/?projet=baignoire-douche"
   },
   {
     title: "Douche à sécuriser",
     description: "Siège, barres d’appui, sol adapté et robinetterie selon les besoins.",
+    image: "/uploads/douche-siege-mural-barres-appui.webp",
+    imageAlt: "Douche sécurisée avec siège mural et barres d’appui",
     href: "/projet/?projet=douche-senior"
   },
   {
     title: "Salle de bain à réagencer",
     description: "Adaptation plus complète lorsque la circulation ou l’implantation doivent évoluer.",
+    image: "/uploads/salle-de-bain-adaptee-complete.webp",
+    imageAlt: "Salle de bain adaptée facilitant la circulation",
     href: "/projet/?projet=salle-de-bain"
   }
 ]);
