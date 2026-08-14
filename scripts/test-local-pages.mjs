@@ -90,10 +90,11 @@ assert.equal(stairMamoudzou.faq.some((item) => /Ces chiffres décrivent la commu
 assert.equal(effectivePublication(bordeaux).status, "published");
 assert.equal(effectivePublication(bordeaux).indexStatus, "index");
 assert.equal(effectivePublication(bordeaux).sitemapStatus, "included");
-assert.ok(bordeaux.introduction.includes("L’INSEE recense 79 % d’appartements dans la commune"));
+assert.equal(bordeaux.introduction, "Une douche senior à Bordeaux doit faciliter l’entrée, la toilette et les déplacements dans la pièce. L’étude sur place vérifie le sol, l’évacuation et l’accès au chantier avant de confirmer les équipements et les finitions.");
 assert.equal(/sans déduire une solution standard du seul code postal|Le projet commence par les gestes qui posent problème/i.test(bordeaux.introduction), false);
 for (const page of localPages.filter((item) => item.service === "douche-senior" && item.pageLevel === "city")) {
-  assert.ok(page.introduction.split(/\s+/).length >= 45, `${page.id}: introduction explicative`);
+  const introductionWordCount = page.introduction.split(/\s+/).length;
+  assert.ok(introductionWordCount >= 25 && introductionWordCount <= 50, `${page.id}: introduction douche concise`);
   assert.ok(page.localHousingCommentary.split(/\s+/).length <= 120, `${page.id}: commentaire local concis`);
   assert.equal(/rang \d parmi les cinq communes|sans déduire une solution standard|données communales interchangeables/i.test(`${page.introduction} ${page.localHousingCommentary}`), false, `${page.id}: aucune formulation artificielle`);
 }
@@ -433,6 +434,8 @@ assert.equal(bordeauxBuilt.includes("data-local-draft-banner"), false);
 assert.equal((bordeauxBuilt.match(/data-local-insee-card/g) || []).length, 6);
 assert.equal((bordeauxBuilt.match(/<details data-local-faq/g) || []).length, 8);
 assert.ok(bordeauxBuilt.includes("Commune de Bordeaux"));
+assert.ok(bordeauxBuilt.includes("Une douche senior à Bordeaux doit faciliter l’entrée, la toilette et les déplacements dans la pièce."));
+assert.equal(bordeauxBuilt.includes("L’INSEE recense 79 % d’appartements dans la commune"), false);
 assert.equal(/Aides locales|Aides nationales|MaPrimeAdapt|APA —/i.test(bordeauxBuilt), false);
 
 const rootSitemap = await readFile(path.join(dist, "sitemap.xml"), "utf8");

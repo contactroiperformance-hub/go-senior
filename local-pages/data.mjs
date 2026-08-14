@@ -1324,32 +1324,19 @@ function generatedShowerCityConfig(record, city) {
     ? `${formatNumber(houses)} % des logements sont des maisons et ${formatNumber(apartments)} % des appartements ; ${formatNumber(stats.owners)} % des résidences principales sont occupées par leur propriétaire.`
     : `Les données détaillées communales de logement ne sont pas affichées pour ${city.name}. Le contexte départemental de Mayotte est présenté séparément avec son millésime 2017, sans l’attribuer à la commune.`;
   const locationAtSentenceStart = upperFirst(cityPlace);
-  const housingSummary = stats
-    ? apartments >= houses
-      ? `${formatNumber(apartments)} % des logements de la commune sont des appartements`
-      : `${formatNumber(houses)} % des logements de la commune sont des maisons`
-    : "les statistiques communales détaillées sur les logements ne sont pas disponibles dans le même millésime";
-  const dominantHousing = stats
-    ? apartments >= houses
-      ? `${formatNumber(apartments)} % d’appartements`
-      : `${formatNumber(houses)} % de maisons`
-    : "un parc de logements non détaillé au niveau communal";
-  const housingCheck = stats && apartments >= houses
-    ? "Dans un immeuble, le professionnel vérifie aussi la dalle, les colonnes d’eau et les éventuelles règles de copropriété."
-    : "Le type de logement ne permet toutefois pas de connaître l’épaisseur du sol, le trajet de l’évacuation ou l’état de la plomberie.";
   const introVariants = stats
     ? [
-        `${locationAtSentenceStart}, une douche senior peut consister à sécuriser l’installation existante, remplacer une baignoire ou réaménager toute la salle de bain. Selon l’INSEE, ${housingSummary}. ${housingCheck} Une visite de la pièce permet ensuite de choisir entre douche de plain-pied, receveur extra-plat ou adaptation plus légère.`,
-        `Un projet de douche senior ${cityPlace} commence par un choix concret : conserver la douche actuelle, remplacer la baignoire ou revoir l’agencement de la pièce. Les données INSEE indiquent que ${housingSummary}. ${housingCheck} Le devis doit ensuite préciser les travaux de plomberie, d’étanchéité et de finition réellement nécessaires.`,
-        `${locationAtSentenceStart}, adapter une salle de bain ne signifie pas forcément refaire toute la pièce. Une barre d’appui, un siège ou un sol plus sûr peuvent parfois suffire ; dans d’autres cas, il faut remplacer la baignoire. Le parc local compte ${dominantHousing}. ${housingCheck} La solution se décide après examen de la salle de bain.`,
-        `Pour préparer une douche senior ${cityPlace}, il faut d’abord décrire l’installation actuelle et les difficultés rencontrées. L’INSEE recense ${dominantHousing} dans la commune. ${housingCheck} Il faut ensuite contrôler les dimensions, l’évacuation et l’étanchéité avant de proposer un projet et un devis.`,
-        `${locationAtSentenceStart}, le remplacement d’une baignoire peut être simple si les réseaux et le sol sont compatibles, ou demander davantage de reprises dans une pièce ancienne. Les chiffres INSEE montrent que ${housingSummary}. ${housingCheck} Une visite technique sert à déterminer le niveau du receveur, les équipements utiles et la durée probable du chantier.`,
-        `Sécuriser une salle de bain ${cityPlace} peut aller d’une adaptation ciblée à un réaménagement complet. L’INSEE recense ${dominantHousing} dans la commune. ${housingCheck} Avant tout devis, les dimensions de la pièce, la pente d’évacuation, le support des barres et la ventilation doivent être contrôlés.`,
-        `${locationAtSentenceStart}, le bon projet dépend surtout de la salle de bain existante et de l’usage recherché. Les statistiques locales indiquent que ${housingSummary}. ${housingCheck} Le choix entre une douche extra-plate et une douche de plain-pied dépend ensuite du plancher, de l’évacuation et des reprises prévues dans le devis.`,
-        `Une douche senior ${cityPlace} doit faciliter l’entrée, la toilette et les mouvements dans la pièce. L’INSEE recense ${dominantHousing} dans la commune. ${housingCheck} L’étude sur place permet de confirmer la faisabilité, les équipements à poser et les finitions à prévoir.`
+        `${locationAtSentenceStart}, une douche senior peut sécuriser l’installation existante, remplacer une baignoire ou réaménager toute la salle de bain. La visite technique permet de choisir entre douche de plain-pied, receveur extra-plat et adaptation plus légère.`,
+        `Un projet de douche senior ${cityPlace} commence par un choix concret : conserver la douche actuelle, remplacer la baignoire ou revoir l’agencement. Le devis précise ensuite les travaux de plomberie, d’étanchéité et de finition réellement nécessaires.`,
+        `${locationAtSentenceStart}, adapter une salle de bain ne signifie pas forcément refaire toute la pièce. Une barre d’appui, un siège ou un sol plus sûr peuvent parfois suffire ; dans d’autres cas, la baignoire doit être remplacée.`,
+        `Pour préparer une douche senior ${cityPlace}, il faut décrire l’installation actuelle et les difficultés rencontrées. Les dimensions, l’évacuation et l’étanchéité sont ensuite contrôlées avant de proposer un aménagement et un devis.`,
+        `${locationAtSentenceStart}, remplacer une baignoire peut être simple si les réseaux et le sol sont compatibles, ou demander davantage de reprises dans une pièce ancienne. La visite technique détermine le niveau du receveur, les équipements utiles et la durée probable du chantier.`,
+        `Sécuriser une salle de bain ${cityPlace} peut aller d’une adaptation ciblée à un réaménagement complet. Avant le devis, le professionnel contrôle les dimensions, la pente d’évacuation, le support des barres et la ventilation.`,
+        `${locationAtSentenceStart}, le projet dépend surtout de la salle de bain existante et de l’usage recherché. Le choix entre douche extra-plate et douche de plain-pied est confirmé après vérification du plancher, de l’évacuation et des reprises nécessaires.`,
+        `Une douche senior ${cityPlace} doit faciliter l’entrée, la toilette et les déplacements dans la pièce. L’étude sur place vérifie le sol, l’évacuation et l’accès au chantier avant de confirmer les équipements et les finitions.`
       ]
     : [
-        `${locationAtSentenceStart}, une douche senior peut sécuriser l’installation existante, remplacer une baignoire ou réaménager la salle de bain. La population communale est disponible via l’API Géo, mais les données détaillées sur les logements présentées ici concernent Mayotte en 2017. Le professionnel doit donc examiner directement le sol, l’évacuation, la plomberie et l’accès au chantier avant d’établir son devis.`
+        `${locationAtSentenceStart}, une douche senior peut sécuriser l’installation existante, remplacer une baignoire ou réaménager la salle de bain. Le professionnel examine le sol, l’évacuation, la plomberie et l’accès au chantier avant de proposer un projet et un devis.`
       ];
   const introduction = introVariants[variantIndex % introVariants.length];
   const localHousingAnalysis = stats
