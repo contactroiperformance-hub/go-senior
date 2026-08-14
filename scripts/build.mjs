@@ -86,33 +86,36 @@ const localModelFiles = new Set([
   "Modele-ville-douche.dc.html"
 ]);
 
+// Une date n'est renseignée que lorsqu'elle correspond à une révision
+// éditoriale réelle. Elle doit être mise à jour avec le contenu, pas au build.
 const pages = [
-  ["Accueil.dc.html", "/", true],
-  ["Monte-escalier.dc.html", "/monte-escalier/", true],
-  ["Douche-senior.dc.html", "/douche-senior/", true],
-  ["MaPrimeAdapt.dc.html", "/maprimeadapt/", true],
-  ["Guides.dc.html", "/guides/", true],
-  ["Guide-prix-monte-escalier.dc.html", "/guides/prix-monte-escalier/", true],
-  ["Guide-droit-tournant.dc.html", "/guides/monte-escalier-droit-ou-tournant/", true],
-  ["Guide-aides-monte-escalier.dc.html", "/guides/aides-monte-escalier/", true],
-  ["Guide-monte-escalier-exterieur.dc.html", "/guides/monte-escalier-exterieur/", true],
-  ["Guide-occasion-location.dc.html", "/guides/monte-escalier-occasion-location/", true],
-  ["Guide-delai-installation.dc.html", "/guides/delai-installation-monte-escalier/", true],
-  ["Guide-prix-douche-senior.dc.html", "/guides/prix-douche-senior/", true],
-  ["Guide-remplacer-baignoire-douche.dc.html", "/guides/remplacer-baignoire-par-douche/", true],
-  ["Guide-douche-senior-pmr.dc.html", "/guides/douche-senior-ou-pmr/", true],
-  ["Guide-baignoire-porte-douche.dc.html", "/guides/baignoire-a-porte-ou-douche/", true],
-  ["Guide-equipements-douche.dc.html", "/guides/equipements-securiser-douche/", true],
-  ["Guide-prix-salle-de-bain.dc.html", "/guides/prix-salle-de-bain-adaptee/", true],
-  ["Guide-plafonds-ressources.dc.html", "/guides/plafonds-ressources/", true],
-  ["Guide-apa-pch.dc.html", "/guides/apa-pch/", true],
+  ["Accueil.dc.html", "/", true, "2026-08-14"],
+  ["Monte-escalier.dc.html", "/monte-escalier/", true, "2026-08-14"],
+  ["Douche-senior.dc.html", "/douche-senior/", true, "2026-08-14"],
+  ["MaPrimeAdapt.dc.html", "/maprimeadapt/", true, "2026-08-14"],
+  ["Guides.dc.html", "/guides/", true, "2026-08-14"],
+  ["Guide-prix-monte-escalier.dc.html", "/guides/prix-monte-escalier/", true, "2026-08-14"],
+  ["Guide-droit-tournant.dc.html", "/guides/monte-escalier-droit-ou-tournant/", true, "2026-08-14"],
+  ["Guide-aides-monte-escalier.dc.html", "/guides/aides-monte-escalier/", true, "2026-08-14"],
+  ["Guide-monte-escalier-exterieur.dc.html", "/guides/monte-escalier-exterieur/", true, "2026-08-14"],
+  ["Guide-occasion-location.dc.html", "/guides/monte-escalier-occasion-location/", true, "2026-08-14"],
+  ["Guide-delai-installation.dc.html", "/guides/delai-installation-monte-escalier/", true, "2026-08-14"],
+  ["Guide-prix-douche-senior.dc.html", "/guides/prix-douche-senior/", true, "2026-08-14"],
+  ["Guide-remplacer-baignoire-douche.dc.html", "/guides/remplacer-baignoire-par-douche/", true, "2026-08-14"],
+  ["Guide-douche-senior-pmr.dc.html", "/guides/douche-senior-ou-pmr/", true, "2026-08-14"],
+  ["Guide-baignoire-porte-douche.dc.html", "/guides/baignoire-a-porte-ou-douche/", true, "2026-08-14"],
+  ["Guide-equipements-douche.dc.html", "/guides/equipements-securiser-douche/", true, "2026-08-14"],
+  ["Guide-prix-salle-de-bain.dc.html", "/guides/prix-salle-de-bain-adaptee/", true, "2026-08-14"],
+  ["Guide-plafonds-ressources.dc.html", "/guides/plafonds-ressources/", true, "2026-08-14"],
+  ["Guide-apa-pch.dc.html", "/guides/apa-pch/", true, "2026-08-14"],
   ["Formulaire.dc.html", "/projet/", false],
   // Les contenus actuels sont des fixtures éditoriales : la route reste
   // consultable, mais ne doit entrer dans l'index qu'avec de vrais articles.
   ["Actualites.dc.html", "/actualites/", false],
-  ["A-propos.dc.html", "/a-propos/", true],
-  ["Methodologie.dc.html", "/methodologie-editoriale/", true],
-  ["Contact.dc.html", "/contact/", true],
+  ["Actualite-modele.dc.html", "/actualites/compte-personnel-france-renov/", false],
+  ["A-propos.dc.html", "/a-propos/", true, "2026-08-14"],
+  ["Methodologie.dc.html", "/methodologie-editoriale/", true, "2026-08-14"],
+  ["Contact.dc.html", "/contact/", true, "2026-08-14"],
   ["Mentions-legales.dc.html", "/mentions-legales/", false],
   ["Conditions-generales.dc.html", "/conditions-generales/", false],
   ["Politique-confidentialite.dc.html", "/politique-de-confidentialite/", false],
@@ -121,7 +124,6 @@ const pages = [
 
 const routes = new Map(pages.map(([file, route]) => [file, route]));
 routes.set("Banniere-cookies.dc.html", "/politique-cookies/");
-routes.set("Actualite-modele.dc.html", "/actualites/");
 routes.set("Modele-article.dc.html", "/guides/");
 routes.set("Modele-departement.dc.html", "/monte-escalier/");
 routes.set("Modele-ville.dc.html", "/monte-escalier/");
@@ -483,20 +485,23 @@ const minifiedConsent = await minifyJavaScript(consentSource, {
 await writeFile(path.join(dist, "support.js"), minifiedSupport.code);
 await writeFile(path.join(dist, "consent.js"), minifiedConsent.code);
 
-const sitemap = [
-  '<?xml version="1.0" encoding="UTF-8"?>',
-  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+const publicLocalPages = localPages.filter(isPublicLocalPage);
+const pageLastModified = (page) => page.updatedAt || page.publishedAt;
+const latestDate = (dates) => dates.filter(Boolean).sort().at(-1);
+const directoryLastModified = (service) => latestDate(
+  publicLocalPages
+    .filter((page) => page.service === service)
+    .map(pageLastModified)
+);
+const sitemap = sitemapXml([
   ...pages
     .filter(([, , indexed]) => indexed)
-    .map(([, route]) => `  <url><loc>${origin}${route}</loc></url>`),
-  ...Object.values(departmentDirectoryRoutes)
-    .map((route) => `  <url><loc>${origin}${route}</loc></url>`),
-  ...localPages
-    .filter(isPublicLocalPage)
-    .map((page) => `  <url><loc>${origin}${localPageRoute(page)}</loc></url>`),
-  "</urlset>",
-  ""
-].join("\n");
+    .map(([, route, , lastmod]) => ({ loc: `${origin}${route}`, lastmod })),
+  ...Object.entries(departmentDirectoryRoutes)
+    .map(([service, route]) => ({ loc: `${origin}${route}`, lastmod: directoryLastModified(service) })),
+  ...publicLocalPages
+    .map((page) => ({ loc: `${origin}${localPageRoute(page)}`, lastmod: pageLastModified(page) }))
+]);
 
 const localSitemapDefinitions = [
   ["monte-escalier-departements.xml", "monte-escalier", "department"],
@@ -506,7 +511,12 @@ const localSitemapDefinitions = [
 ];
 const localSitemaps = localSitemapDefinitions.map(([file, service, pageLevel]) => {
   const urls = localSitemapUrls(localPages, origin, service, pageLevel);
-  return [file, sitemapXml(urls)];
+  const lastModifiedByUrl = new Map(
+    publicLocalPages
+      .filter((page) => page.service === service && page.pageLevel === pageLevel)
+      .map((page) => [new URL(localPageRoute(page), origin).href, pageLastModified(page)])
+  );
+  return [file, sitemapXml(urls.map((loc) => ({ loc, lastmod: lastModifiedByUrl.get(loc) })))];
 });
 
 const draftHeaders = localPages
