@@ -259,6 +259,8 @@ const completeRendered = renderLocalPage(completePage, [completePage]);
 assert.equal((completeRendered.match(/data-local-faq/g) || []).length, 6);
 assert.ok(completeRendered.includes("Périmètre de ce guide"));
 assert.ok(completeRendered.includes('cp-exemple="31000"'));
+assert.ok(completeRendered.includes('href="/methodologie-editoriale/"'));
+assert.ok(completeRendered.includes("Guide préparé par l’équipe éditoriale Go Senior"));
 assert.equal(containsPublicPlaceholder(completeRendered), false);
 
 const stairSpecific = structuredClone(lille);

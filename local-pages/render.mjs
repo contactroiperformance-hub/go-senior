@@ -300,13 +300,12 @@ function dailyLifeSection(page) {
 }
 
 function editorialSection(page) {
-  if (page.pageLevel !== "department") return "";
   const organizations = [...new Set((page.officialSources || []).map((source) => source.organization))]
     .slice(0, 3)
     .join(" · ");
   return `<aside data-local-editorial class="local-editorial" aria-label="Informations éditoriales">
     <div class="local-editorial-mark" aria-hidden="true">✓</div>
-    <div><strong>Guide préparé par l’équipe éditoriale Go Senior</strong><span>Informations vérifiées et mises à jour le ${escapeHtml(formatFrenchDate(page.updatedAt || page.sourceCheckedAt))}.</span></div>
+    <div><a href="/methodologie-editoriale/" style="text-decoration:none"><strong>Guide préparé par l’équipe éditoriale Go Senior</strong></a><span>Informations vérifiées et mises à jour le ${escapeHtml(formatFrenchDate(page.updatedAt || page.sourceCheckedAt))}.</span></div>
     <div><strong>Sources identifiées</strong><span>${escapeHtml(organizations || "INSEE · organismes publics")}</span></div>
     <a href="/methodologie-editoriale/">Notre méthode éditoriale ›</a>
   </aside>`;
