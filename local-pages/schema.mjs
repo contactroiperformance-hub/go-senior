@@ -501,10 +501,13 @@ export function similarityReport(pages, threshold = 0.65) {
 }
 
 export function sitemapXml(urls) {
+  const entries = urls.map((entry) => typeof entry === "string" ? { loc: entry } : entry);
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-    ...urls.map((url) => `  <url><loc>${url}</loc></url>`),
+    ...entries.map(({ loc, lastmod }) => lastmod
+      ? `  <url><loc>${loc}</loc><lastmod>${lastmod}</lastmod></url>`
+      : `  <url><loc>${loc}</loc></url>`),
     "</urlset>",
     ""
   ].join("\n");

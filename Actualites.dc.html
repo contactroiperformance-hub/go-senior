@@ -57,7 +57,7 @@ a{color:#2E5B4C}a:hover{color:#1F4237}
     </nav>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px">
       <sc-for list="{{ articles }}" as="a" hint-placeholder-count="3">
-        <a href="Actualite-modele.dc.html" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:16px;overflow:hidden;display:flex;flex-direction:column" style-hover="border-color:#2E5B4C;box-shadow:0 8px 24px rgba(34,50,43,0.08)">
+        <a href="{{ a.href }}" style="text-decoration:none;background:#FFFFFF;border:1px solid #E5DFD2;border-radius:16px;overflow:hidden;display:flex;flex-direction:column" style-hover="border-color:#2E5B4C;box-shadow:0 8px 24px rgba(34,50,43,0.08)">
           <sc-if value="{{ a.img }}" hint-placeholder-val="{{ false }}"><img src="{{ a.img }}" alt="{{ a.alt }}" style="width:100%;height:150px;object-fit:cover;display:block"></sc-if>
           <div style="padding:22px;display:flex;flex-direction:column;gap:9px;flex:1">
             <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
@@ -66,7 +66,7 @@ a{color:#2E5B4C}a:hover{color:#1F4237}
             </div>
             <h3 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:20.5px;line-height:1.25;color:#1F2E27">{{ a.titre }}</h3>
             <p style="margin:0;font-size:16.5px;color:#41504A;flex:1">{{ a.resume }}</p>
-            <span style="font-size:15.5px;color:#6B7A70">{{ a.date }} · {{ a.lecture }} · <span style="color:#2E5B4C;font-weight:600">Lire l’actualité →</span></span>
+            <span style="font-size:15.5px;color:#6B7A70">{{ a.date }} · {{ a.lecture }} · <span style="color:#2E5B4C;font-weight:600">{{ a.cta }} →</span></span>
           </div>
         </a>
       </sc-for>
@@ -87,9 +87,9 @@ class Component extends DCLogic {
   // Fixtures internes de démonstration — status: published requis pour tout affichage réel
   fixtures() {
     return [
-      { cat: "Aides et démarches", couleurCat: "#8A6A1F", badge: "À venir · 17 août 2026", ton: "avenir", titre: "MaPrimeAdapt’ : le compte personnel unique France Rénov’", resume: "Création du compte sécurisé FranceConnect+ et maintenance des plateformes du 3 au 16 août : ce qu’il faut anticiper pour votre dossier.", date: "Publié le 28 juillet 2026", lecture: "Lecture 4 min", img: "uploads/couple-senior-dossier-aides.webp", alt: "Dossier de demande d’aides" },
-      { cat: "Aides et démarches", couleurCat: "#8A6A1F", badge: "En vigueur", ton: "vigueur", titre: "Plafonds de ressources Anah : le barème 2026 est disponible", resume: "Les nouveaux plafonds « très modestes » et « modestes » s’appliquent aux demandes MaPrimeAdapt’ : vérifiez votre catégorie.", date: "Publié le 28 juillet 2026", lecture: "Lecture 3 min", img: "uploads/douche-de-plain-pied.webp", alt: "Salle de bain adaptée" },
-      { cat: "Autonomie à domicile", couleurCat: "#2E5B4C", badge: "En vigueur", ton: "vigueur", titre: "APA 2026 : plafonds mensuels et participation actualisés", resume: "Plans d’aide de 811,52 € à 2 080,33 € selon le GIR, et nouveaux seuils de participation au 1ᵉʳ janvier 2026.", date: "Publié le 28 juillet 2026", lecture: "Lecture 3 min", img: "uploads/dame-siege-monte-escalier.webp", alt: "Dame utilisant un monte-escalier" }
+      { cat: "Aides et démarches", couleurCat: "#8A6A1F", badge: "À venir · 17 août 2026", ton: "avenir", titre: "MaPrimeAdapt’ : le compte personnel unique France Rénov’", resume: "Création du compte sécurisé FranceConnect+ et maintenance des plateformes du 3 au 16 août : ce qu’il faut anticiper pour votre dossier.", date: "Publié le 28 juillet 2026", lecture: "Lecture 4 min", href: "Actualite-modele.dc.html", cta: "Lire l’actualité", img: "uploads/couple-senior-dossier-aides.webp", alt: "Dossier de demande d’aides" },
+      { cat: "Aides et démarches", couleurCat: "#8A6A1F", badge: "En vigueur", ton: "vigueur", titre: "Plafonds de ressources Anah : le barème 2026 est disponible", resume: "Les nouveaux plafonds « très modestes » et « modestes » s’appliquent aux demandes MaPrimeAdapt’ : vérifiez votre catégorie.", date: "Mis à jour en 2026", lecture: "Guide complet", href: "Guide-plafonds-ressources.dc.html", cta: "Consulter le barème", img: "uploads/douche-de-plain-pied.webp", alt: "Salle de bain adaptée" },
+      { cat: "Autonomie à domicile", couleurCat: "#2E5B4C", badge: "En vigueur", ton: "vigueur", titre: "APA 2026 : plafonds mensuels et participation actualisés", resume: "Plans d’aide actualisés selon le GIR et règles de participation : retrouvez les montants, les conditions et les démarches.", date: "Mis à jour en 2026", lecture: "Guide complet", href: "Guide-apa-pch.dc.html", cta: "Consulter le guide", img: "uploads/dame-siege-monte-escalier.webp", alt: "Dame utilisant un monte-escalier" }
     ];
   }
   renderVals() {
