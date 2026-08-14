@@ -287,6 +287,13 @@ function replaceLinks(source) {
   return result;
 }
 
+function protectFrenchColons(source) {
+  return source.replace(
+    /<script\b[\s\S]*?<\/script>|<style\b[\s\S]*?<\/style>|<[^>]+>|[^<]+/gi,
+    (token) => token.startsWith("<") ? token : token.replace(/ (?=:)/g, "\u00a0")
+  );
+}
+
 function addProductionHead(source, file, route, indexed, options = {}) {
   const canonical = `${origin}${route}`;
   const title = titleFrom(source);
@@ -344,6 +351,7 @@ function transform(source, file, route = null, indexed = false, stripSharedFonts
   result = addImageLoadingPolicy(result, file);
   if (stripSharedFonts) result = stripSharedFontHead(result);
   if (route) result = addProductionHead(result, file, route, indexed, options);
+  result = protectFrenchColons(result);
   return result;
 }
 

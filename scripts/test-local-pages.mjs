@@ -75,9 +75,10 @@ assert.equal(localPages.filter((page) => page.service === "douche-senior" && pag
 assert.equal(effectivePublication(lille).status, "published");
 assert.equal(effectivePublication(lille).indexStatus, "index");
 assert.equal(effectivePublication(lille).sitemapStatus, "included");
-assert.ok(lille.introduction.includes("la première décision consiste à savoir si le rail peut rester rectiligne"));
+assert.equal(lille.introduction, "À Lille, le choix du rail dépend d’abord de la forme de l’escalier : droit, tournant ou avec palier. Une prise de mesures permet ensuite de vérifier le passage disponible, le pivotement du siège et les éventuelles contraintes de copropriété.");
 for (const page of localPages.filter((item) => item.service === "monte-escalier" && item.pageLevel === "city")) {
-  assert.ok(page.introduction.split(/\s+/).length >= 45, `${page.id}: introduction monte-escalier explicative`);
+  const introductionWordCount = page.introduction.split(/\s+/).length;
+  assert.ok(introductionWordCount >= 25 && introductionWordCount <= 50, `${page.id}: introduction monte-escalier concise`);
   assert.ok(page.localHousingCommentary.split(/\s+/).length <= 120, `${page.id}: commentaire monte-escalier concis`);
   assert.equal(page.nationalPriceReference.length, 4, `${page.id}: quatre fourchettes monte-escalier`);
   assert.ok(page.localAssistancePrograms.length >= 2, `${page.id}: ressources nationales et départementales`);
@@ -332,7 +333,7 @@ assert.ok(nordBuilt.includes("consulté le 12 août 2026"));
 assert.ok(nordBuilt.includes("Démarrer mon projet"));
 assert.ok(nordBuilt.includes("Tous les codes postaux du Nord sont couverts"));
 assert.equal((nordBuilt.match(/<h1\b/g) || []).length, 1);
-assert.ok(nordBuilt.includes("<title>Monte-escalier dans le Nord (59) : prix et aides | Go Senior</title>"));
+assert.ok(nordBuilt.includes("<title>Monte-escalier dans le Nord (59)\u00a0: prix et aides | Go Senior</title>"));
 assert.ok(nordBuilt.includes('content="Découvrez les prix d’un monte-escalier dans le Nord, les modèles droits ou tournants, les aides disponibles et les professionnels intervenant dans votre secteur."'));
 assert.ok(nordBuilt.includes('<link rel="canonical" href="https://go-senior.fr/monte-escalier/nord/">'));
 assert.ok(nordBuilt.includes('href="/monte-escalier/nord/" aria-current="page"'));
@@ -401,7 +402,7 @@ assert.equal(/prix et aides|aides et professionnels/i.test(showerGirondeBuilt), 
 assert.equal(containsPublicPlaceholder(showerGirondeBuilt), false);
 
 const showerPillarBuilt = await readFile(path.join(dist, "douche-senior/index.html"), "utf8");
-assert.ok(showerPillarBuilt.includes("Douche senior : prix, modèles, travaux et installation"));
+assert.ok(showerPillarBuilt.includes("Douche senior\u00a0: prix, modèles, travaux et installation"));
 assert.ok(showerPillarBuilt.includes('id="contraintes"'));
 assert.ok(showerPillarBuilt.includes('href="/douche-senior/departements/"'));
 assert.equal(showerPillarBuilt.includes('id="aides"'), false);
@@ -418,6 +419,9 @@ assert.equal((lilleBuilt.match(/<details data-local-faq/g) || []).length, 9);
 assert.ok(lilleBuilt.includes("Commune de Lille"));
 assert.ok(lilleBuilt.includes("Rail rectiligne ou fabriqué sur mesure"));
 assert.ok(lilleBuilt.includes("MaPrimeAdapt’"));
+assert.ok(lilleBuilt.includes("forme de l’escalier\u00a0: droit, tournant ou avec palier"));
+assert.equal(lilleBuilt.includes("forme de l’escalier : droit, tournant ou avec palier"), false);
+assert.equal(lilleBuilt.includes("la première décision consiste à savoir si le rail peut rester rectiligne"), false);
 assert.ok(lilleBuilt.includes('href="/monte-escalier/nord/lille/#budget"'));
 assert.ok(lilleBuilt.includes('href="/monte-escalier/nord/lille/#faisabilite"'));
 assert.ok(bordeauxBuilt.includes('cp-exemple="33000"'));

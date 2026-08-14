@@ -1139,30 +1139,19 @@ function generatedStairliftCityConfig(record, city) {
     ? `${housingText} Ces chiffres décrivent la commune entière et ne permettent pas de choisir le rail d’un logement particulier.`
     : `${housingText} Ces repères départementaux ne doivent pas être lus comme des statistiques propres à la commune ; la configuration de l’escalier doit être constatée dans le logement.`;
   const locationAtSentenceStart = upperFirst(cityPlace);
-  const dominantHousing = stats
-    ? houses >= apartments
-      ? `${formatNumber(houses)} % de maisons`
-      : `${formatNumber(apartments)} % d’appartements`
-    : "un parc communal qui n’est pas détaillé dans le même millésime";
-  const buildingAge = stats
-    ? `${formatNumber(stats.pre1971)} % des résidences principales ont été achevées avant 1971`
-    : "l’ancienneté du parc communal n’est pas détaillée dans les données affichées";
-  const housingCheck = stats && apartments >= houses
-    ? "Dans un immeuble, il faut distinguer l’escalier privatif des parties communes et préserver la circulation des autres occupants."
-    : "Le type et l’ancienneté du logement ne révèlent toutefois ni la largeur, ni les virages, ni les dégagements de l’escalier.";
   const introVariants = stats
     ? [
-        `${locationAtSentenceStart}, choisir un monte-escalier commence par la forme de l’escalier : volée droite, virage, palier ou accès extérieur. L’INSEE recense ${dominantHousing} dans la commune et indique que ${buildingAge}. ${housingCheck} Un relevé sur place confirme le rail, le passage disponible et les options réellement utiles.`,
-        `Un projet de monte-escalier ${cityPlace} doit d’abord préciser le nombre de volées, les changements de direction et la place libre en haut comme en bas. Les données INSEE font état de ${dominantHousing} dans la commune. ${housingCheck} Le devis peut ensuite distinguer l’appareil, le rail, la pose et les éventuels travaux complémentaires.`,
-        `${locationAtSentenceStart}, un escalier droit peut recevoir un rail rectiligne, tandis qu’un virage ou un palier demande généralement un rail fabriqué sur mesure. L’INSEE indique que ${buildingAge}. ${housingCheck} La mesure des marches, des portes proches et du siège replié reste indispensable avant de retenir un modèle.`,
-        `Pour préparer l’installation d’un monte-escalier ${cityPlace}, il faut observer l’usage quotidien autant que la géométrie : position assise, pivotement à l’arrivée, accès aux pièces et passage des autres occupants. Le parc local compte ${dominantHousing}. ${housingCheck} La visite technique transforme ces besoins en tracé et en devis précis.`,
-        `${locationAtSentenceStart}, le prix d’un monte-escalier dépend surtout du rail, des courbes, de la longueur du parcours et des options de sécurité. L’INSEE recense ${dominantHousing}, tandis que ${buildingAge}. ${housingCheck} Ces chiffres donnent un contexte local ; seules les mesures du domicile permettent de chiffrer l’installation.`,
-        `Installer un monte-escalier ${cityPlace} peut concerner un escalier intérieur, un perron ou plusieurs niveaux. Les statistiques communales indiquent ${dominantHousing}. ${housingCheck} Le professionnel doit aussi vérifier l’alimentation, les zones de stationnement, les portes et la largeur restant disponible lorsque le siège est replié.`,
-        `${locationAtSentenceStart}, la première décision consiste à savoir si le rail peut rester rectiligne ou doit suivre une courbe. L’INSEE indique que ${buildingAge} et recense ${dominantHousing}. ${housingCheck} Une étude dans le logement permet ensuite de choisir le siège, le pivotement et les dispositifs de sécurité adaptés.`,
-        `Un monte-escalier ${cityPlace} doit faciliter le déplacement tout en laissant l’escalier praticable pour les autres occupants. L’INSEE recense ${dominantHousing} dans la commune. ${housingCheck} La largeur utile, les obstacles, le départ, l’arrivée et chaque changement de pente doivent donc être relevés avant la commande du rail.`
+        `${locationAtSentenceStart}, le choix du rail dépend d’abord de la forme de l’escalier : droit, tournant, avec palier ou extérieur. Une prise de mesures permet ensuite de vérifier le passage disponible, les zones de départ et d’arrivée ainsi que les options utiles.`,
+        `Un projet de monte-escalier ${cityPlace} commence par le relevé des volées, des virages et de la place libre en haut comme en bas. Cette visite permet de choisir le rail et d’établir un devis adapté à l’escalier.`,
+        `${locationAtSentenceStart}, un escalier droit peut recevoir un rail rectiligne, tandis qu’un virage ou un palier demande généralement un rail fabriqué sur mesure. La largeur des marches, les portes proches et l’encombrement du siège doivent aussi être vérifiés.`,
+        `Pour installer un monte-escalier ${cityPlace}, il faut tenir compte de la géométrie et de l’usage quotidien : position assise, pivotement à l’arrivée et passage des autres occupants. La visite technique transforme ces besoins en un tracé précis.`,
+        `${locationAtSentenceStart}, le prix d’un monte-escalier dépend surtout de la forme du rail, de la longueur du parcours et des options de sécurité. Seules les mesures prises au domicile permettent de confirmer la configuration et de chiffrer l’installation.`,
+        `Installer un monte-escalier ${cityPlace} peut concerner un escalier intérieur, un perron ou plusieurs niveaux. Le professionnel vérifie le tracé, l’alimentation, les zones de stationnement et la largeur restant disponible lorsque le siège est replié.`,
+        `${locationAtSentenceStart}, le choix du rail dépend d’abord de la forme de l’escalier : droit, tournant ou avec palier. Une prise de mesures permet ensuite de vérifier le passage disponible, le pivotement du siège et les éventuelles contraintes de copropriété.`,
+        `Un monte-escalier ${cityPlace} doit faciliter le déplacement tout en laissant l’escalier praticable. La largeur utile, les obstacles, le départ, l’arrivée et chaque changement de direction sont donc relevés avant la fabrication du rail.`
       ]
     : [
-        `${locationAtSentenceStart}, un projet de monte-escalier commence par la mesure des marches, des virages, des paliers et des accès. La population communale est disponible via l’API Géo, mais les indicateurs détaillés sur le logement présentés ici concernent Mayotte dans son ensemble. Le professionnel doit donc examiner directement l’escalier, le support, l’alimentation et l’exposition avant de proposer un rail et un devis.`
+        `${locationAtSentenceStart}, un projet de monte-escalier commence par la mesure des marches, des virages, des paliers et des accès. Le professionnel vérifie aussi le support, l’alimentation et l’exposition avant de proposer un rail et un devis adaptés.`
       ];
   const introduction = introVariants[variantIndex % introVariants.length];
   const localHousingAnalysis = stats
