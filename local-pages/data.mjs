@@ -2,6 +2,7 @@ import { departmentRecords } from "./department-records.mjs";
 
 const updatedAt = "2026-08-12";
 const showerUpdatedAt = "2026-08-13";
+const stairCityUpdatedAt = "2026-08-14";
 
 const stairliftPrices = Object.freeze([
   {
@@ -364,6 +365,79 @@ function createPublishedStairliftDepartment(config) {
       availableModels: ["Droit", "tournant", "extérieur", "assis-debout"],
       nationalPriceRanges: stairliftPrices,
       projectAssistance: ["MaPrimeAdapt’", ...config.projectAssistance]
+    }
+  });
+}
+
+function createPublishedStairliftCity(config) {
+  return commonDraft({
+    id: `monte-escalier-${config.departmentSlug}-${config.citySlug}`,
+    service: "monte-escalier",
+    pageLevel: "city",
+    regionName: config.regionName,
+    regionSlug: config.regionSlug,
+    departmentName: config.departmentName,
+    departmentSlug: config.departmentSlug,
+    departmentCode: config.departmentCode,
+    locationPhrase: config.cityPreposition,
+    cityName: config.cityName,
+    citySlug: config.citySlug,
+    inseeCode: config.inseeCode,
+    postalCodes: config.postalCodes,
+    intercommunalityName: null,
+    seoTitle: `Monte-escalier ${config.cityPreposition} : prix, aides et installation | Go Senior`,
+    metaDescription: `Prix, modèles et points à vérifier pour installer un monte-escalier ${config.cityPreposition}. Données INSEE communales et demande gratuite.`,
+    h1: `Monte-escalier ${config.cityPreposition} : prix, aides et devis`,
+    introduction: config.introduction,
+    geographicScope: config.geographicScope,
+    nationalPriceReference: stairliftPrices,
+    localCostFactors: config.localCostFactors,
+    demographicData: config.demographicData,
+    housingData: config.housingData,
+    inseeMethodology: config.inseeMethodology,
+    localHousingCommentary: config.localHousingCommentary,
+    projectOptions: stairliftOptions,
+    coownershipConsiderations: config.coownershipConsiderations,
+    localAssistancePrograms: config.localAssistancePrograms,
+    usefulLocalContacts: config.usefulLocalContacts,
+    coverageStatus: "nationwide",
+    routingStatus: "active",
+    leadDistributionMode: "exclusive",
+    coveredPostalCodes: [],
+    nearbyLocations: config.nearbyLocations,
+    localPlaces: config.localPlaces,
+    faq: config.faq,
+    officialSources: config.officialSources,
+    conclusion: config.conclusion,
+    cta: {
+      title: `Votre projet de monte-escalier ${config.cityPreposition}`,
+      description: "Décrivez l’escalier, les virages et les accès pour préparer une étude adaptée au logement.",
+      project: "monte-escalier",
+      postalCodeExample: config.postalCodeExample,
+      buttonLabel: "Démarrer mon projet",
+      reassurance: "Demande gratuite et sans engagement.",
+      validPostalCodeMessage: "Votre secteur est couvert. Continuez pour préciser l’escalier et vos coordonnées."
+    },
+    canonical: `/monte-escalier/${config.departmentSlug}/${config.citySlug}/`,
+    sourceCheckedAt: stairCityUpdatedAt,
+    status: "published",
+    indexStatus: "index",
+    sitemapStatus: "included",
+    publishedAt: stairCityUpdatedAt,
+    updatedAt: stairCityUpdatedAt,
+    serviceDetails: {
+      stairLocation: config.stairLocation,
+      stairShape: "Droit, tournant ou à confirmer après mesure",
+      levels: "Un ou plusieurs niveaux à documenter pendant l’étude",
+      turns: "Virages, changements de pente et volées à relever précisément",
+      landings: "Départ, arrivée, paliers et ouvertures à conserver accessibles",
+      width: "Largeur utile et passage avec le siège replié à mesurer sur place",
+      obstacles: ["portes proches", "radiateurs", "rampes", "marches irrégulières", "passage résiduel"],
+      railType: "Rail rectiligne ou fabriqué sur mesure selon la géométrie de l’escalier",
+      possibleTimelines: ["Délai confirmé après le relevé technique, la validation du devis et la fabrication éventuelle du rail"],
+      availableModels: ["Droit", "tournant", "extérieur", "assis-debout"],
+      nationalPriceRanges: stairliftPrices,
+      projectAssistance: ["MaPrimeAdapt’", "APA selon le plan d’aide", "PCH selon la situation"]
     }
   });
 }
@@ -1004,6 +1078,227 @@ function cityDatum(record, city, indicator, value, unit, year = city.statistics?
   };
 }
 
+function stairCityDatum(record, city, indicator, value, unit, year = city.statistics?.dataYear || 2023) {
+  return {
+    ...cityDatum(record, city, indicator, value, unit, year),
+    sourceCheckedAt: stairCityUpdatedAt,
+    retrievedAt: stairCityUpdatedAt
+  };
+}
+
+function generatedStairliftCityConfig(record, city) {
+  const stats = city.statistics;
+  const departmentSlug = slugify(record.name);
+  const citySlug = slugify(city.name);
+  const cityPlace = cityLocationPhrase(city.name);
+  const profile = territoryProfile(record);
+  const profileText = profileCopy[profile];
+  const peerEntries = record.topCommunes
+    .filter((candidate) => candidate.inseeCode !== city.inseeCode)
+    .map((candidate) => ({ city: candidate, departmentSlug }));
+  if (peerEntries.length < 4) {
+    for (const peerRecord of departmentRecords.filter((candidate) => candidate.regionName === record.regionName && candidate.code !== record.code)) {
+      const candidate = peerRecord.topCommunes[0];
+      if (!candidate) continue;
+      peerEntries.push({ city: candidate, departmentSlug: slugify(peerRecord.name) });
+      if (peerEntries.length >= 4) break;
+    }
+  }
+  const peers = peerEntries.map((entry) => entry.city);
+  const peerNames = peers.map((candidate) => candidate.name);
+  const variantIndex = [...city.inseeCode].reduce((total, character) => total + character.charCodeAt(0), 0);
+  const population = stats?.population ?? city.population;
+  const houses = stats?.houses;
+  const apartments = stats?.apartments;
+  const age65 = stats?.age65;
+  const cnsaSlug = slugify(record.name);
+  const cnsaDepartmentUrl = `https://www.pour-les-personnes-agees.gouv.fr/annuaire-departements/${cnsaSlug}-${record.code.toLowerCase()}`;
+  const cnsaInformationUrl = `https://www.pour-les-personnes-agees.gouv.fr/annuaire-points-dinformation-et-conseil/${cnsaSlug}-${record.code.toLowerCase()}`;
+  const demographicData = stats
+    ? [
+        stairCityDatum(record, city, "Population de la commune", population, "habitants"),
+        stairCityDatum(record, city, "Population âgée de 65 ans ou plus", age65, "%"),
+        stairCityDatum(record, city, "Population âgée de 80 ans ou plus", stats.age80, "%")
+      ]
+    : [stairCityDatum(record, city, "Population de la commune", population, "habitants", 2026)];
+  const housingData = stats
+    ? [
+        stairCityDatum(record, city, "Part des maisons dans le parc de logements", houses, "%"),
+        stairCityDatum(record, city, "Résidences principales occupées par leur propriétaire", stats.owners, "%"),
+        stairCityDatum(record, city, "Résidences principales achevées avant 1971", stats.pre1971, "%")
+      ]
+    : [
+        recordDatum(record, "Contexte départemental — résidences principales recensées", record.mainResidences, "logements", 2017),
+        recordDatum(record, "Contexte départemental — ménages propriétaires", record.owners, "%", 2017),
+        recordDatum(record, "Contexte départemental — habitat précaire", record.precariousHousing, "%", 2017)
+      ];
+  const housingText = stats
+    ? `${formatNumber(houses)} % des logements sont des maisons et ${formatNumber(apartments)} % des appartements ; ${formatNumber(stats.owners)} % des résidences principales sont occupées par leur propriétaire et ${formatNumber(stats.pre1971)} % ont été achevées avant 1971.`
+    : `Les données détaillées sur les logements ne sont pas affichées au niveau communal pour ${city.name}. Les repères de logement présentés concernent Mayotte dans son ensemble et conservent leur millésime 2017.`;
+  const housingFaqAnswer = stats
+    ? `${housingText} Ces chiffres décrivent la commune entière et ne permettent pas de choisir le rail d’un logement particulier.`
+    : `${housingText} Ces repères départementaux ne doivent pas être lus comme des statistiques propres à la commune ; la configuration de l’escalier doit être constatée dans le logement.`;
+  const locationAtSentenceStart = upperFirst(cityPlace);
+  const dominantHousing = stats
+    ? houses >= apartments
+      ? `${formatNumber(houses)} % de maisons`
+      : `${formatNumber(apartments)} % d’appartements`
+    : "un parc communal qui n’est pas détaillé dans le même millésime";
+  const buildingAge = stats
+    ? `${formatNumber(stats.pre1971)} % des résidences principales ont été achevées avant 1971`
+    : "l’ancienneté du parc communal n’est pas détaillée dans les données affichées";
+  const housingCheck = stats && apartments >= houses
+    ? "Dans un immeuble, il faut distinguer l’escalier privatif des parties communes et préserver la circulation des autres occupants."
+    : "Le type et l’ancienneté du logement ne révèlent toutefois ni la largeur, ni les virages, ni les dégagements de l’escalier.";
+  const introVariants = stats
+    ? [
+        `${locationAtSentenceStart}, choisir un monte-escalier commence par la forme de l’escalier : volée droite, virage, palier ou accès extérieur. L’INSEE recense ${dominantHousing} dans la commune et indique que ${buildingAge}. ${housingCheck} Un relevé sur place confirme le rail, le passage disponible et les options réellement utiles.`,
+        `Un projet de monte-escalier ${cityPlace} doit d’abord préciser le nombre de volées, les changements de direction et la place libre en haut comme en bas. Les données INSEE font état de ${dominantHousing} dans la commune. ${housingCheck} Le devis peut ensuite distinguer l’appareil, le rail, la pose et les éventuels travaux complémentaires.`,
+        `${locationAtSentenceStart}, un escalier droit peut recevoir un rail rectiligne, tandis qu’un virage ou un palier demande généralement un rail fabriqué sur mesure. L’INSEE indique que ${buildingAge}. ${housingCheck} La mesure des marches, des portes proches et du siège replié reste indispensable avant de retenir un modèle.`,
+        `Pour préparer l’installation d’un monte-escalier ${cityPlace}, il faut observer l’usage quotidien autant que la géométrie : position assise, pivotement à l’arrivée, accès aux pièces et passage des autres occupants. Le parc local compte ${dominantHousing}. ${housingCheck} La visite technique transforme ces besoins en tracé et en devis précis.`,
+        `${locationAtSentenceStart}, le prix d’un monte-escalier dépend surtout du rail, des courbes, de la longueur du parcours et des options de sécurité. L’INSEE recense ${dominantHousing}, tandis que ${buildingAge}. ${housingCheck} Ces chiffres donnent un contexte local ; seules les mesures du domicile permettent de chiffrer l’installation.`,
+        `Installer un monte-escalier ${cityPlace} peut concerner un escalier intérieur, un perron ou plusieurs niveaux. Les statistiques communales indiquent ${dominantHousing}. ${housingCheck} Le professionnel doit aussi vérifier l’alimentation, les zones de stationnement, les portes et la largeur restant disponible lorsque le siège est replié.`,
+        `${locationAtSentenceStart}, la première décision consiste à savoir si le rail peut rester rectiligne ou doit suivre une courbe. L’INSEE indique que ${buildingAge} et recense ${dominantHousing}. ${housingCheck} Une étude dans le logement permet ensuite de choisir le siège, le pivotement et les dispositifs de sécurité adaptés.`,
+        `Un monte-escalier ${cityPlace} doit faciliter le déplacement tout en laissant l’escalier praticable pour les autres occupants. L’INSEE recense ${dominantHousing} dans la commune. ${housingCheck} La largeur utile, les obstacles, le départ, l’arrivée et chaque changement de pente doivent donc être relevés avant la commande du rail.`
+      ]
+    : [
+        `${locationAtSentenceStart}, un projet de monte-escalier commence par la mesure des marches, des virages, des paliers et des accès. La population communale est disponible via l’API Géo, mais les indicateurs détaillés sur le logement présentés ici concernent Mayotte dans son ensemble. Le professionnel doit donc examiner directement l’escalier, le support, l’alimentation et l’exposition avant de proposer un rail et un devis.`
+      ];
+  const introduction = introVariants[variantIndex % introVariants.length];
+  const localHousingAnalysis = stats
+    ? `Le dossier INSEE de ${city.name} (${city.inseeCode}) recense ${formatNumber(population)} habitants, dont ${formatNumber(age65)} % âgés de 65 ans ou plus. Côté logement, ${formatNumber(houses)} % sont des maisons et ${formatNumber(apartments)} % des appartements ; ${formatNumber(stats.pre1971)} % des résidences principales ont été achevées avant 1971. Ces données décrivent la commune, pas un escalier précis. Elles servent à préparer les questions sur les accès, les parties communes, les marches et les dégagements.`
+    : `${city.name} compte ${formatNumber(population)} habitants selon la population de référence disponible via l’API Géo. Les indicateurs de logement affichés concernent Mayotte dans son ensemble et datent de 2017 ; ils ne sont pas présentés comme des chiffres communaux. La configuration du rail doit être déterminée directement dans le logement, après mesure de l’escalier et des accès.`;
+  const localInseeSource = stats
+    ? {
+        organization: "INSEE",
+        exactTitle: `Dossier complet — Commune de ${city.name} (${city.inseeCode})`,
+        supportedClaims: ["Population communale", "Structure par âge", "Maisons", "Appartements", "Statut d’occupation", "Période d’achèvement"],
+        dataYear: "RP 2023",
+        publishedAt: "2026-07-23",
+        checkedAt: stairCityUpdatedAt,
+        officialUrl: `https://www.insee.fr/fr/statistiques/2011101?geo=COM-${city.inseeCode}`,
+        scope: "local"
+      }
+    : {
+        organization: "API Géo",
+        exactTitle: `Commune de ${city.name} (${city.inseeCode})`,
+        supportedClaims: ["Nom", "Code INSEE", "Population de référence", "Code postal"],
+        dataYear: "2026",
+        publishedAt: null,
+        checkedAt: stairCityUpdatedAt,
+        officialUrl: `https://geo.api.gouv.fr/communes/${city.inseeCode}?fields=nom,code,population,codesPostaux`,
+        scope: "local"
+      };
+
+  return {
+    departmentName: record.name,
+    departmentSlug,
+    departmentCode: record.code,
+    regionName: record.regionName,
+    regionSlug: slugify(record.regionName),
+    cityName: city.name,
+    citySlug,
+    cityPreposition: cityPlace,
+    inseeCode: city.inseeCode,
+    postalCodes: city.postalCode ? [city.postalCode] : [],
+    postalCodeExample: city.postalCode || `${record.code.padStart(2, "0")}000`,
+    demographicData,
+    housingData,
+    introduction,
+    geographicScope: `Les données locales de cette page concernent la commune de ${city.name} (${city.inseeCode}), dans le département ${record.name}. Les prix sont des fourchettes nationales. La configuration du rail et l’intervention d’un professionnel se confirment à l’adresse exacte du projet.`,
+    localCostFactors: [
+      "Un rail droit suit une volée rectiligne ; un virage, un palier ou plusieurs volées imposent généralement une fabrication sur mesure.",
+      `La largeur des marches, les portes, les radiateurs et les zones de stationnement doivent être relevés dans le logement ${cityPlace}, siège ouvert puis replié.`,
+      `L’accès au domicile ${cityPlace}, le stationnement et le transport des éléments du rail peuvent modifier l’organisation de la pose sans changer le prix catalogue de l’appareil.`,
+      `${profileText.factor} Ce point doit être contrôlé sur l’escalier concerné plutôt que déduit du seul territoire.`,
+      "Deux devis sont comparables s’ils détaillent le modèle, le rail, la pose, le pivotement, les options, l’alimentation, la garantie, l’entretien et les travaux annexes."
+    ],
+    inseeMethodology: stats
+      ? `La part des 65 ans ou plus additionne ${formatNumber(stats.age65to79)} % de 65 à 79 ans et ${formatNumber(stats.age80)} % de 80 ans ou plus. La part avant 1971 additionne ${formatNumber(stats.housingBefore1919)} % avant 1919, ${formatNumber(stats.housing1919to1945)} % de 1919 à 1945 et ${formatNumber(stats.housing1946to1970)} % de 1946 à 1970.`
+      : "Pour les communes de Mayotte, la population de référence provient de l’API Géo. Les indicateurs de logement affichés sont départementaux et issus du recensement 2017 ; ils ne sont pas présentés comme des valeurs communales.",
+    localHousingCommentary: localHousingAnalysis,
+    coownershipConsiderations: `${cityPlace}, un escalier entièrement privatif doit être distingué d’un escalier, d’un palier ou d’un accès commun. Le règlement de copropriété et le syndic permettent de vérifier les autorisations et le passage minimal à préserver avant toute installation.`,
+    localAssistancePrograms: [
+      nationalAdaptationProgram,
+      {
+        programName: `APA — ${record.name}`,
+        programType: "aide_nationale_geree_localement",
+        description: "L’Allocation personnalisée d’autonomie à domicile est instruite par le service autonomie départemental. Les dépenses éventuellement retenues dépendent de l’évaluation et du plan d’aide individuel.",
+        eligibilitySummary: "À partir de 60 ans, selon la résidence, la perte d’autonomie évaluée et le plan d’aide établi.",
+        officialOrganization: `Service autonomie — ${record.name}`,
+        officialTitle: `Département — ${record.name}`,
+        officialUrl: cnsaDepartmentUrl,
+        sourceCheckedAt: stairCityUpdatedAt,
+        status: "verified"
+      }
+    ],
+    usefulLocalContacts: [
+      {
+        programName: `Information et conseil — ${record.name}`,
+        programType: "contact_departemental",
+        description: `L’annuaire du Service public de l’autonomie permet de rechercher les structures d’information et de conseil recensées pour ${record.name}.`,
+        eligibilitySummary: "Consultation libre de l’annuaire ; les services proposés dépendent de chaque structure.",
+        officialOrganization: "Service public de l’autonomie — CNSA",
+        officialTitle: `Annuaire d’information et de conseil — ${record.name}`,
+        officialUrl: cnsaInformationUrl,
+        sourceCheckedAt: stairCityUpdatedAt,
+        status: "verified"
+      }
+    ],
+    nearbyLocations: peerEntries.map((entry) => `monte-escalier-${entry.departmentSlug}-${slugify(entry.city.name)}`),
+    localPlaces: [city.name, ...peerNames],
+    faq: [
+      { question: `Quel budget prévoir pour un monte-escalier ${cityPlace} ?`, answer: `Les repères nationaux 2026 vont de 2 500 à 5 500 € pose comprise pour un modèle droit et de 6 000 à 12 000 € pour un tournant. Le devis ${cityPlace} dépend du tracé, de la longueur du rail, des options et des éventuels travaux complémentaires.`, local: true },
+      { question: `Que disent les données de logement de ${city.name} ?`, answer: housingFaqAnswer, local: true },
+      { question: `Faut-il un monte-escalier droit ou tournant ${cityPlace} ?`, answer: "Un rail droit convient à une volée rectiligne sans virage ni palier intermédiaire. Une courbe, plusieurs volées ou un changement de pente conduisent généralement à un rail tournant fabriqué sur mesure.", local: true },
+      { question: `Un escalier étroit peut-il être équipé à ${city.name} ?`, answer: "Parfois. Il faut mesurer la largeur utile, le passage avec le siège replié, les accoudoirs, les portes proches et les dégagements. La morphologie et les capacités de l’utilisateur comptent également.", local: true },
+      { question: `Que vérifier dans une copropriété ${cityPlace} ?`, answer: "Il faut identifier le caractère privatif ou commun de l’escalier, préserver le passage et vérifier les autorisations si la pose touche un accès partagé, un mur ou une alimentation commune.", local: true },
+      { question: `Comment préparer la visite technique à ${city.name} ?`, answer: "Photographiez l’escalier, comptez les marches et les virages, puis signalez les portes, radiateurs, paliers et prises électriques. Le technicien réalisera ensuite les mesures nécessaires au tracé du rail.", local: true },
+      { question: `Comment vérifier qu’un professionnel intervient à ${city.name} ?`, answer: "Indiquez le code postal et décrivez l’escalier. Go Senior peut alors orienter la demande vers un professionnel indépendant intervenant dans ce secteur pour le type de projet concerné.", local: true },
+      { question: `À qui s’adresser pour préparer une demande d’APA ${cityPlace} ?`, answer: "Le service autonomie départemental instruit l’APA et l’annuaire officiel recense les points d’information disponibles sur le territoire. Le financement n’est jamais automatique : il dépend de l’évaluation et du plan d’aide.", local: true },
+      { question: `Comment comparer deux devis de monte-escalier reçus ${cityPlace} ?`, answer: "Comparez le même périmètre : modèle, rail, pose, pivotement, repose-pieds, alimentation, délai, garantie, entretien, dépannage et travaux annexes. Les exclusions doivent être écrites.", local: true }
+    ],
+    officialSources: [
+      localInseeSource,
+      ...(stats ? [] : [{
+        organization: "INSEE",
+        exactTitle: "Mayotte en 2017 — population et conditions de logement",
+        supportedClaims: ["Résidences principales", "Propriétaires", "Habitat précaire"],
+        dataYear: "2017",
+        publishedAt: "2019-08-05",
+        checkedAt: stairCityUpdatedAt,
+        officialUrl: "https://www.insee.fr/fr/statistiques/3713016?sommaire=4199393",
+        scope: "local"
+      }]),
+      {
+        organization: "Service public de l’autonomie — CNSA",
+        exactTitle: `Département — ${record.name}`,
+        supportedClaims: ["Service autonomie compétent", "Coordonnées départementales", "Démarches APA"],
+        dataYear: "2026",
+        publishedAt: null,
+        checkedAt: stairCityUpdatedAt,
+        officialUrl: cnsaDepartmentUrl,
+        additionalOfficialUrls: [cnsaInformationUrl],
+        scope: "local"
+      },
+      {
+        organization: "France Rénov’",
+        exactTitle: "MaPrimeAdapt’",
+        supportedClaims: ["Travaux pouvant être financés", "Conditions", "Parcours d’accompagnement"],
+        dataYear: "2026",
+        publishedAt: null,
+        checkedAt: stairCityUpdatedAt,
+        officialUrl: "https://france-renov.gouv.fr/aides/maprimeadapt",
+        scope: "national"
+      }
+    ],
+    conclusion: `${locationAtSentenceStart}, le bon monte-escalier dépend de l’escalier et de son usage quotidien plus que des statistiques communales. Les données locales donnent un contexte ; le relevé technique confirme ensuite le rail, le passage disponible, les options de sécurité et le devis.`,
+    stairLocation: profile === "littoral" || profile === "ultramarin"
+      ? "Intérieur ou extérieur, avec exposition et entretien à documenter"
+      : "Intérieur ou extérieur selon l’accès à équiper"
+  };
+}
+
 function generatedShowerCityConfig(record, city) {
   const stats = city.statistics;
   const departmentSlug = slugify(record.name);
@@ -1173,6 +1468,9 @@ const generatedNationalDepartmentPages = departmentRecords
 
 const generatedShowerDepartmentPages = departmentRecords
   .map((record) => createPublishedShowerDepartment(generatedShowerConfig(record, departmentRecords)));
+
+const generatedStairliftCityPages = departmentRecords.flatMap((record) => record.topCommunes
+  .map((city) => createPublishedStairliftCity(generatedStairliftCityConfig(record, city))));
 
 const generatedShowerCityPages = departmentRecords.flatMap((record) => record.topCommunes
   .map((city) => createPublishedShowerCity(generatedShowerCityConfig(record, city))));
@@ -1695,47 +1993,6 @@ export const localPages = [
   }),
   ...generatedNationalDepartmentPages,
   ...generatedShowerDepartmentPages,
-  ...generatedShowerCityPages,
-  commonDraft({
-    id: "monte-escalier-nord-lille",
-    service: "monte-escalier",
-    pageLevel: "city",
-    regionName: "Hauts-de-France",
-    regionSlug: "hauts-de-france",
-    departmentName: "Nord",
-    departmentSlug: "nord",
-    departmentCode: "59",
-    cityName: "Lille",
-    citySlug: "lille",
-    inseeCode: "59350",
-    postalCodes: ["59000"],
-    intercommunalityName: "Métropole Européenne de Lille",
-    coverageStatus: "nationwide",
-    seoTitle: "Monte-escalier à Lille : prix et solutions — Go Senior",
-    metaDescription: "Préparation de la page locale Go Senior consacrée aux monte-escaliers à Lille. Les données locales doivent être vérifiées avant publication.",
-    h1: "Monte-escalier à Lille : prix et solutions disponibles",
-    nationalPriceReference: stairliftPrices,
-    projectOptions: stairliftOptions,
-    cta: {
-      title: "Vérifiez les solutions à Lille",
-      description: null,
-      project: "monte-escalier",
-      postalCodeExample: "59000"
-    },
-    canonical: "/monte-escalier/nord/lille/",
-    serviceDetails: {
-      stairLocation: null,
-      stairShape: null,
-      levels: null,
-      turns: null,
-      landings: null,
-      width: null,
-      obstacles: [],
-      railType: null,
-      possibleTimelines: [],
-      availableModels: [],
-      nationalPriceRanges: stairliftPrices,
-      projectAssistance: []
-    }
-  })
+  ...generatedStairliftCityPages,
+  ...generatedShowerCityPages
 ];

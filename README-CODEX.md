@@ -131,11 +131,11 @@ Header.dc.html (navigation + menu mobile + barre CTA fixe), Footer.dc.html, Bloc
 ## Moteur de pages locales — implémenté
 
 Le moteur programmatique se trouve dans `local-pages/` :
-- `data.mjs` orchestre les 101 départements publiés et trois brouillons de validation (Lille, Gironde, Bordeaux) ;
+- `data.mjs` orchestre 202 départements et 1 002 pages communales publiées pour les verticales monte-escalier et douche senior ;
 - `schema.mjs` applique le modèle commun, les champs propres à chaque service, les règles de publication, les codes postaux de couverture et le contrôle de similarité ;
 - `render.mjs` fournit les quatre templates réutilisables en conservant le design validé et en réutilisant Header, Footer et BlocProjet.
 
-Le build génère le hub indexable `/monte-escalier/departements/`, les 101 départements et les trois routes de validation sans aucun placeholder public. Les départements sont en `published`, `index` et `included` ; Lille, la Gironde et Bordeaux restent en brouillon, `noindex, follow` et hors sitemap. Les maquettes `Modele-*.dc.html` restent les références visuelles dans le dépôt mais ne sont plus copiées dans le site public.
+Le build génère les deux hubs indexables, 202 départements et 1 002 pages communales sans placeholder public. Toutes ces pages sont en `published`, `index` et `included`. Les maquettes `Modele-*.dc.html` restent les références visuelles dans le dépôt mais ne sont plus copiées dans le site public.
 
 ### Déploiement départemental préparé le 12/08/2026
 - Hub `/monte-escalier/departements/` inspiré de la hiérarchie de Cadastre France : page nationale → annuaire régional → pages départementales.
@@ -146,7 +146,7 @@ Le build génère le hub indexable `/monte-escalier/departements/`, les 101 dép
 - Données INSEE RP 2023 et sources officielles structurées ; Mayotte conserve des millésimes 2017/2026 explicitement documentés.
 - FAQ, conclusion et facteurs de coût locaux validés par le schéma et le contrôle de similarité.
 - Couverture nationale de la verticale monte-escalier séparée des états de routing `active`, `capped`, `paused` et `technical_error`.
-- Le hub et les liens de proximité ne peuvent afficher que des pages publiées, indexables et présentes dans le sitemap ; les trois brouillons demeurent masqués.
+- Les hubs, les départements et les liens de proximité ne peuvent afficher que des pages publiées, indexables et présentes dans les sitemaps.
 
 Sitemaps locaux préparés :
 - `/sitemaps/monte-escalier-departements.xml`
@@ -160,7 +160,7 @@ Sitemaps locaux préparés :
 3. Prix = fourchettes indicatives avec badge « à vérifier » ; jamais présentés comme devis
 4. Aides : toujours renvoyer aux sources officielles ; Go Senior ne décide pas de l'éligibilité ; ne pas commencer les travaux avant accord
 5. Consentement formulaires : case jamais pré-cochée ; texte validé juridiquement
-6. Pages locales : publier uniquement avec données INSEE réelles, aides locales vérifiées et couverture professionnelle effective — pas de pages minces générées en masse
+6. Pages locales : publier uniquement avec données INSEE réelles, sources locales vérifiées et couverture professionnelle effective ; les ressources d’aide restent requises pour le monte-escalier mais ne sont pas mises en avant sur la douche — pas de pages minces générées en masse
 7. Téléphone : retiré du site en attente de validation — réintégrer aux emplacements prévus (header, footer, encadrés latéraux) une fois validé
 8. Direction éditoriale (Jérôme Rappel) : mentions légales uniquement, pas de mise en avant
 

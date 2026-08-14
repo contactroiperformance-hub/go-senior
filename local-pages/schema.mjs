@@ -468,24 +468,30 @@ export function editorialSimilarity(left, right) {
 
 export function similarityReport(pages, threshold = 0.65) {
   const issues = [];
-  const rawTokenSets = pages.map(editorialShingles);
-  const documentFrequency = new Map();
-  for (const tokens of rawTokenSets) {
-    for (const token of tokens) {
-      documentFrequency.set(token, (documentFrequency.get(token) || 0) + 1);
-    }
+  const groups = new Map();
+  for (const page of pages) {
+    const key = `${page.service}:${page.pageLevel}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push({ page, tokens: editorialShingles(page) });
   }
-  const commonTemplateLimit = Math.max(2, Math.ceil(pages.length * 0.05));
-  const tokenSets = rawTokenSets.map((tokens) => new Set(
-    [...tokens].filter((token) => documentFrequency.get(token) <= commonTemplateLimit)
-  ));
-  for (let i = 0; i < pages.length; i += 1) {
-    for (let j = i + 1; j < pages.length; j += 1) {
-      const similarity = shingleSimilarity(tokenSets[i], tokenSets[j]);
-      if (similarity >= threshold) {
+  for (const group of groups.values()) {
+    const documentFrequency = new Map();
+    for (const { tokens } of group) {
+      for (const token of tokens) {
+        documentFrequency.set(token, (documentFrequency.get(token) || 0) + 1);
+      }
+    }
+    const commonTemplateLimit = Math.max(2, Math.ceil(group.length * 0.05));
+    const tokenSets = group.map(({ tokens }) => new Set(
+      [...tokens].filter((token) => documentFrequency.get(token) <= commonTemplateLimit)
+    ));
+    for (let i = 0; i < group.length; i += 1) {
+      for (let j = i + 1; j < group.length; j += 1) {
+        const similarity = shingleSimilarity(tokenSets[i], tokenSets[j]);
+        if (similarity < threshold) continue;
         issues.push({
-          left: pages[i].id,
-          right: pages[j].id,
+          left: group[i].page.id,
+          right: group[j].page.id,
           similarity
         });
       }
