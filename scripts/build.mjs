@@ -294,6 +294,38 @@ function protectFrenchColons(source) {
   );
 }
 
+function protectVisibleEmailAddresses(source) {
+  const fragments = [];
+  const reserve = (fragment) => {
+    const placeholder = `GO_SENIOR_PROTECTED_EMAIL_${fragments.length}_PLACEHOLDER`;
+    fragments.push({ placeholder, fragment });
+    return placeholder;
+  };
+
+  let result = source.replace(
+    /<!--email_off-->[\s\S]*?<!--\/email_off-->|<script\b[\s\S]*?<\/script>|<style\b[\s\S]*?<\/style>/gi,
+    (fragment) => reserve(fragment)
+  );
+
+  result = result.replace(
+    /<a\b[^>]*\bhref=["']mailto:[^"']+["'][^>]*>[\s\S]*?<\/a>/gi,
+    (anchor) => reserve(`<!--email_off-->${anchor}<!--/email_off-->`)
+  );
+
+  result = result.replace(/<[^>]+>|[^<]+/g, (token) => {
+    if (token.startsWith("<")) return token;
+    return token.replace(
+      /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,
+      (email) => `<!--email_off-->${email}<!--/email_off-->`
+    );
+  });
+
+  for (const { placeholder, fragment } of fragments) {
+    result = result.replaceAll(placeholder, fragment);
+  }
+  return result;
+}
+
 function addProductionHead(source, file, route, indexed, options = {}) {
   const canonical = `${origin}${route}`;
   const title = titleFrom(source);
@@ -352,6 +384,7 @@ function transform(source, file, route = null, indexed = false, stripSharedFonts
   if (stripSharedFonts) result = stripSharedFontHead(result);
   if (route) result = addProductionHead(result, file, route, indexed, options);
   result = protectFrenchColons(result);
+  result = protectVisibleEmailAddresses(result);
   return result;
 }
 

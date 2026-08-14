@@ -178,4 +178,4 @@ Sitemaps locaux préparés :
 - Services tiers : Cloudflare, IONOS, Google Analytics et Microsoft Clarity sont documentés. Revalider les politiques avant d’activer tout nouveau prestataire ou traceur.
 - Avant production : exécuter `npm run deploy:preview`, contrôler les pages représentatives et tester une vraie demande LeadByte, puis lancer `npm run deploy:production`.
 
-⚠️ Cloudflare : désactiver « Email Address Obfuscation » (Scrape Shield) ou exclure son script de décodage du blocage des traceurs — sinon support@go-senior.fr s'affiche « [email protected] » sur le site en production.
+Cloudflare : le build protège automatiquement les adresses visibles avec `email_off`, afin que `support@go-senior.fr` reste lisible même lorsque le script « Email Address Obfuscation » est bloqué. Le contrôle de build refuse toute nouvelle adresse visible non protégée.
