@@ -1147,7 +1147,7 @@ function generatedStairliftCityConfig(record, city) {
         `Pour installer un monte-escalier ${cityPlace}, il faut tenir compte de la géométrie et de l’usage quotidien : position assise, pivotement à l’arrivée et passage des autres occupants. La visite technique transforme ces besoins en un tracé précis.`,
         `${locationAtSentenceStart}, le prix d’un monte-escalier dépend surtout de la forme du rail, de la longueur du parcours et des options de sécurité. Seules les mesures prises au domicile permettent de confirmer la configuration et de chiffrer l’installation.`,
         `Installer un monte-escalier ${cityPlace} peut concerner un escalier intérieur, un perron ou plusieurs niveaux. Le professionnel vérifie le tracé, l’alimentation, les zones de stationnement et la largeur restant disponible lorsque le siège est replié.`,
-        `${locationAtSentenceStart}, le choix du rail dépend d’abord de la forme de l’escalier : droit, tournant ou avec palier. Une prise de mesures permet ensuite de vérifier le passage disponible, le pivotement du siège et les éventuelles contraintes de copropriété.`,
+        `${locationAtSentenceStart}, le choix du rail dépend d’abord de la forme de l’escalier : droit, tournant ou avec palier. Une prise de mesures permet ensuite de concevoir une installation confortable, qui préserve le passage et facilite chaque déplacement au quotidien.`,
         `Un monte-escalier ${cityPlace} doit faciliter le déplacement tout en laissant l’escalier praticable. La largeur utile, les obstacles, le départ, l’arrivée et chaque changement de direction sont donc relevés avant la fabrication du rail.`
       ]
     : [
