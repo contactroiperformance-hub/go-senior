@@ -164,6 +164,15 @@ for (const target of [
 ]) {
   if (!newsPage.includes(target)) failures.push(`actualites/index.html: destination manquante ${target}`);
 }
+
+const projectPage = await readFile(path.join(dist, "projet", "index.html"), "utf8");
+if (!projectPage.includes("body .gsh-bar{display:none !important}body{padding-bottom:0 !important}")) {
+  failures.push("projet/index.html: barre mobile du formulaire non masquée");
+}
+const homePage = await readFile(path.join(dist, "index.html"), "utf8");
+if (!homePage.includes(".gsh-bar{display:flex !important}body{padding-bottom:76px}")) {
+  failures.push("index.html: barre mobile globale masquée par erreur");
+}
 const newsArticle = await readFile(path.join(dist, "actualites", "compte-personnel-france-renov", "index.html"), "utf8");
 if (!newsArticle.includes('<link rel="canonical" href="https://go-senior.fr/actualites/compte-personnel-france-renov/">')) {
   failures.push("actualité France Rénov’: URL canonique incorrecte");
