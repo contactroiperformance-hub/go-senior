@@ -440,7 +440,8 @@ assert.equal(bordeauxBuilt.includes("L’INSEE recense 79 % d’appartements dan
 assert.equal(/Aides locales|Aides nationales|MaPrimeAdapt|APA —/i.test(bordeauxBuilt), false);
 
 const rootSitemap = await readFile(path.join(dist, "sitemap.xml"), "utf8");
-assert.equal((rootSitemap.match(/<loc>/g) || []).length, 1228, "1 228 URL indexables dans le sitemap principal");
+assert.equal((rootSitemap.match(/<loc>/g) || []).length, 1229, "1 229 URL indexables dans le sitemap principal");
+assert.ok(rootSitemap.includes(`${origin}/actualites/compte-personnel-france-renov/`));
 for (const page of localPages) {
   const expected = effectivePublication(page).status === "published";
   assert.equal(rootSitemap.includes(`${origin}${localPageRoute(page)}`), expected, `${page.id}: présence sitemap cohérente`);

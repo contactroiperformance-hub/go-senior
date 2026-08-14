@@ -109,10 +109,10 @@ const pages = [
   ["Guide-plafonds-ressources.dc.html", "/guides/plafonds-ressources/", true, "2026-08-14"],
   ["Guide-apa-pch.dc.html", "/guides/apa-pch/", true, "2026-08-14"],
   ["Formulaire.dc.html", "/projet/", false],
-  // Les contenus actuels sont des fixtures éditoriales : la route reste
-  // consultable, mais ne doit entrer dans l'index qu'avec de vrais articles.
+  // La liste reste hors index jusqu'à contenir plusieurs véritables articles.
+  // Un article éditorialement complet peut être indexé séparément.
   ["Actualites.dc.html", "/actualites/", false],
-  ["Actualite-modele.dc.html", "/actualites/compte-personnel-france-renov/", false],
+  ["Actualite-modele.dc.html", "/actualites/compte-personnel-france-renov/", true, "2026-08-14"],
   ["A-propos.dc.html", "/a-propos/", true, "2026-08-14"],
   ["Methodologie.dc.html", "/methodologie-editoriale/", true, "2026-08-14"],
   ["Contact.dc.html", "/contact/", true, "2026-08-14"],
