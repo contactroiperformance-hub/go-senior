@@ -24,7 +24,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 const origin = "https://go-senior.fr";
 
-assert.equal(localPages.length, 704, "202 pages départementales, 501 pages ville douche et un brouillon ville monte-escalier");
+assert.equal(localPages.length, 1204, "202 pages départementales et 1 002 pages ville publiées");
 assert.deepEqual(
   new Set(localPages.map((page) => `${page.service}-${page.pageLevel}`)),
   new Set([
@@ -41,18 +41,11 @@ for (const page of localPages) {
     assert.ok(field in page, `${page.id}: ${field} présent`);
   }
   const publication = effectivePublication(page);
-  if (page.pageLevel === "department" || page.service === "douche-senior") {
-    assert.equal(publication.ready, true);
-    assert.equal(publication.status, "published");
-    assert.equal(publication.indexStatus, "index");
-    assert.equal(publication.sitemapStatus, "included");
-    assert.deepEqual(publication.reasons, []);
-  } else {
-    assert.equal(publication.status, "draft");
-    assert.equal(publication.indexStatus, "noindex");
-    assert.equal(publication.sitemapStatus, "excluded");
-    assert.ok(publication.reasons.length > 0, `${page.id}: données manquantes documentées`);
-  }
+  assert.equal(publication.ready, true);
+  assert.equal(publication.status, "published");
+  assert.equal(publication.indexStatus, "index");
+  assert.equal(publication.sitemapStatus, "included");
+  assert.deepEqual(publication.reasons, []);
 }
 
 for (const page of localPages.filter((item) => item.service === "douche-senior")) {
@@ -72,9 +65,27 @@ const mayotte = localPages.find((page) => page.id === "monte-escalier-mayotte");
 const showerGironde = localPages.find((page) => page.id === "douche-senior-gironde");
 const showerParis = localPages.find((page) => page.id === "douche-senior-paris");
 const showerMayotte = localPages.find((page) => page.id === "douche-senior-mayotte");
-assert.ok(nord && oise && somme && lille && bordeaux && showerGironde && showerParis && showerMayotte);
+const stairMamoudzou = localPages.find((page) => page.id === "monte-escalier-mayotte-mamoudzou");
+assert.ok(nord && oise && somme && lille && bordeaux && showerGironde && showerParis && showerMayotte && stairMamoudzou);
 assert.ok(mayotte);
+assert.equal(new Set(localPages.map((page) => page.id)).size, localPages.length, "identifiants locaux uniques");
+assert.equal(new Set(localPages.map((page) => localPageRoute(page))).size, localPages.length, "routes locales uniques");
+assert.equal(localPages.filter((page) => page.service === "monte-escalier" && page.pageLevel === "city").length, 501);
 assert.equal(localPages.filter((page) => page.service === "douche-senior" && page.pageLevel === "city").length, 501);
+assert.equal(effectivePublication(lille).status, "published");
+assert.equal(effectivePublication(lille).indexStatus, "index");
+assert.equal(effectivePublication(lille).sitemapStatus, "included");
+assert.ok(lille.introduction.includes("la première décision consiste à savoir si le rail peut rester rectiligne"));
+for (const page of localPages.filter((item) => item.service === "monte-escalier" && item.pageLevel === "city")) {
+  assert.ok(page.introduction.split(/\s+/).length >= 45, `${page.id}: introduction monte-escalier explicative`);
+  assert.ok(page.localHousingCommentary.split(/\s+/).length <= 120, `${page.id}: commentaire monte-escalier concis`);
+  assert.equal(page.nationalPriceReference.length, 4, `${page.id}: quatre fourchettes monte-escalier`);
+  assert.ok(page.localAssistancePrograms.length >= 2, `${page.id}: ressources nationales et départementales`);
+  assert.ok(page.nearbyLocations.length >= 4, `${page.id}: maillage vers les autres villes du département`);
+  assert.equal(/sans déduire une solution standard|données communales interchangeables/i.test(`${page.introduction} ${page.localHousingCommentary}`), false, `${page.id}: aucune formulation artificielle`);
+}
+assert.ok(stairMamoudzou.localHousingCommentary.includes("ne sont pas présentés comme des chiffres communaux"));
+assert.equal(stairMamoudzou.faq.some((item) => /Ces chiffres décrivent la commune entière/.test(item.answer)), false);
 assert.equal(effectivePublication(bordeaux).status, "published");
 assert.equal(effectivePublication(bordeaux).indexStatus, "index");
 assert.equal(effectivePublication(bordeaux).sitemapStatus, "included");
@@ -198,9 +209,10 @@ assert.equal(publicationReadiness(placeholderPage).ready, false);
 assert.ok(publicationReadiness(placeholderPage).reasons.includes("placeholder public détecté"));
 
 const nearbyFixture = structuredClone(bordeaux);
-nearbyFixture.nearbyLocations = [completePage.id, lille.id];
+const nonPublicLille = { ...lille, status: "draft", indexStatus: "noindex", sitemapStatus: "excluded" };
+nearbyFixture.nearbyLocations = [completePage.id, nonPublicLille.id];
 assert.deepEqual(
-  publicNearbyLocations(nearbyFixture, [completePage, lille, nearbyFixture]).map((page) => page.id),
+  publicNearbyLocations(nearbyFixture, [completePage, nonPublicLille, nearbyFixture]).map((page) => page.id),
   [completePage.id],
   "seules les destinations publiées, indexables et en sitemap sont liées"
 );
@@ -338,7 +350,8 @@ for (const officialUrl of [
   assert.ok(nordBuilt.includes(officialUrl), `lien officiel rendu: ${officialUrl}`);
 }
 assert.ok(nordBuilt.includes("data-local-nearby"), "les départements publiés sont maillés entre eux");
-assert.equal(nordBuilt.includes("/monte-escalier/nord/lille/"), false, "Lille reste masquée tant que sa page est en brouillon");
+assert.ok(nordBuilt.includes("/monte-escalier/nord/lille/"), "le département est maillé vers Lille");
+assert.equal((nordBuilt.match(/data-local-city-guides/g) || []).length, 1);
 assert.equal(containsPublicPlaceholder(nordBuilt), false);
 
 const oiseBuilt = await readFile(path.join(dist, "monte-escalier/oise/index.html"), "utf8");
@@ -398,6 +411,15 @@ const lilleBuilt = await readFile(path.join(dist, "monte-escalier/nord/lille/ind
 const bordeauxBuilt = await readFile(path.join(dist, "douche-senior/gironde/bordeaux/index.html"), "utf8");
 assert.ok(lilleBuilt.includes('cp-exemple="59000"'));
 assert.equal(lilleBuilt.includes('cp-exemple="33000"'), false);
+assert.ok(lilleBuilt.includes('<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">'));
+assert.equal(lilleBuilt.includes("data-local-draft-banner"), false);
+assert.equal((lilleBuilt.match(/data-local-insee-card/g) || []).length, 6);
+assert.equal((lilleBuilt.match(/<details data-local-faq/g) || []).length, 9);
+assert.ok(lilleBuilt.includes("Commune de Lille"));
+assert.ok(lilleBuilt.includes("Rail rectiligne ou fabriqué sur mesure"));
+assert.ok(lilleBuilt.includes("MaPrimeAdapt’"));
+assert.ok(lilleBuilt.includes('href="/monte-escalier/nord/lille/#budget"'));
+assert.ok(lilleBuilt.includes('href="/monte-escalier/nord/lille/#faisabilite"'));
 assert.ok(bordeauxBuilt.includes('cp-exemple="33000"'));
 assert.equal(bordeauxBuilt.includes('cp-exemple="59000"'), false);
 assert.ok(bordeauxBuilt.includes('href="/douche-senior/gironde/bordeaux/#budget"'));
@@ -410,6 +432,7 @@ assert.ok(bordeauxBuilt.includes("Commune de Bordeaux"));
 assert.equal(/Aides locales|Aides nationales|MaPrimeAdapt|APA —/i.test(bordeauxBuilt), false);
 
 const rootSitemap = await readFile(path.join(dist, "sitemap.xml"), "utf8");
+assert.equal((rootSitemap.match(/<loc>/g) || []).length, 1228, "1 228 URL indexables dans le sitemap principal");
 for (const page of localPages) {
   const expected = effectivePublication(page).status === "published";
   assert.equal(rootSitemap.includes(`${origin}${localPageRoute(page)}`), expected, `${page.id}: présence sitemap cohérente`);
@@ -435,7 +458,8 @@ assert.equal(
   "les 101 pages douche senior sont incluses dans leur sitemap dédié"
 );
 const stairCitySitemap = await readFile(path.join(dist, "sitemaps/monte-escalier-villes.xml"), "utf8");
-assert.equal(stairCitySitemap.includes("<loc>"), false, "le brouillon ville monte-escalier reste hors sitemap");
+assert.equal((stairCitySitemap.match(/<loc>/g) || []).length, 501, "les 501 pages ville monte-escalier sont incluses");
+assert.ok(stairCitySitemap.includes(`${origin}/monte-escalier/nord/lille/`));
 const showerCitySitemap = await readFile(path.join(dist, "sitemaps/douche-senior-villes.xml"), "utf8");
 assert.equal((showerCitySitemap.match(/<loc>/g) || []).length, 501, "les 501 pages ville douche sont incluses");
 assert.ok(showerCitySitemap.includes(`${origin}/douche-senior/gironde/bordeaux/`));
@@ -490,5 +514,5 @@ for (const file of [
 }
 
 console.log(
-  "Validated 202 indexable department pages, 501 indexable shower city pages, two national hubs, one remaining stairlift city draft, local schema, coverage rules, structured prices, INSEE calculations, Mayotte exceptions, dynamic modules, sitemaps, similarity, and SEO hierarchy."
+  "Validated 202 indexable department pages, 501 indexable stairlift city pages, 501 indexable shower city pages, two national hubs, local schema, coverage rules, structured prices, INSEE calculations, Mayotte exceptions, dynamic modules, sitemaps, similarity, and SEO hierarchy."
 );
