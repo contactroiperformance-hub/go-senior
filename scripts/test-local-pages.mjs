@@ -75,7 +75,7 @@ assert.equal(localPages.filter((page) => page.service === "douche-senior" && pag
 assert.equal(effectivePublication(lille).status, "published");
 assert.equal(effectivePublication(lille).indexStatus, "index");
 assert.equal(effectivePublication(lille).sitemapStatus, "included");
-assert.equal(lille.introduction, "À Lille, le choix du rail dépend d’abord de la forme de l’escalier : droit, tournant ou avec palier. Une prise de mesures permet ensuite de vérifier le passage disponible, le pivotement du siège et les éventuelles contraintes de copropriété.");
+assert.equal(lille.introduction, "À Lille, le choix du rail dépend d’abord de la forme de l’escalier : droit, tournant ou avec palier. Une prise de mesures permet ensuite de concevoir une installation confortable, qui préserve le passage et facilite chaque déplacement au quotidien.");
 for (const page of localPages.filter((item) => item.service === "monte-escalier" && item.pageLevel === "city")) {
   const introductionWordCount = page.introduction.split(/\s+/).length;
   assert.ok(introductionWordCount >= 25 && introductionWordCount <= 50, `${page.id}: introduction monte-escalier concise`);
@@ -84,6 +84,7 @@ for (const page of localPages.filter((item) => item.service === "monte-escalier"
   assert.ok(page.localAssistancePrograms.length >= 2, `${page.id}: ressources nationales et départementales`);
   assert.ok(page.nearbyLocations.length >= 4, `${page.id}: maillage vers les autres villes du département`);
   assert.equal(/sans déduire une solution standard|données communales interchangeables/i.test(`${page.introduction} ${page.localHousingCommentary}`), false, `${page.id}: aucune formulation artificielle`);
+  assert.equal(/contraintes de copropriété/i.test(page.introduction), false, `${page.id}: introduction orientée confort`);
 }
 assert.ok(stairMamoudzou.localHousingCommentary.includes("ne sont pas présentés comme des chiffres communaux"));
 assert.equal(stairMamoudzou.faq.some((item) => /Ces chiffres décrivent la commune entière/.test(item.answer)), false);
