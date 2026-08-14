@@ -87,12 +87,35 @@ function departmentLocation(page) {
   return page.locationPhrase || `dans le ${page.departmentName}`;
 }
 
-function section(title, content, gap = 14) {
+function section(title, content, gap = 14, id = "") {
   if (!content) return "";
-  return `<section style="display:flex;flex-direction:column;gap:${gap}px">
+  const attr = id ? ` id="${escapeAttribute(id)}"` : "";
+  return `<section${attr} style="display:flex;flex-direction:column;gap:${gap}px">
       <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(25px,2.8vw,31px);color:#1F2E27">${escapeHtml(title)}</h2>
       ${content}
     </section>`;
+}
+
+function heroShortcuts(page) {
+  const dataLabel = page.pageLevel === "city" ? `Les repères de ${page.cityName}` : "Les données locales";
+  const items = page.service === "douche-senior"
+    ? [
+        ["#budget", "Le budget", '<path d="M17 6.5A6 6 0 0 0 8 12a6 6 0 0 0 9 5.5M5 10.5h7M5 14h7"></path>'],
+        ["#donnees", dataLabel, '<path d="M5 19V9m7 10V5m7 14v-7"></path>'],
+        ["#faisabilite", "La faisabilité", '<path d="M4 20h4v-4h4v-4h4V8h4"></path>'],
+        ["#pro", "Trouver un pro", '<path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle>']
+      ]
+    : [
+        ["#budget", "Le budget", '<path d="M17 6.5A6 6 0 0 0 8 12a6 6 0 0 0 9 5.5M5 10.5h7M5 14h7"></path>'],
+        ["#aides", page.pageLevel === "city" ? "Les aides locales" : `Les aides ${departmentLocation(page)}`, '<path d="M4 13a8 8 0 0 1 16 0v6H4z"></path><path d="M9 19v-4h6v4"></path>'],
+        ["#faisabilite", "Compatibilité", '<path d="M4 20h4v-4h4v-4h4V8h4"></path>'],
+        ["#pro", "Trouver un pro", '<path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle>']
+      ];
+  const route = localPageRoute(page);
+  return `<div class="local-shortcuts"><div>${items.map(([href, label, path]) => `<a href="${escapeAttribute(`${route}${href}`)}">
+      <span><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path}</svg></span>
+      <strong>${escapeHtml(label)}</strong>
+    </a>`).join("")}</div></div>`;
 }
 
 function breadcrumb(page) {
@@ -102,8 +125,8 @@ function breadcrumb(page) {
     { label: "Accueil", href: "/" },
     { label: serviceLabel, href: guides.national }
   ];
-  if (page.service === "monte-escalier") {
-    items.push({ label: "Départements", href: "/monte-escalier/departements/" });
+  if (page.pageLevel === "department" || page.pageLevel === "city") {
+    items.push({ label: "Départements", href: `/${page.service}/departements/` });
   }
   if (page.pageLevel === "city") {
     items.push({
@@ -130,8 +153,8 @@ export function breadcrumbData(page) {
     { name: "Accueil", route: "/" },
     { name: SERVICE_LABELS[page.service], route: guides.national }
   ];
-  if (page.service === "monte-escalier") {
-    items.push({ name: "Départements", route: "/monte-escalier/departements/" });
+  if (page.pageLevel === "department" || page.pageLevel === "city") {
+    items.push({ name: "Départements", route: `/${page.service}/departements/` });
   }
   if (page.pageLevel === "city") {
     items.push({
@@ -185,17 +208,49 @@ function hero(page) {
           </div>
         </div>
         <figure class="local-hero-visual">
-          <img src="${escapeAttribute(image)}" alt="${escapeAttribute(imageAlt)}" width="800" height="600" loading="eager" fetchpriority="high">
+          <img src="${escapeAttribute(image)}" alt="${escapeAttribute(imageAlt)}" width="1340" height="560" loading="eager" fetchpriority="high" style="object-position:${page.service === "monte-escalier" ? "56% 30%" : "50% 50%"}">
           <figcaption>${escapeHtml(imageCaption)}</figcaption>
         </figure>
         ${blocProjet(page, page.cta.title)}
       </div>
     </div>
+    ${heroShortcuts(page)}
+  </section>`;
+}
+
+function afterRequestSection(page) {
+  const object = page.service === "monte-escalier" ? "votre escalier" : "votre salle de bain";
+  const cards = [
+    ['<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5.5l3.5 2"></path>', "Un conseiller vous rappelle", `Un seul appel pour comprendre ${object} et votre situation. Vous choisissez ensuite de poursuivre ou non.`],
+    ['<path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle>', "Un seul professionnel", "Votre demande est transmise à un unique professionnel indépendant intervenant dans votre secteur."],
+    ['<path d="M12 3l7.5 3v5.5c0 4.4-3.1 8.2-7.5 9.5-4.4-1.3-7.5-5.1-7.5-9.5V6z"></path>', "Gratuit et sans engagement", "Vos coordonnées sont transmises à ce professionnel pour l’étude du projet. Vous restez libre d’arrêter à tout moment."]
+  ];
+  return `<section id="ensuite" data-local-after-request class="local-after-request" aria-label="Ce qui se passe après votre demande">
+    <div class="local-after-request-heading"><h2>Ce qui se passe après votre demande</h2><span>Vous savez qui vous contacte, et pourquoi.</span></div>
+    <div class="local-after-request-grid">${cards.map(([path, title, text]) => `<div>
+      <span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E5B4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path}</svg></span>
+      <p><strong>${escapeHtml(title)}</strong><small>${escapeHtml(text)}</small></p>
+    </div>`).join("")}</div>
   </section>`;
 }
 
 function essentialsSection(page) {
-  if (page.service !== "monte-escalier" || page.pageLevel !== "department") return "";
+  if (page.pageLevel !== "department") return "";
+  if (page.service === "douche-senior") {
+    const replacement = page.nationalPriceReference?.find((item) => /Remplacement d’une baignoire/i.test(item.label));
+    const apartments = (page.housingData || []).find((item) => /Part des appartements/i.test(item.indicator));
+    const age = (page.demographicData || []).find((item) => /65 ans ou plus/i.test(item.indicator));
+    const cards = [
+      ["Projet fréquent", "Baignoire → douche", "dépose, accès, parois et réseaux à contrôler"],
+      ["Budget indicatif", replacement?.range || "Sur devis", "repère national, selon l’état de la pièce"],
+      ["Repère logement", apartments?.displayValue || "Parc local", apartments ? "d’appartements dans le département" : "données disponibles selon le millésime"],
+      ["Repère population", age?.displayValue || "Tout âge", age ? "de personnes âgées de 65 ans ou plus" : "usage évalué avec la personne"]
+    ];
+    return `<section data-local-essentials class="local-essentials" aria-labelledby="local-essentials-title">
+      <div class="local-essentials-heading"><p>L’essentiel</p><h2 id="local-essentials-title">Le projet en un coup d’œil</h2></div>
+      <div class="local-essentials-grid">${cards.map(([label, value, detail]) => `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong><small>${escapeHtml(detail)}</small></div>`).join("")}</div>
+    </section>`;
+  }
   const straight = page.nationalPriceReference?.find((item) => item.productType === "Monte-escalier droit");
   const curved = page.nationalPriceReference?.find((item) => item.productType === "Monte-escalier tournant");
   const houses = (page.housingData || []).find((item) => /Part des maisons/i.test(item.indicator));
@@ -218,8 +273,18 @@ function essentialsSection(page) {
 }
 
 function dailyLifeSection(page) {
-  if (page.service !== "monte-escalier" || page.pageLevel !== "department") return "";
+  if (page.pageLevel !== "department") return "";
   const firstPlace = page.localPlaces?.[0] || page.departmentName;
+  if (page.service === "douche-senior") {
+    return `<section data-local-daily-life class="local-daily-life">
+      <div><p class="local-kicker">Les gestes avant le modèle</p><h2>Rendre la toilette plus simple au quotidien</h2><p>${escapeHtml(page.introduction)}</p></div>
+      <ul>
+        <li><span aria-hidden="true">01</span><div><strong>Réduire le franchissement</strong><p>La hauteur d’accès doit être compatible avec le plancher, la pente d’évacuation et la stabilité recherchée.</p></div></li>
+        <li><span aria-hidden="true">02</span><div><strong>Placer les bons appuis</strong><p>Siège, barres et robinetterie se choisissent selon les gestes réels, pas comme une liste d’options automatique.</p></div></li>
+        <li><span aria-hidden="true">03</span><div><strong>Protéger durablement la pièce</strong><p>À ${escapeHtml(firstPlace)} comme ailleurs dans le département, plomberie, ventilation et étanchéité doivent être vérifiées avant le devis final.</p></div></li>
+      </ul>
+    </section>`;
+  }
   return `<section data-local-daily-life class="local-daily-life">
     <div>
       <p class="local-kicker">Votre quotidien d’abord</p>
@@ -275,23 +340,53 @@ function priceSection(page) {
   const guide = SERVICE_GUIDES[page.service];
   const rows = page.nationalPriceReference.map((item) => {
     const label = item.productType || item.label;
+    const href = page.service === "douche-senior"
+      ? /baignoire/i.test(label)
+        ? "/projet/?projet=baignoire-douche"
+        : /complète/i.test(label)
+          ? "/projet/?projet=salle-de-bain"
+          : "/projet/?projet=douche-senior"
+      : page.projectOptions?.find((option) => option.title === label)?.href || "/projet/?projet=monte-escalier";
     const range = Number.isFinite(item.amountMin) && Number.isFinite(item.amountMax)
       ? `${formatEuro(item.amountMin)} – ${formatEuro(item.amountMax)} €`
       : item.range;
     return `
-        <div style="background:#FFFFFF;border:1px solid #EADFC9;border-radius:14px;padding:16px 22px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;justify-content:space-between">
-          <span style="display:flex;flex:1 1 280px;flex-direction:column;gap:2px"><strong style="font-size:17.5px;font-weight:700;color:#1F2E27">${escapeHtml(label)}</strong>${item.descriptor ? `<small style="font-size:15.5px;line-height:1.45;color:#6B7A70">${escapeHtml(item.descriptor)}</small>` : ""}</span>
+        <a href="${escapeAttribute(href)}" style="text-decoration:none;background:#FFFFFF;border:1px solid #EADFC9;border-radius:14px;padding:16px 22px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;justify-content:space-between" style-hover="border-color:#2E5B4C;box-shadow:0 6px 18px rgba(34,50,43,0.10)">
+          <span style="display:flex;flex:1 1 280px;flex-direction:column;gap:2px"><strong style="font-size:17.5px;font-weight:700;color:#1F2E27">${escapeHtml(label)} <span style="color:#B04E20">›</span></strong>${item.descriptor ? `<small style="font-size:15.5px;line-height:1.45;color:#6B7A70">${escapeHtml(item.descriptor)}</small>` : ""}</span>
           <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:21px;color:#2E5B4C">${escapeHtml(range)}</span>
-        </div>`;
+        </a>`;
   }).join("");
   const note = page.service === "monte-escalier"
     ? "Ces montants sont des repères nationaux 2026, et non des prix moyens propres à ce département. Le coût précis dépend de la configuration du logement, du rail, des options, de la pose et des éventuels travaux complémentaires."
     : "Ces montants sont des repères nationaux, pas un devis ni un prix local. Le coût dépend de la configuration du logement et du projet.";
+  const differences = page.service === "douche-senior"
+    ? [
+        ["L’évacuation existante", "Conserver l’emplacement et la pente coûte moins cher que reprendre une évacuation ou créer une réservation dans le plancher."],
+        ["L’état de la plomberie", "Des réseaux à déplacer ou découverts en mauvais état modifient le chantier. Le devis doit indiquer les reprises incluses."],
+        ["Les finitions retenues", "Paroi, siège, robinetterie, revêtements et accessoires doivent être chiffrés poste par poste."],
+        ["Ce qui suit le chantier", "Étanchéité, remise en état, évacuation des gravats, nettoyage et garanties font partie du périmètre à comparer."]
+      ]
+    : [
+        ["La forme de l’escalier", "Un rail droit est standard ; un tracé avec courbes, paliers ou changements de pente est fabriqué sur mesure."],
+        ["Le circuit de vente", "Fabricant, revendeur, pose et service après-vente peuvent être regroupés ou facturés séparément."],
+        ["Les options choisies", "Pivotement, rail escamotable, repose-pieds et équipements extérieurs doivent être distingués du modèle de base."],
+        ["L’après-pose", "Garantie, entretien, dépannage et modalités de démontage peuvent expliquer une partie de l’écart entre deux offres."]
+      ];
+  const preciseObject = page.service === "douche-senior" ? "votre salle de bain" : "votre escalier";
   return section(
     `Quel budget prévoir pour ${label} ${place} ?`,
-    `<div data-local-price-block style="display:flex;flex-direction:column;gap:10px">${rows}
+    `<dc-import name="EstimateurBudget" projet="${escapeAttribute(page.cta.project)}" service="${escapeAttribute(page.service)}" hint-size="100%,360px"></dc-import>
+      <div data-local-price-block style="display:flex;flex-direction:column;gap:10px">${rows}
       </div>
-      <p style="margin:0;color:#41504A">${escapeHtml(note)} <a href="${guide.price}">${guide.priceLabel}</a>.</p>`
+      <p style="margin:0;color:#41504A">${escapeHtml(note)} <a href="${guide.price}">${guide.priceLabel}</a>.</p>
+      <h3 style="margin:10px 0 0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:23px;color:#1F2E27">Pourquoi deux devis peuvent différer</h3>
+      <div data-local-price-differences style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:14px">${differences.map(([title, text]) => `<div style="background:#FFFFFF;border:1px solid #EADFC9;border-radius:14px;padding:20px 22px"><p style="margin:0 0 6px;font-size:18px;font-weight:700;color:#1F2E27">${escapeHtml(title)}</p><p style="margin:0;font-size:16.5px;color:#41504A">${escapeHtml(text)}</p></div>`).join("")}</div>
+      <div style="background:#F4E7D7;border-radius:16px;padding:22px 26px;display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center;justify-content:space-between">
+        <p style="margin:0;font-size:18px;color:#41504A;max-width:560px"><strong style="color:#1F2E27">Un chiffre précis pour ${escapeHtml(preciseObject)} ?</strong> Décrivez le projet en quelques questions : un conseiller vous rappelle et une seule entreprise étudie la demande.</p>
+        <a href="/projet/?projet=${escapeAttribute(page.cta.project)}" style="text-decoration:none;background:#C05A2E;color:#FFFFFF;font-weight:700;font-size:18px;padding:15px 24px;border-radius:10px;white-space:nowrap" style-hover="background:#A84D24">Faire chiffrer mon projet</a>
+      </div>`,
+    16,
+    "budget"
   );
 }
 
@@ -325,7 +420,8 @@ function localDataSection(page) {
       </div>
       ${commentary}
       ${methodology}`,
-    18
+    18,
+    "donnees"
   );
 }
 
@@ -368,13 +464,32 @@ function serviceSpecificSection(page) {
     }))
     .filter((item) => item.value);
   if (!details.length) return "";
-  const heading = "Ce que le professionnel étudie avec vous";
+  const heading = page.service === "douche-senior"
+    ? "Votre salle de bain est-elle transformable ?"
+    : "Votre escalier est-il compatible ?";
+  const constraints = page.service === "douche-senior"
+    ? [
+        ["L’évacuation", "La pente d’écoulement et la distance jusqu’à la canalisation déterminent le niveau du receveur."],
+        ["Le plancher", "Une dalle, un étage ou un plancher bois n’offrent pas la même possibilité d’encastrement."],
+        ["L’espace disponible", "L’entrée, l’assise, les appuis et un éventuel dégagement pour une aide humaine doivent rester praticables."],
+        ["La copropriété", "Une colonne d’eau, une dalle ou une gaine commune se vérifie avant la signature du devis."]
+      ]
+    : [
+        ["La largeur utile", "La largeur, le passage résiduel et la position de l’utilisateur sont mesurés sur place."],
+        ["Le bas des marches", "Une porte ou un passage peut conduire à étudier un rail escamotable."],
+        ["L’état des marches", "Le rail se fixe sur les marches ; leur support et leur régularité doivent être contrôlés."],
+        ["La copropriété", "Un escalier ou un accès commun nécessite une vérification distincte d’un escalier privatif."]
+      ];
   return section(
     heading,
-    `<div data-local-service-details="${escapeAttribute(page.service)}" class="local-service-checklist">${details.map((item) => `<div>
+    `<div data-local-feasibility style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(250px,100%),1fr));gap:14px">${constraints.map(([title, text]) => `<div style="background:#FFFFFF;border:1px solid #EADFC9;border-radius:14px;padding:20px 22px"><p style="margin:0 0 6px;font-size:18px;font-weight:700;color:#B04E20">${escapeHtml(title)}</p><p style="margin:0;font-size:16.5px;color:#41504A">${escapeHtml(text)}</p></div>`).join("")}</div>
+    <h3 style="margin:6px 0 0;font-family:'Source Serif 4',Georgia,serif;font-size:23px;color:#1F2E27">Ce que le professionnel relève ensuite</h3>
+    <div data-local-service-details="${escapeAttribute(page.service)}" class="local-service-checklist">${details.map((item) => `<div>
       <span aria-hidden="true">✓</span><p><strong>${escapeHtml(item.label)}</strong><small>${escapeHtml(item.value)}</small></p>
-    </div>`).join("")}</div>`,
-    18
+    </div>`).join("")}</div>
+    <a href="/projet/?projet=${escapeAttribute(page.cta.project)}" style="align-self:flex-start;text-decoration:none;background:#C05A2E;color:#FFFFFF;font-weight:700;font-size:18px;padding:15px 24px;border-radius:10px" style-hover="background:#A84D24">Faire vérifier la faisabilité</a>`,
+    18,
+    "faisabilite"
   );
 }
 
@@ -399,6 +514,7 @@ function resourceCard(item) {
 }
 
 function resourcesSection(page) {
+  if (page.service === "douche-senior") return "";
   const aids = page.localAssistancePrograms || [];
   const national = aids.filter((item) => String(item.programType || "").startsWith("aide_nationale"));
   const local = [
@@ -412,8 +528,28 @@ function resourcesSection(page) {
   return section(
     page.departmentName === "Nord" ? "Aides et ressources utiles dans le Nord" : "Aides locales et contacts utiles",
     `${group("Aides nationales", national)}${group(`Dispositifs et contacts ${departmentLocation(page)}`, local)}`,
-    18
+    18,
+    "aides"
   );
+}
+
+function familyProjectSection(page) {
+  const middle = page.service === "douche-senior"
+    ? ["Le chantier se prépare", "La durée d’indisponibilité de la salle de bain et une solution temporaire se discutent dès la visite."]
+    : ["La visite se prépare", "Les dimensions, les habitudes et les contraintes d’accès peuvent être relevées avec vous."];
+  return `<section data-local-family-project aria-label="Vous cherchez pour un proche" style="background:#FFFFFF;border:1px solid #EADFC9;border-radius:22px;padding:clamp(24px,3.2vw,38px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:28px;align-items:center">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <span style="color:#B04E20;font-weight:700;font-size:14px;letter-spacing:0.09em;text-transform:uppercase">Vous cherchez pour un parent</span>
+      <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(23px,2.6vw,29px);line-height:1.2;color:#1F2E27">Organiser le projet à distance, sans forcer la décision</h2>
+      <p style="margin:0;font-size:18px;color:#41504A">Vous pouvez décrire le logement concerné et rester l’interlocuteur si votre parent le préfère. La visite et le devis se préparent ensuite à son rythme.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;gap:12px;align-items:flex-start"><span style="color:#2E5B4C;font-weight:700;font-size:19px">·</span><p style="margin:0;font-size:17px;color:#41504A"><strong style="color:#1F2E27">Vous restez l’interlocuteur.</strong> Les échanges passent par vous si cela facilite le projet.</p></div>
+      <div style="display:flex;gap:12px;align-items:flex-start"><span style="color:#2E5B4C;font-weight:700;font-size:19px">·</span><p style="margin:0;font-size:17px;color:#41504A"><strong style="color:#1F2E27">${escapeHtml(middle[0])}.</strong> ${escapeHtml(middle[1])}</p></div>
+      <div style="display:flex;gap:12px;align-items:flex-start"><span style="color:#2E5B4C;font-weight:700;font-size:19px">·</span><p style="margin:0;font-size:17px;color:#41504A"><strong style="color:#1F2E27">La décision reste libre.</strong> Une demande d’information n’oblige ni à recevoir une visite ni à signer un devis.</p></div>
+      <a href="/projet/?projet=${escapeAttribute(page.cta.project)}&amp;pour=un-proche" style="align-self:flex-start;text-decoration:none;background:#C05A2E;color:#FFFFFF;font-weight:700;font-size:18px;padding:15px 24px;border-radius:10px" style-hover="background:#A84D24">Faire la demande pour un proche</a>
+    </div>
+  </section>`;
 }
 
 function coverageSection(page) {
@@ -424,15 +560,19 @@ function coverageSection(page) {
         : `Des professionnels interviennent à ${page.cityName}`,
       `<div data-coverage="nationwide" data-routing="${escapeAttribute(page.routingStatus)}" style="background:#EBF1E8;border:1px solid #D7E2D2;border-radius:14px;padding:18px 22px">
         <p style="margin:0;font-size:17.5px;color:#2C463B">Go Senior couvre l’ensemble des codes postaux du département ${escapeHtml(page.departmentName)} pour les projets de monte-escalier. Indiquez votre code postal et décrivez votre escalier afin que votre demande puisse être orientée vers un professionnel indépendant intervenant dans votre secteur.</p>
-      </div>`
+      </div>`,
+      14,
+      "pro"
     );
   }
   const place = page.pageLevel === "city" ? `à ${page.cityName}` : departmentLocation(page);
   return section(
-    `Professionnels intervenant ${place}`,
+    `Vérifier l’intervention ${place}`,
     `<div data-coverage="configurable" data-routing="${escapeAttribute(page.routingStatus)}" style="background:#FCF6E8;border:1px solid #E6D8AE;border-radius:14px;padding:18px 22px">
-      <p style="margin:0;font-size:17.5px;color:#5C4E22">Indiquez votre code postal pour que votre demande soit orientée selon la configuration de ce service.</p>
-    </div>`
+      <p style="margin:0;font-size:17.5px;color:#5C4E22">Indiquez le code postal du chantier et décrivez l’installation actuelle. Go Senior vérifie ensuite si un professionnel indépendant prenant en charge ce type de transformation intervient dans votre secteur.</p>
+    </div>`,
+    14,
+    "pro"
   );
 }
 
@@ -492,6 +632,24 @@ function nearbySection(page, allPages) {
   );
 }
 
+function cityGuidesSection(page, allPages) {
+  if (page.pageLevel !== "department" || !page.cityLocations?.length) return "";
+  const cityIds = new Set(page.cityLocations.map((item) => typeof item === "string" ? item : item.id));
+  const cities = allPages
+    .filter((item) => item.service === page.service && item.pageLevel === "city" && cityIds.has(item.id) && isPublicLocalPage(item))
+    .sort((left, right) => page.cityLocations.findIndex((item) => (typeof item === "string" ? item : item.id) === left.id) - page.cityLocations.findIndex((item) => (typeof item === "string" ? item : item.id) === right.id));
+  if (!cities.length) return "";
+  const links = cities.map((city) => `<a href="${escapeAttribute(localPageRoute(city))}" style="display:flex;align-items:center;justify-content:space-between;gap:14px;background:#FFFFFF;border:1px solid #EADFC9;border-radius:14px;padding:16px 18px;text-decoration:none;font-weight:700;color:#1F2E27" style-hover="border-color:#2E5B4C;box-shadow:0 6px 18px rgba(34,50,43,.08)">
+      <span>${escapeHtml(city.cityName)}</span><span style="color:#B04E20" aria-hidden="true">›</span>
+    </a>`).join("");
+  return section(
+    `Guides douche senior dans les principales villes de ${page.departmentName}`,
+    `<p style="margin:0;color:#41504A">Retrouvez des repères communaux sur la population, les logements et les points à vérifier avant de transformer une salle de bain.</p>
+      <div data-local-city-guides style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));gap:12px">${links}</div>`,
+    16
+  );
+}
+
 function sourcesSection(page) {
   if (!page.officialSources?.length) return "";
   const sources = page.officialSources.map((source) => {
@@ -535,6 +693,7 @@ function templateBody(page, allPages) {
   return `${draftBanner(publication)}
   ${hero(page)}
   <div style="max-width:1200px;margin:0 auto;padding:56px 24px 88px;display:flex;flex-direction:column;gap:56px">
+    ${afterRequestSection(page)}
     ${essentialsSection(page)}
     ${dailyLifeSection(page)}
     ${editorialSection(page)}
@@ -545,8 +704,10 @@ function templateBody(page, allPages) {
     ${serviceSpecificSection(page)}
     ${localCostSection(page)}
     ${resourcesSection(page)}
+    ${familyProjectSection(page)}
     ${coverageSection(page)}
     ${processSection(page)}
+    ${cityGuidesSection(page, allPages)}
     ${faqSection(page)}
     ${nearbySection(page, allPages)}
     ${sourcesSection(page)}
@@ -571,16 +732,18 @@ function renderDocument(page, allPages, template) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
 <style>
-html,body{overflow-x:hidden;max-width:100%}
+html,body{overflow-x:hidden;max-width:100%}html{scroll-padding-top:96px}
 img{max-width:100%;height:auto}
 [id]{scroll-margin-top:94px}
-.local-hero-grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(250px,.7fr) minmax(350px,.92fr);gap:24px;align-items:center}
+.local-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(350px,.9fr);gap:28px;align-items:center}
 .local-hero-grid>*{min-width:0}.local-hero-grid>dc-import{min-width:0;max-width:100%}
-.local-hero-visual{position:relative;margin:0;min-height:370px;border-radius:22px;overflow:hidden;box-shadow:0 16px 38px rgba(34,50,43,.15)}
+.local-hero-visual{position:relative;margin:0;grid-column:1/-1;order:2;aspect-ratio:1340/560;border-radius:22px;overflow:hidden;box-shadow:0 16px 38px rgba(34,50,43,.15)}
 .local-hero-visual img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .local-hero-visual figcaption{position:absolute;left:14px;right:14px;bottom:14px;padding:10px 13px;border-radius:10px;background:rgba(31,66,55,.9);color:#fff;font-size:14.5px;line-height:1.35}
 .local-trust-pills{display:flex;flex-wrap:wrap;gap:8px}
 .local-trust-pills span{padding:7px 10px;border-radius:999px;background:#fff;border:1px solid #DDD4C5;color:#2E5B4C;font-size:14.5px;font-weight:600}
+.local-shortcuts{background:#FFFFFF;border-top:1px solid #E5DFD2;border-bottom:1px solid #E5DFD2}.local-shortcuts>div{max-width:1120px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.local-shortcuts a{display:flex;align-items:center;justify-content:center;gap:10px;min-height:74px;padding:10px 16px;text-decoration:none;color:#1F2E27;border-left:1px solid #ECE5D9}.local-shortcuts a:last-child{border-right:1px solid #ECE5D9}.local-shortcuts a>span{width:36px;height:36px;border-radius:50%;background:#EBF1E8;display:flex;align-items:center;justify-content:center}.local-shortcuts strong{font-size:15.5px}
+.local-after-request{padding:clamp(25px,3.5vw,38px);border-radius:20px;background:#FFFFFF;border:1px solid #E5DFD2;box-shadow:0 10px 26px rgba(34,50,43,.07);display:flex;flex-direction:column;gap:24px}.local-after-request-heading{display:flex;align-items:baseline;justify-content:space-between;gap:18px;flex-wrap:wrap}.local-after-request-heading h2{margin:0;font-family:'Source Serif 4',Georgia,serif;font-size:clamp(25px,2.8vw,31px);line-height:1.2;color:#1F2E27}.local-after-request-heading>span{color:#6B7A70;font-size:16px}.local-after-request-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:#E5DFD2;border:1px solid #E5DFD2;border-radius:15px;overflow:hidden}.local-after-request-grid>div{background:#FAF7F0;padding:20px;display:grid;grid-template-columns:42px 1fr;gap:12px}.local-after-request-grid>div>span{width:40px;height:40px;border-radius:50%;background:#EBF1E8;display:flex;align-items:center;justify-content:center}.local-after-request-grid p{margin:0;display:flex;flex-direction:column;gap:4px}.local-after-request-grid strong{font-size:17px;color:#1F2E27}.local-after-request-grid small{font-size:15px;line-height:1.45;color:#5D6B64}
 .local-project-card{transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}
 .local-project-card>img{width:100%;height:190px;object-fit:cover;display:block}
 .local-service-checklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 28px;padding:clamp(24px,3vw,34px);background:#F7E7DC;border:1px solid #E8CDBB;border-radius:18px}
@@ -617,10 +780,10 @@ img{max-width:100%;height:auto}
 .local-process-steps>div>span{width:34px;height:34px;border-radius:50%;background:#C05A2E;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px}
 .local-process-steps h3{margin:0;font-size:18px;color:#1F2E27}.local-process-steps p{margin:3px 0 0;color:#41504A;font-size:16px}
 .gsh-desk{display:flex}.gsh-mob{display:none}.gsh-bar{display:none}
-@media(max-width:1180px){.local-hero-grid{grid-template-columns:minmax(0,1fr) minmax(280px,.72fr)}.local-hero-grid>dc-import{grid-column:1/-1}.local-essentials{grid-template-columns:1fr}.local-essentials-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1180px){.local-essentials{grid-template-columns:1fr}.local-essentials-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:1060px){.gsh-desk{display:none !important}.gsh-mob{display:flex !important}.gsh-bar{display:flex !important}body{padding-bottom:76px}.local-editorial{grid-template-columns:auto 1fr}.local-editorial>a{grid-column:2}.local-process{grid-template-columns:1fr}.local-process-visual{min-height:340px}}
-@media(max-width:820px){.local-hero-grid{grid-template-columns:minmax(0,1fr)}.local-daily-life{grid-template-columns:1fr}.local-hero-grid>dc-import{grid-column:auto}.local-hero-grid>figure{order:1}.local-hero-visual{min-height:280px}.local-essentials{padding:22px}.local-essentials-grid{grid-template-columns:1fr}.local-service-checklist{grid-template-columns:1fr}.local-service-checklist>div:nth-child(2){border-top:1px solid rgba(183,88,49,.18)}.local-process-visual{min-height:280px}}
-@media(max-width:520px){.local-editorial{grid-template-columns:1fr}.local-editorial>a{grid-column:auto}.local-hero-visual{min-height:240px}.local-project-card>img{height:175px}.local-daily-life{padding:24px}.local-daily-life li{grid-template-columns:38px 1fr}.local-daily-life li>span{width:36px;height:36px}.local-process-copy{padding:25px 22px}}
+@media(max-width:820px){.local-hero-grid{grid-template-columns:minmax(0,1fr)}.local-daily-life{grid-template-columns:1fr}.local-hero-visual{grid-column:auto;aspect-ratio:4/3;max-height:340px}.local-shortcuts>div{grid-template-columns:repeat(2,minmax(0,1fr));padding:0}.local-shortcuts a:nth-child(odd){border-left:0}.local-shortcuts a:nth-child(-n+2){border-bottom:1px solid #ECE5D9}.local-after-request-grid{grid-template-columns:1fr}.local-essentials{padding:22px}.local-essentials-grid{grid-template-columns:1fr}.local-service-checklist{grid-template-columns:1fr}.local-service-checklist>div:nth-child(2){border-top:1px solid rgba(183,88,49,.18)}.local-process-visual{min-height:280px}}
+@media(max-width:520px){.local-editorial{grid-template-columns:1fr}.local-editorial>a{grid-column:auto}.local-shortcuts strong{font-size:14px}.local-project-card>img{height:175px}.local-daily-life{padding:24px}.local-daily-life li{grid-template-columns:38px 1fr}.local-daily-life li>span{width:36px;height:36px}.local-process-copy{padding:25px 22px}}
 body{margin:0;background:#FAF7F0;font-family:'Libre Franklin',system-ui,sans-serif;color:#22322B;font-size:19.5px;line-height:1.65}
 a{color:#2E5B4C}a:hover{color:#1F4237}
 :focus-visible{outline:3px solid #C05A2E;outline-offset:2px;border-radius:4px}
@@ -668,9 +831,13 @@ export function renderLocalPage(page, allPages) {
   return template(page, allPages);
 }
 
-export function renderDepartmentDirectory(allPages) {
+export function renderDepartmentDirectory(allPages, service = "monte-escalier") {
+  const shower = service === "douche-senior";
+  const serviceLabel = shower ? "Douche senior" : "Monte-escalier";
+  const route = `/${service}/departements/`;
+  const cardSubtitle = shower ? "Prix, travaux et données logement" : "Prix, aides et données locales";
   const departments = allPages
-    .filter((page) => page.service === "monte-escalier" && page.pageLevel === "department")
+    .filter((page) => page.service === service && page.pageLevel === "department")
     .filter(isPublicLocalPage)
     .sort((a, b) => a.departmentName.localeCompare(b.departmentName, "fr"));
   const regions = new Map();
@@ -683,7 +850,7 @@ export function renderDepartmentDirectory(allPages) {
       <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-size:clamp(25px,3vw,32px);color:#1F2E27">${escapeHtml(region)}</h2>
       <div data-department-directory style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
         ${pages.map((page) => `<a href="${escapeAttribute(localPageRoute(page))}" style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px;text-decoration:none;display:flex;align-items:center;justify-content:space-between;gap:16px" style-hover="border-color:#2E5B4C;transform:translateY(-1px)">
-          <span style="display:flex;flex-direction:column;gap:3px"><strong style="font-size:20px;color:#1F2E27">${escapeHtml(page.departmentName)}</strong><span style="font-size:16px;color:#6B7A70">Prix, aides et données locales</span></span>
+          <span style="display:flex;flex-direction:column;gap:3px"><strong style="font-size:20px;color:#1F2E27">${escapeHtml(page.departmentName)}</strong><span style="font-size:16px;color:#6B7A70">${escapeHtml(cardSubtitle)}</span></span>
           <span aria-label="Département ${escapeAttribute(page.departmentCode)}" style="width:42px;height:42px;border-radius:50%;background:#EBF1E8;color:#2E5B4C;font-weight:700;display:flex;align-items:center;justify-content:center">${escapeHtml(page.departmentCode)}</span>
         </a>`).join("")}
       </div>
@@ -693,7 +860,7 @@ export function renderDepartmentDirectory(allPages) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Trouvez les guides Go Senior consacrés au monte-escalier par département : prix, aides, données INSEE et ressources officielles locales.">
+<meta name="description" content="${escapeAttribute(shower ? "Trouvez les guides Go Senior consacrés à la douche senior par département : prix, contraintes techniques, données logement et préparation du devis." : "Trouvez les guides Go Senior consacrés au monte-escalier par département : prix, aides, données INSEE et ressources officielles locales.")}">
 <script src="./support.js"></script>
 </head>
 <body>
@@ -705,27 +872,27 @@ export function renderDepartmentDirectory(allPages) {
 <style>
 html,body{overflow-x:hidden;max-width:100%}body{margin:0;background:#FAF7F0;font-family:'Libre Franklin',system-ui,sans-serif;color:#22322B;font-size:19px;line-height:1.65}a{color:#2E5B4C}:focus-visible{outline:3px solid #C05A2E;outline-offset:2px;border-radius:4px}
 </style>
-<title>Monte-escalier par département : prix et aides | Go Senior</title>
+<title>${escapeHtml(shower ? "Douche senior par département : prix et travaux | Go Senior" : "Monte-escalier par département : prix et aides | Go Senior")}</title>
 </helmet>
-<dc-import name="Header" active="monte-escalier" hint-size="100%,78px"></dc-import>
+<dc-import name="Header" active="${escapeAttribute(service)}" hint-size="100%,78px"></dc-import>
 <main>
   <section style="background:linear-gradient(180deg,#F3EFE4 0%,#FAF7F0 100%);border-bottom:1px solid #E5DFD2">
     <div style="max-width:1200px;margin:0 auto;padding:40px 24px 52px;display:flex;flex-direction:column;gap:18px">
-      <nav aria-label="Fil d’Ariane" style="font-size:17px;color:#6B7A70"><a href="/" style="text-decoration:none">Accueil</a> <span aria-hidden="true">›</span> <a href="/monte-escalier/" style="text-decoration:none">Monte-escalier</a> <span aria-hidden="true">›</span> <a href="/monte-escalier/departements/" aria-current="page" style="text-decoration:none">Départements</a></nav>
+      <nav aria-label="Fil d’Ariane" style="font-size:17px;color:#6B7A70"><a href="/" style="text-decoration:none">Accueil</a> <span aria-hidden="true">›</span> <a href="/${escapeAttribute(service)}/" style="text-decoration:none">${escapeHtml(serviceLabel)}</a> <span aria-hidden="true">›</span> <a href="${escapeAttribute(route)}" aria-current="page" style="text-decoration:none">Départements</a></nav>
       <p style="margin:0;color:#C05A2E;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:15px">Guides locaux vérifiés</p>
-      <h1 style="margin:0;max-width:850px;font-family:'Source Serif 4',Georgia,serif;font-size:clamp(34px,4.5vw,52px);line-height:1.12;color:#1F2E27">Le monte-escalier dans votre département</h1>
-      <p style="margin:0;max-width:820px;font-size:20px;color:#41504A">Chaque guide réunit des repères de prix nationaux, des données INSEE 2023, les aides et contacts officiels du département, puis un accès direct à l’étude de votre projet.</p>
+      <h1 style="margin:0;max-width:850px;font-family:'Source Serif 4',Georgia,serif;font-size:clamp(34px,4.5vw,52px);line-height:1.12;color:#1F2E27">${escapeHtml(shower ? "La douche senior dans votre département" : "Le monte-escalier dans votre département")}</h1>
+      <p style="margin:0;max-width:820px;font-size:20px;color:#41504A">${escapeHtml(shower ? "Chaque guide met en regard les prix nationaux, les données locales sur les logements et les contraintes concrètes à vérifier avant de remplacer une baignoire ou de sécuriser une douche." : "Chaque guide réunit des repères de prix nationaux, des données INSEE 2023, les aides et contacts officiels du département, puis un accès direct à l’étude de votre projet.")}</p>
     </div>
   </section>
   <div style="max-width:1200px;margin:0 auto;padding:56px 24px 88px;display:flex;flex-direction:column;gap:54px">
     <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
-      <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px"><h2 style="margin:0 0 8px;font-size:21px;color:#1F2E27">Des prix comparables</h2><p style="margin:0;color:#41504A">Les mêmes quatre fourchettes nationales sont distinguées des facteurs propres au logement.</p></div>
-      <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px"><h2 style="margin:0 0 8px;font-size:21px;color:#1F2E27">Un contexte réellement local</h2><p style="margin:0;color:#41504A">Population, âge du parc et type de logement proviennent des dossiers complets INSEE.</p></div>
-      <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px"><h2 style="margin:0 0 8px;font-size:21px;color:#1F2E27">Des ressources officielles</h2><p style="margin:0;color:#41504A">Aides et contacts sont publiés avec leur organisme, leur lien et leur date de vérification.</p></div>
+      <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px"><h2 style="margin:0 0 8px;font-size:21px;color:#1F2E27">Des prix comparables</h2><p style="margin:0;color:#41504A">${escapeHtml(shower ? "Cinq niveaux de travaux sont séparés des contraintes propres à chaque salle de bain." : "Les mêmes quatre fourchettes nationales sont distinguées des facteurs propres au logement.")}</p></div>
+      <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px"><h2 style="margin:0 0 8px;font-size:21px;color:#1F2E27">Un contexte réellement local</h2><p style="margin:0;color:#41504A">${escapeHtml(shower ? "Maisons, appartements et structure par âge proviennent des dossiers complets INSEE." : "Population, âge du parc et type de logement proviennent des dossiers complets INSEE.")}</p></div>
+      <div style="background:#FFFFFF;border:1px solid #E5DFD2;border-radius:14px;padding:22px"><h2 style="margin:0 0 8px;font-size:21px;color:#1F2E27">Une étude concrète</h2><p style="margin:0;color:#41504A">${escapeHtml(shower ? "Sol, évacuation, étanchéité, appuis et copropriété sont traités avant le devis." : "Les ressources officielles sont publiées avec leur organisme, leur lien et leur date de vérification.")}</p></div>
     </section>
     ${groups || `<p>Aucun guide départemental n’est encore publié.</p>`}
     <section style="background:#EBF1E8;border:1px solid #D7E2D2;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:8px">
-      <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-size:27px;color:#1F2E27">Une couverture nationale contrôlée</h2>
+      <h2 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-size:27px;color:#1F2E27">101 guides contrôlés</h2>
       <p style="margin:0;color:#41504A">Les 101 départements disposent d’un guide. Chaque page n’apparaît ici qu’après validation de ses sources, de ses données, de sa profondeur éditoriale et de sa différence avec les autres contenus locaux.</p>
     </section>
   </div>

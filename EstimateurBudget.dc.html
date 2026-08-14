@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>html,body{overflow-x:hidden;max-width:100%}body{margin:0;font-family:'Libre Franklin',system-ui,sans-serif}@media(max-width:700px){[data-budget-estimator]{grid-template-columns:1fr !important}}</style>
+</helmet>
+<section data-budget-estimator style="background:#1F4237;border-radius:20px;padding:clamp(24px,3.5vw,38px);color:#FFFFFF;display:grid;grid-template-columns:minmax(220px,.78fr) minmax(0,1.22fr);gap:28px;align-items:center;font-family:'Libre Franklin',system-ui,sans-serif">
+  <div>
+    <p style="margin:0 0 7px;color:#E8A87C;font-size:14px;font-weight:700;letter-spacing:.07em;text-transform:uppercase">Estimation en 20 secondes</p>
+    <h3 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-size:clamp(24px,2.7vw,30px);line-height:1.18">Situez le budget de votre projet</h3>
+    <p style="margin:12px 0 0;color:#DCE7DF;font-size:16.5px;line-height:1.5">Choisissez la configuration la plus proche de votre besoin. La fourchette est un repère national, pas un devis.</p>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(190px,100%),1fr));gap:9px">
+      <sc-for list="{{ options }}" as="o" hint-placeholder-count="4">
+        <button onClick="{{ o.pick }}" aria-pressed="{{ o.selected }}" style="{{ o.style }}">{{ o.label }}</button>
+      </sc-for>
+    </div>
+    <sc-if value="{{ hasSelection }}" hint-placeholder-val="true">
+      <div aria-live="polite" style="background:#FFFFFF;color:#1F2E27;border-radius:14px;padding:18px 20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px">
+        <span style="display:flex;flex-direction:column"><strong style="font-size:17px">{{ selectedLabel }}</strong><small style="font-size:14.5px;color:#6B7A70">{{ explanation }}</small></span>
+        <strong style="font-family:'Source Serif 4',Georgia,serif;font-size:25px;color:#2E5B4C;white-space:nowrap">{{ selectedRange }}</strong>
+      </div>
+    </sc-if>
+    <a href="{{ projectHref }}" style="align-self:flex-start;text-decoration:none;background:#C05A2E;color:#FFFFFF;font-weight:700;font-size:17px;padding:13px 20px;border-radius:10px" style-hover="background:#A84D24">Obtenir un devis personnalisé</a>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1080,&quot;height&quot;:360},&quot;service&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;monte-escalier&quot;,&quot;douche-senior&quot;],&quot;default&quot;:&quot;douche-senior&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;},&quot;projet&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;douche-senior&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contenu&quot;}}">
+class Component extends DCLogic {
+  state = { selected: 0 };
+  choices() {
+    return this.props.service === "monte-escalier"
+      ? [
+          ["Monte-escalier droit", "2 500 – 5 500 €"],
+          ["Monte-escalier tournant", "6 000 – 12 000 €"],
+          ["Monte-escalier extérieur", "4 000 – 10 000 €"],
+          ["Monte-escalier assis-debout", "4 000 – 9 000 €"]
+        ]
+      : [
+          ["Adapter la douche existante", "500 – 2 000 €"],
+          ["Remplacer la baignoire", "4 000 – 9 000 €"],
+          ["Douche extra-plate", "3 000 – 6 000 €"],
+          ["Douche de plain-pied", "5 000 – 10 000 €"],
+          ["Salle de bain complète", "8 000 – 15 000 €"]
+        ];
+  }
+  renderVals() {
+    const choices = this.choices();
+    const selected = Math.min(this.state.selected, choices.length - 1);
+    return {
+      options: choices.map(([label], index) => ({
+        label,
+        selected: selected === index,
+        pick: () => this.setState({ selected: index }),
+        style: "min-height:52px;padding:10px 13px;border-radius:10px;cursor:pointer;font-family:'Libre Franklin',system-ui,sans-serif;font-weight:600;font-size:15.5px;text-align:left;" + (selected === index ? "background:#EBF1E8;color:#1F2E27;border:2px solid #E8A87C" : "background:#FFFFFF;color:#1F2E27;border:2px solid transparent")
+      })),
+      hasSelection: true,
+      selectedLabel: choices[selected][0],
+      selectedRange: choices[selected][1],
+      explanation: "Les options et contraintes techniques se situent à l’intérieur de cette fourchette.",
+      projectHref: "/projet/?projet=" + encodeURIComponent(this.props.projet || this.props.service || "")
+    };
+  }
+}
+</script>
+</body>
+</html>

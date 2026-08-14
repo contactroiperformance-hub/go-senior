@@ -19,7 +19,10 @@ import { breadcrumbData, renderDepartmentDirectory, renderLocalPage } from "../l
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 const origin = "https://go-senior.fr";
-const departmentDirectoryRoute = "/monte-escalier/departements/";
+const departmentDirectoryRoutes = Object.freeze({
+  "monte-escalier": "/monte-escalier/departements/",
+  "douche-senior": "/douche-senior/departements/"
+});
 const organizationId = `${origin}/#organization`;
 const websiteId = `${origin}/#website`;
 const defaultSocialImage = `${origin}/uploads/cover-linkedin-1584x396.png`;
@@ -73,6 +76,7 @@ const sharedComponents = new Set([
   "Footer.dc.html",
   "Header.dc.html",
   "MiniFormulaire.dc.html",
+  "EstimateurBudget.dc.html",
   "Simulateur.dc.html"
 ]);
 const localModelFiles = new Set([
@@ -385,23 +389,26 @@ for (const [file, route, indexed] of pages) {
   await writeRoute(route, transform(source, file, route, indexed));
 }
 
-await writeRoute(
-  departmentDirectoryRoute,
-  transform(
-    renderDepartmentDirectory(localPages),
-    "monte-escalier-departements.generated.html",
+for (const [service, departmentDirectoryRoute] of Object.entries(departmentDirectoryRoutes)) {
+  const serviceLabel = service === "douche-senior" ? "Douche senior" : "Monte-escalier";
+  await writeRoute(
     departmentDirectoryRoute,
-    true,
-    false,
-    {
-      breadcrumbs: [
-        { name: "Accueil", route: "/" },
-        { name: "Monte-escalier", route: "/monte-escalier/" },
-        { name: "Départements", route: departmentDirectoryRoute }
-      ]
-    }
-  )
-);
+    transform(
+      renderDepartmentDirectory(localPages, service),
+      `${service}-departements.generated.html`,
+      departmentDirectoryRoute,
+      true,
+      false,
+      {
+        breadcrumbs: [
+          { name: "Accueil", route: "/" },
+          { name: serviceLabel, route: `/${service}/` },
+          { name: "Départements", route: departmentDirectoryRoute }
+        ]
+      }
+    )
+  );
+}
 
 for (const page of localPages) {
   const publication = effectivePublication(page);
@@ -441,7 +448,8 @@ const sitemap = [
   ...pages
     .filter(([, , indexed]) => indexed)
     .map(([, route]) => `  <url><loc>${origin}${route}</loc></url>`),
-  `  <url><loc>${origin}${departmentDirectoryRoute}</loc></url>`,
+  ...Object.values(departmentDirectoryRoutes)
+    .map((route) => `  <url><loc>${origin}${route}</loc></url>`),
   ...localPages
     .filter(isPublicLocalPage)
     .map((page) => `  <url><loc>${origin}${localPageRoute(page)}</loc></url>`),
@@ -529,4 +537,4 @@ await Promise.all([
   )
 ]);
 
-console.log(`Built ${pages.length + localPages.length + 1} production routes and ${designFiles.length} design components.`);
+console.log(`Built ${pages.length + localPages.length + Object.keys(departmentDirectoryRoutes).length} production routes and ${designFiles.length} design components.`);

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "data:departments": "node scripts/fetch-department-data.mjs",
+    "data:cities:retry": "node scripts/refetch-city-data.mjs",
     "build": "node scripts/build.mjs",
     "check": "node scripts/check.mjs",
     "test": "node scripts/test-lead.mjs && node scripts/test-smart-form.mjs && node scripts/test-local-pages.mjs",

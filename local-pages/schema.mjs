@@ -129,7 +129,7 @@ export function projectAvailability(service, postalCode, routingStatus = "active
   const validPostalCode = isValidFrenchPostalCode(postalCode);
   const coverageStatus = service === "monte-escalier"
     ? SERVICE_COVERAGE.monteEscalier
-    : SERVICE_COVERAGE.futureServices;
+    : SERVICE_COVERAGE.doucheSenior;
   return {
     validPostalCode,
     coverageStatus,
@@ -166,7 +166,7 @@ export function validateLocalPage(page) {
   }
   const expectedCoverage = page.service === "monte-escalier"
     ? SERVICE_COVERAGE.monteEscalier
-    : SERVICE_COVERAGE.futureServices;
+    : SERVICE_COVERAGE.doucheSenior;
   if (page.coverageStatus !== expectedCoverage) {
     errors.push(`couverture ${page.service} attendue: ${expectedCoverage}`);
   }
@@ -282,6 +282,17 @@ function isStructuredPrice(price) {
     && /^\d{4}-\d{2}-\d{2}$/.test(price.sourceCheckedAt || "");
 }
 
+function isStructuredShowerPrice(price) {
+  return price
+    && isNonEmptyString(price.label)
+    && isNonEmptyString(price.descriptor)
+    && isNonEmptyString(price.range)
+    && Number.isInteger(price.dataYear)
+    && isNonEmptyString(price.sourceTitle)
+    && /^https:\/\/[^ ]+$/i.test(price.sourceUrl || "")
+    && /^\d{4}-\d{2}-\d{2}$/.test(price.sourceCheckedAt || "");
+}
+
 function isStructuredResource(resource) {
   return resource
     && isNonEmptyString(resource.programName)
@@ -322,7 +333,7 @@ export function publicationReadiness(page) {
   if (!page.officialSources?.some((source) => source.scope === "local")) {
     reasons.push("source locale obligatoire manquante");
   }
-  if (!page.localAssistancePrograms?.length && !page.usefulLocalContacts?.length) {
+  if (page.service === "monte-escalier" && !page.localAssistancePrograms?.length && !page.usefulLocalContacts?.length) {
     reasons.push("aides ou ressources locales vérifiées manquantes");
   }
   const resources = [...(page.localAssistancePrograms || []), ...(page.usefulLocalContacts || [])];
@@ -334,6 +345,12 @@ export function publicationReadiness(page) {
       reasons.push("quatre fourchettes nationales monte-escalier requises");
     } else if (page.nationalPriceReference.some((price) => !isStructuredPrice(price))) {
       reasons.push("fourchette nationale sans source ou date de vérification");
+    }
+  } else if (page.service === "douche-senior") {
+    if (page.nationalPriceReference?.length !== 5) {
+      reasons.push("cinq fourchettes nationales douche senior requises");
+    } else if (page.nationalPriceReference.some((price) => !isStructuredShowerPrice(price))) {
+      reasons.push("fourchette douche senior sans source ou date de vérification");
     }
   }
 
@@ -348,6 +365,9 @@ export function publicationReadiness(page) {
   const editorialWordCount = normalizeEditorialText(page).length;
   if (page.pageLevel === "department" && editorialWordCount < 350) {
     reasons.push(`profondeur éditoriale insuffisante: ${editorialWordCount}/350 mots`);
+  }
+  if (page.pageLevel === "city" && editorialWordCount < 300) {
+    reasons.push(`profondeur éditoriale ville insuffisante: ${editorialWordCount}/300 mots`);
   }
   if (page.pageLevel === "city" && (page.faq || []).filter((item) => item.local === true).length < 3) {
     reasons.push("FAQ ville requise: au moins 3 questions locales");
@@ -421,27 +441,47 @@ function normalizeEditorialText(page) {
     .filter((word) => word.length >= 4);
 }
 
-export function editorialSimilarity(left, right) {
+function editorialShingles(page) {
   const phraseSize = 6;
-  const shingles = (page) => {
-    const words = normalizeEditorialText(page);
-    return new Set(words
-      .slice(0, Math.max(0, words.length - phraseSize + 1))
-      .map((_, index) => words.slice(index, index + phraseSize).join(" ")));
-  };
-  const leftTokens = shingles(left);
-  const rightTokens = shingles(right);
+  const words = normalizeEditorialText(page);
+  return new Set(words
+    .slice(0, Math.max(0, words.length - phraseSize + 1))
+    .map((_, index) => words.slice(index, index + phraseSize).join(" ")));
+}
+
+function shingleSimilarity(leftTokens, rightTokens) {
   if (leftTokens.size < 20 || rightTokens.size < 20) return 0;
-  const intersection = [...leftTokens].filter((token) => rightTokens.has(token)).length;
-  const union = new Set([...leftTokens, ...rightTokens]).size;
+  const [smallest, largest] = leftTokens.size <= rightTokens.size
+    ? [leftTokens, rightTokens]
+    : [rightTokens, leftTokens];
+  let intersection = 0;
+  for (const token of smallest) {
+    if (largest.has(token)) intersection += 1;
+  }
+  const union = leftTokens.size + rightTokens.size - intersection;
   return union ? intersection / union : 0;
+}
+
+export function editorialSimilarity(left, right) {
+  return shingleSimilarity(editorialShingles(left), editorialShingles(right));
 }
 
 export function similarityReport(pages, threshold = 0.65) {
   const issues = [];
+  const rawTokenSets = pages.map(editorialShingles);
+  const documentFrequency = new Map();
+  for (const tokens of rawTokenSets) {
+    for (const token of tokens) {
+      documentFrequency.set(token, (documentFrequency.get(token) || 0) + 1);
+    }
+  }
+  const commonTemplateLimit = Math.max(2, Math.ceil(pages.length * 0.05));
+  const tokenSets = rawTokenSets.map((tokens) => new Set(
+    [...tokens].filter((token) => documentFrequency.get(token) <= commonTemplateLimit)
+  ));
   for (let i = 0; i < pages.length; i += 1) {
     for (let j = i + 1; j < pages.length; j += 1) {
-      const similarity = editorialSimilarity(pages[i], pages[j]);
+      const similarity = shingleSimilarity(tokenSets[i], tokenSets[j]);
       if (similarity >= threshold) {
         issues.push({
           left: pages[i].id,

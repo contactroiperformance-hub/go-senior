@@ -46,6 +46,7 @@ function parseInsee(html) {
   const age65to79 = number(row(populationRows, /65 à 79 ans/i).cells.at(-1));
   const age80 = number(row(populationRows, /80 ans ou plus/i).cells.at(-1));
   const houses = number(row(housingTypeRows, /^Maison$/i).cells.at(-1));
+  const apartments = number(row(housingTypeRows, /^Appartement$/i).cells.at(-1));
   const owners = number(row(tenureRows, /^Propriétaire$/i).cells[5]);
   const housingBefore1919 = number(row(housingAgeRows, /^Avant 1919$/i).cells.at(-1));
   const housing1919to1945 = number(row(housingAgeRows, /1919 à 1945/i).cells.at(-1));
@@ -57,6 +58,7 @@ function parseInsee(html) {
     age80,
     age65: Math.round((age65to79 + age80) * 10) / 10,
     houses,
+    apartments,
     owners,
     housingBefore1919,
     housing1919to1945,
@@ -110,7 +112,7 @@ const records = await mapLimit(
   8,
   async (department) => {
     const communes = await get(`https://geo.api.gouv.fr/communes?codeDepartement=${encodeURIComponent(department.code)}&fields=nom,code,population,codesPostaux&format=json`);
-    const topCommunes = communes
+    const topCommuneSummaries = communes
       .filter((commune) => Number.isFinite(commune.population))
       .sort((a, b) => b.population - a.population)
       .slice(0, 5)
@@ -120,6 +122,16 @@ const records = await mapLimit(
         population: commune.population,
         postalCode: commune.codesPostaux?.[0] || ""
       }));
+    const topCommunes = await Promise.all(topCommuneSummaries.map(async (commune) => {
+      if (department.code === "976") return commune;
+      try {
+        const cityHtml = await get(`https://www.insee.fr/fr/statistiques/2011101?geo=COM-${commune.inseeCode}`, "text");
+        return { ...commune, statistics: parseInsee(cityHtml) };
+      } catch (error) {
+        process.stderr.write(`\nDonnées communales indisponibles pour ${commune.name} (${commune.inseeCode}): ${error.message}\n`);
+        return { ...commune, statistics: null };
+      }
+    }));
     if (department.code === "976") {
       return {
         code: department.code,
