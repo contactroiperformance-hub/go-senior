@@ -140,7 +140,12 @@ for (const entry of await readdir(root)) {
 const sitemap = await readFile(path.join(dist, "sitemap.xml"), "utf8");
 if (!sitemap.includes("https://go-senior.fr/")) failures.push("sitemap.xml: accueil manquant");
 if (sitemap.includes("/projet/")) failures.push("sitemap.xml: page projet ne doit pas être indexée");
-if (sitemap.includes("/actualites/")) failures.push("sitemap.xml: fixtures actualités ne doivent pas être indexées");
+if (sitemap.includes("<loc>https://go-senior.fr/actualites/</loc>")) {
+  failures.push("sitemap.xml: la liste actualités ne doit pas encore être indexée");
+}
+if (!sitemap.includes("<loc>https://go-senior.fr/actualites/compte-personnel-france-renov/</loc><lastmod>2026-08-14</lastmod>")) {
+  failures.push("sitemap.xml: actualité France Rénov’ indexable manquante");
+}
 const sitemapUrls = [...sitemap.matchAll(/<url><loc>([^<]+)<\/loc>(?:<lastmod>([^<]+)<\/lastmod>)?<\/url>/g)];
 if (!sitemapUrls.length) failures.push("sitemap.xml: aucune URL détectée");
 for (const [, loc, lastmod] of sitemapUrls) {
@@ -163,8 +168,8 @@ const newsArticle = await readFile(path.join(dist, "actualites", "compte-personn
 if (!newsArticle.includes('<link rel="canonical" href="https://go-senior.fr/actualites/compte-personnel-france-renov/">')) {
   failures.push("actualité France Rénov’: URL canonique incorrecte");
 }
-if (!newsArticle.includes('<meta name="robots" content="noindex,follow">')) {
-  failures.push("actualité France Rénov’: protection noindex manquante");
+if (!newsArticle.includes('<meta name="robots" content="index,follow,')) {
+  failures.push("actualité France Rénov’: directive index,follow manquante");
 }
 
 const headers = await readFile(path.join(dist, "_headers"), "utf8");
