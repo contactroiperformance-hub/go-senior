@@ -171,6 +171,38 @@ if (!newsArticle.includes('<link rel="canonical" href="https://go-senior.fr/actu
 if (!newsArticle.includes('<meta name="robots" content="index,follow,')) {
   failures.push("actualité France Rénov’: directive index,follow manquante");
 }
+if (!newsArticle.includes('<meta property="og:type" content="article">')) {
+  failures.push("actualité France Rénov’: type Open Graph article manquant");
+}
+if (!newsArticle.includes('href="/methodologie-editoriale/"')) {
+  failures.push("actualité France Rénov’: auteur non relié à la méthode éditoriale");
+}
+const newsJsonLd = JSON.parse(newsArticle.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/i)?.[1] || "{}");
+const newsArticleSchema = (newsJsonLd["@graph"] || []).find((entry) => entry["@type"] === "NewsArticle");
+if (!newsArticleSchema) failures.push("actualité France Rénov’: schéma NewsArticle manquant");
+else {
+  if (newsArticleSchema.datePublished !== "2026-07-28") failures.push("actualité France Rénov’: datePublished incorrecte");
+  if (newsArticleSchema.dateModified !== "2026-08-14") failures.push("actualité France Rénov’: dateModified incorrecte");
+  if (newsArticleSchema.author?.url !== "https://go-senior.fr/methodologie-editoriale/") failures.push("actualité France Rénov’: auteur structuré incomplet");
+  if (!Array.isArray(newsArticleSchema.citation) || newsArticleSchema.citation.length < 2) failures.push("actualité France Rénov’: citations officielles structurées manquantes");
+  if (!newsArticleSchema.citation?.some((url) => url.includes("anah.gouv.fr/presse/compter-du-17-aout-2026"))) failures.push("actualité France Rénov’: communiqué Anah exact manquant");
+}
+
+const localArticle = await readFile(path.join(dist, "douche-senior", "gironde", "bordeaux", "index.html"), "utf8");
+const localJsonLd = JSON.parse(localArticle.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/i)?.[1] || "{}");
+const localArticleSchema = (localJsonLd["@graph"] || []).find((entry) => entry["@type"] === "Article");
+if (!localArticleSchema) failures.push("page locale Bordeaux: schéma Article manquant");
+else {
+  if (!localArticleSchema.datePublished || !localArticleSchema.dateModified) failures.push("page locale Bordeaux: dates structurées manquantes");
+  if (!Array.isArray(localArticleSchema.citation) || !localArticleSchema.citation.length) failures.push("page locale Bordeaux: citations officielles structurées manquantes");
+}
+
+const robots = await readFile(path.join(dist, "robots.txt"), "utf8");
+for (const userAgent of ["OAI-SearchBot", "PerplexityBot", "Claude-SearchBot"]) {
+  if (!robots.includes(`User-agent: ${userAgent}\nAllow: /`)) {
+    failures.push(`robots.txt: autorisation explicite manquante pour ${userAgent}`);
+  }
+}
 
 const headers = await readFile(path.join(dist, "_headers"), "utf8");
 if (!headers.includes("/*.dc.html\n  X-Robots-Tag: noindex, nofollow")) {

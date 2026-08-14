@@ -25,6 +25,7 @@ const departmentDirectoryRoutes = Object.freeze({
 });
 const organizationId = `${origin}/#organization`;
 const websiteId = `${origin}/#website`;
+const editorialMethodUrl = `${origin}/methodologie-editoriale/`;
 const defaultSocialImage = `${origin}/uploads/cover-linkedin-1584x396.png`;
 const supportSource = await readFile(path.join(root, "support.js"), "utf8");
 const supportVersion = createHash("sha256").update(supportSource).digest("hex").slice(0, 10);
@@ -168,8 +169,9 @@ function imageFrom(source) {
   };
 }
 
-function structuredData(route, title, description, customBreadcrumbs = null) {
+function structuredData(route, title, description, options = {}) {
   const canonical = `${origin}${route}`;
+  const webPageId = `${canonical}#webpage`;
   const graph = [
     {
       "@type": "Organization",
@@ -196,7 +198,7 @@ function structuredData(route, title, description, customBreadcrumbs = null) {
     },
     {
       "@type": "WebPage",
-      "@id": `${canonical}#webpage`,
+      "@id": webPageId,
       url: canonical,
       name: title,
       description,
@@ -206,10 +208,41 @@ function structuredData(route, title, description, customBreadcrumbs = null) {
     }
   ];
 
+  if (options.datePublished) graph[2].datePublished = options.datePublished;
+  if (options.dateModified) graph[2].dateModified = options.dateModified;
+
+  if (options.article) {
+    const articleId = `${canonical}#article`;
+    const article = {
+      "@type": options.article.type || "Article",
+      "@id": articleId,
+      headline: cleanTitle(title),
+      description,
+      url: canonical,
+      mainEntityOfPage: { "@id": webPageId },
+      isPartOf: { "@id": websiteId },
+      inLanguage: "fr-FR",
+      isAccessibleForFree: true,
+      author: {
+        "@type": "Organization",
+        name: "Équipe éditoriale Go Senior",
+        url: editorialMethodUrl
+      },
+      publisher: { "@id": organizationId }
+    };
+    if (options.imageUrl) article.image = options.imageUrl;
+    if (options.datePublished) article.datePublished = options.datePublished;
+    if (options.dateModified) article.dateModified = options.dateModified;
+    if (options.article.section) article.articleSection = options.article.section;
+    if (options.article.citations?.length) article.citation = [...new Set(options.article.citations)];
+    graph[2].mainEntity = { "@id": articleId };
+    graph.push(article);
+  }
+
   if (route !== "/") {
     let items;
-    if (customBreadcrumbs?.length) {
-      items = customBreadcrumbs.map((item, index) => ({
+    if (options.breadcrumbs?.length) {
+      items = options.breadcrumbs.map((item, index) => ({
         "@type": "ListItem",
         position: index + 1,
         name: item.name,
@@ -252,6 +285,27 @@ function structuredData(route, title, description, customBreadcrumbs = null) {
     "@context": "https://schema.org",
     "@graph": graph
   }).replaceAll("<", "\\u003c");
+}
+
+function officialCitationsFromSource(source) {
+  const officialHosts = [
+    "anah.gouv.fr",
+    "cnsa.fr",
+    "france-renov.gouv.fr",
+    "insee.fr",
+    "legifrance.gouv.fr",
+    "pour-les-personnes-agees.gouv.fr",
+    "service-public.fr",
+    "solidarites.gouv.fr"
+  ];
+  return [...new Set(
+    [...source.matchAll(/href=["'](https:\/\/[^"']+)["']/gi)]
+      .map((match) => match[1].replaceAll("&amp;", "&"))
+      .filter((href) => {
+        const hostname = new URL(href).hostname.replace(/^www\./, "");
+        return officialHosts.some((host) => hostname === host || hostname.endsWith(`.${host}`));
+      })
+  )];
 }
 
 function stripRuntimeMetadata(source) {
@@ -328,6 +382,13 @@ function protectVisibleEmailAddresses(source) {
   return result;
 }
 
+function linkEditorialAuthor(source) {
+  return source.replaceAll(
+    '<strong style="color:#41504A">l’équipe éditoriale Go Senior</strong>',
+    '<a href="Methodologie.dc.html" style="color:#2E5B4C;font-weight:700">l’équipe éditoriale Go Senior</a>'
+  );
+}
+
 function addProductionHead(source, file, route, indexed, options = {}) {
   const canonical = `${origin}${route}`;
   const title = titleFrom(source);
@@ -336,6 +397,13 @@ function addProductionHead(source, file, route, indexed, options = {}) {
   const robots = indexed
     ? "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"
     : "noindex,follow";
+  const articleMeta = options.article
+    ? [
+        options.datePublished ? `<meta property="article:published_time" content="${options.datePublished}">` : "",
+        options.dateModified ? `<meta property="article:modified_time" content="${options.dateModified}">` : "",
+        `<meta property="article:author" content="${editorialMethodUrl}">`
+      ].filter(Boolean)
+    : [];
   const social = [
     `<title>${title}</title>`,
     `<meta name="description" content="${escapeAttribute(description)}">`,
@@ -343,7 +411,7 @@ function addProductionHead(source, file, route, indexed, options = {}) {
     `<link rel="canonical" href="${canonical}">`,
     `<link rel="alternate" hreflang="fr-FR" href="${canonical}">`,
     `<meta property="og:locale" content="fr_FR">`,
-    `<meta property="og:type" content="website">`,
+    `<meta property="og:type" content="${options.article ? "article" : "website"}">`,
     `<meta property="og:site_name" content="Go Senior">`,
     `<meta property="og:title" content="${escapeAttribute(title)}">`,
     `<meta property="og:description" content="${escapeAttribute(description)}">`,
@@ -354,9 +422,10 @@ function addProductionHead(source, file, route, indexed, options = {}) {
     `<meta name="twitter:title" content="${escapeAttribute(title)}">`,
     `<meta name="twitter:description" content="${escapeAttribute(description)}">`,
     `<meta name="twitter:image" content="${escapeAttribute(image.url)}">`,
-    `<meta name="author" content="Go Senior">`,
+    `<meta name="author" content="${options.article ? "Équipe éditoriale Go Senior" : "Go Senior"}">`,
+    ...articleMeta,
     `<meta name="theme-color" content="#1F4237">`,
-    `<script type="application/ld+json">${structuredData(route, title, description, options.breadcrumbs)}</script>`
+    `<script type="application/ld+json">${structuredData(route, title, description, { ...options, imageUrl: image.url })}</script>`
   ].join("\n");
 
   let result = stripRuntimeMetadata(stripSharedFontHead(source));
@@ -381,6 +450,7 @@ function transform(source, file, route = null, indexed = false, stripSharedFonts
     .replaceAll('src="uploads/', 'src="/uploads/')
     .replaceAll('href="uploads/', 'href="/uploads/');
 
+  result = linkEditorialAuthor(result);
   result = replaceLinks(result);
   result = addImageLoadingPolicy(result, file);
   if (stripSharedFonts) result = stripSharedFontHead(result);
@@ -427,9 +497,22 @@ for (const file of designFiles) {
   );
 }
 
-for (const [file, route, indexed] of pages) {
+for (const [file, route, indexed, lastmod] of pages) {
   const source = await readFile(path.join(root, file), "utf8");
-  await writeRoute(route, transform(source, file, route, indexed));
+  const isArticle = file.startsWith("Guide-")
+    || file === "MaPrimeAdapt.dc.html"
+    || file === "Actualite-modele.dc.html";
+  await writeRoute(route, transform(source, file, route, indexed, false, {
+    dateModified: lastmod,
+    ...(isArticle ? {
+      datePublished: "2026-07-28",
+      article: {
+        type: file === "Actualite-modele.dc.html" ? "NewsArticle" : "Article",
+        section: file === "Actualite-modele.dc.html" ? "Actualités" : "Guides",
+        citations: officialCitationsFromSource(source)
+      }
+    } : {})
+  }));
 }
 
 for (const [service, departmentDirectoryRoute] of Object.entries(departmentDirectoryRoutes)) {
@@ -467,7 +550,19 @@ for (const page of localPages) {
       localPageRoute(page),
       publication.indexStatus === "index",
       false,
-      { breadcrumbs: breadcrumbData(page) }
+      {
+        breadcrumbs: breadcrumbData(page),
+        datePublished: page.publishedAt,
+        dateModified: page.updatedAt || page.sourceCheckedAt,
+        article: {
+          type: "Article",
+          section: "Guides locaux",
+          citations: (page.officialSources || []).flatMap((sourceItem) => [
+            sourceItem.officialUrl || sourceItem.url,
+            ...(sourceItem.additionalOfficialUrls || [])
+          ]).filter(Boolean)
+        }
+      }
     )
   );
 }
@@ -579,7 +674,7 @@ const notFound = `<!doctype html>
 await mkdir(path.join(dist, "sitemaps"), { recursive: true });
 await Promise.all([
   writeFile(path.join(dist, "sitemap.xml"), sitemap),
-  writeFile(path.join(dist, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap.xml\n`),
+  writeFile(path.join(dist, "robots.txt"), `User-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /\n\nUser-agent: Claude-SearchBot\nAllow: /\n\nUser-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\n`),
   writeFile(path.join(dist, "_headers"), headers),
   writeFile(path.join(dist, "_redirects"), redirects),
   writeFile(path.join(dist, "404.html"), notFound),
