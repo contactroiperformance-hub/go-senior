@@ -53,8 +53,10 @@ les pages douche privilégient les travaux, les contraintes techniques et le dev
 
 Un département publié exige au moins 350 mots éditoriaux, 5 FAQ locales et 3
 lieux nommés. Une ville publiée exige 6 à 10 FAQ, dont au moins 3 locales. Les
-séquences de six mots sont comparées entre toutes les pages, avec blocage dès
-65 % de similarité. Une destination voisine n’est liée
+séquences de six mots propres au contenu local sont comparées entre toutes les
+pages, avec blocage dès 65 % de similarité. Les séquences de gabarit présentes
+sur plus de 5 % du corpus sont écartées afin de mesurer la ressemblance du
+contenu local plutôt que les explications communes au service. Une destination voisine n’est liée
 que si elle est `published`, `index`, `included` et réellement générée.
 
 La couverture et le routing sont séparés. Le monte-escalier utilise

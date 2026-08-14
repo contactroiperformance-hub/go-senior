@@ -78,6 +78,13 @@ assert.equal(localPages.filter((page) => page.service === "douche-senior" && pag
 assert.equal(effectivePublication(bordeaux).status, "published");
 assert.equal(effectivePublication(bordeaux).indexStatus, "index");
 assert.equal(effectivePublication(bordeaux).sitemapStatus, "included");
+assert.ok(bordeaux.introduction.includes("L’INSEE recense 79 % d’appartements dans la commune"));
+assert.equal(/sans déduire une solution standard du seul code postal|Le projet commence par les gestes qui posent problème/i.test(bordeaux.introduction), false);
+for (const page of localPages.filter((item) => item.service === "douche-senior" && item.pageLevel === "city")) {
+  assert.ok(page.introduction.split(/\s+/).length >= 45, `${page.id}: introduction explicative`);
+  assert.ok(page.localHousingCommentary.split(/\s+/).length <= 120, `${page.id}: commentaire local concis`);
+  assert.equal(/rang \d parmi les cinq communes|sans déduire une solution standard|données communales interchangeables/i.test(`${page.introduction} ${page.localHousingCommentary}`), false, `${page.id}: aucune formulation artificielle`);
+}
 
 const completePage = structuredClone(lille);
 Object.assign(completePage, {
