@@ -103,6 +103,17 @@ for (const file of htmlFiles) {
   const indexed = /<meta name="robots" content="index,follow(?:,[^"]+)?">/i.test(source);
   if (productionPage && indexed && h1Count !== 1) failures.push(`${relative}: ${h1Count} H1`);
 
+  const emailProtectionRemoved = source
+    .replace(/<!--email_off-->[\s\S]*?<!--\/email_off-->/gi, "")
+    .replace(/<script\b[\s\S]*?<\/script>|<style\b[\s\S]*?<\/style>/gi, "");
+  if (/<a\b[^>]*\bhref=["']mailto:/i.test(emailProtectionRemoved)) {
+    failures.push(`${relative}: lien e-mail visible non protégé de la transformation Cloudflare`);
+  }
+  const visibleTextWithoutTags = emailProtectionRemoved.replace(/<[^>]+>/g, " ");
+  if (/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(visibleTextWithoutTags)) {
+    failures.push(`${relative}: adresse e-mail visible non protégée de la transformation Cloudflare`);
+  }
+
   const references = [...source.matchAll(/(?:href|src)="([^"]+)"/gi)].map((match) => match[1]);
   for (const reference of references) {
     if (
