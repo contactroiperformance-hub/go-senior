@@ -5,9 +5,10 @@ production réutilisables, sans créer de variante visuelle. Le rendu réutilise
 les composants existants `Header`, `Footer` et `BlocProjet`.
 
 Le moteur publie 202 guides départementaux : 101 pour le monte-escalier et
-101 pour la douche senior. Il publie aussi 501 guides communaux douche senior,
-soit les cinq communes les plus peuplées de chaque département (Paris étant
-à la fois commune et département). Le snapshot
+101 pour la douche senior. Il publie aussi 1 002 guides communaux : 501 pour
+le monte-escalier et 501 pour la douche senior, soit les cinq communes les
+plus peuplées de chaque département (Paris étant à la fois commune et
+département). Le snapshot
 `department-records.mjs` est construit depuis l’API Géo et les dossiers INSEE
 avec `npm run data:departments`. Mayotte conserve des millésimes 2017/2026
 explicites, car les tableaux RP 2023 homogènes n’y sont pas encore disponibles.
@@ -53,10 +54,11 @@ les pages douche privilégient les travaux, les contraintes techniques et le dev
 
 Un département publié exige au moins 350 mots éditoriaux, 5 FAQ locales et 3
 lieux nommés. Une ville publiée exige 6 à 10 FAQ, dont au moins 3 locales. Les
-séquences de six mots propres au contenu local sont comparées entre toutes les
-pages, avec blocage dès 65 % de similarité. Les séquences de gabarit présentes
-sur plus de 5 % du corpus sont écartées afin de mesurer la ressemblance du
-contenu local plutôt que les explications communes au service. Une destination voisine n’est liée
+séquences de six mots propres au contenu local sont comparées entre les pages
+du même service et du même niveau, avec blocage dès 65 % de similarité. Les
+séquences de gabarit présentes sur plus de 5 % du groupe comparable sont
+écartées afin de mesurer la ressemblance du contenu local plutôt que les
+explications communes au service. Une destination voisine n’est liée
 que si elle est `published`, `index`, `included` et réellement générée.
 
 La couverture et le routing sont séparés. Le monte-escalier utilise
@@ -74,7 +76,11 @@ tous les sitemaps et n’est lié depuis aucun répertoire public.
 - `/monte-escalier/departements/` : hub national généré, indexable, qui ne liste que les départements publiés.
 - `/monte-escalier/{departement}/` : 101 guides `published`, `index` et
   `included`, alimentés par les données INSEE, des ressources officielles CNSA,
-  cinq communes ou secteurs repères et un maillage régional.
+  cinq communes ou secteurs repères, un maillage régional et des liens vers
+  les guides communaux.
+- `/monte-escalier/{departement}/{ville}/` : 501 guides `published`, `index` et
+  `included`, avec statistiques communales, configuration d’escalier à relever,
+  facteurs de coût, aides vérifiées, FAQ et sources locales.
 - `/douche-senior/departements/` : hub national généré et indexable, sans mise
   en avant des aides.
 - `/douche-senior/{departement}/` : 101 guides `published`, `index` et
@@ -93,10 +99,8 @@ annuaire régionalisé → département.
 
 ## Brouillons de validation
 
-- `/monte-escalier/nord/lille/`
-
-Cette page reste volontairement en draft, en `noindex, follow` et hors sitemap.
-Elle masque les modules dont les données vérifiées ne sont pas intégrées.
+Aucun brouillon local n’est actuellement exposé. Une future page incomplète
+sera automatiquement ramenée à `draft`, en `noindex, follow` et hors sitemap.
 
 ## Premier lot publiable
 

@@ -633,18 +633,39 @@ function nearbySection(page, allPages) {
 }
 
 function cityGuidesSection(page, allPages) {
-  if (page.pageLevel !== "department" || !page.cityLocations?.length) return "";
-  const cityIds = new Set(page.cityLocations.map((item) => typeof item === "string" ? item : item.id));
-  const cities = allPages
-    .filter((item) => item.service === page.service && item.pageLevel === "city" && cityIds.has(item.id) && isPublicLocalPage(item))
-    .sort((left, right) => page.cityLocations.findIndex((item) => (typeof item === "string" ? item : item.id) === left.id) - page.cityLocations.findIndex((item) => (typeof item === "string" ? item : item.id) === right.id));
+  if (page.pageLevel !== "department") return "";
+  const configuredIds = (page.cityLocations || []).map((item) => typeof item === "string" ? item : item.id);
+  const cityIds = new Set(configuredIds);
+  const candidates = allPages.filter((item) => item.service === page.service
+    && item.pageLevel === "city"
+    && item.departmentSlug === page.departmentSlug
+    && isPublicLocalPage(item));
+  const cities = (configuredIds.length
+    ? candidates.filter((item) => cityIds.has(item.id))
+    : candidates
+  ).sort((left, right) => {
+    if (!configuredIds.length) {
+      const leftIndex = (page.localPlaces || []).indexOf(left.cityName);
+      const rightIndex = (page.localPlaces || []).indexOf(right.cityName);
+      if (leftIndex >= 0 || rightIndex >= 0) {
+        if (leftIndex < 0) return 1;
+        if (rightIndex < 0) return -1;
+        return leftIndex - rightIndex;
+      }
+      return left.cityName.localeCompare(right.cityName, "fr");
+    }
+    return configuredIds.indexOf(left.id) - configuredIds.indexOf(right.id);
+  });
   if (!cities.length) return "";
+  const shower = page.service === "douche-senior";
   const links = cities.map((city) => `<a href="${escapeAttribute(localPageRoute(city))}" style="display:flex;align-items:center;justify-content:space-between;gap:14px;background:#FFFFFF;border:1px solid #EADFC9;border-radius:14px;padding:16px 18px;text-decoration:none;font-weight:700;color:#1F2E27" style-hover="border-color:#2E5B4C;box-shadow:0 6px 18px rgba(34,50,43,.08)">
       <span>${escapeHtml(city.cityName)}</span><span style="color:#B04E20" aria-hidden="true">›</span>
     </a>`).join("");
   return section(
-    `Guides douche senior dans les principales villes de ${page.departmentName}`,
-    `<p style="margin:0;color:#41504A">Retrouvez des repères communaux sur la population, les logements et les points à vérifier avant de transformer une salle de bain.</p>
+    `Guides ${shower ? "douche senior" : "monte-escalier"} dans les principales villes de ${page.departmentName}`,
+    `<p style="margin:0;color:#41504A">${shower
+      ? "Retrouvez des repères communaux sur la population, les logements et les points à vérifier avant de transformer une salle de bain."
+      : "Retrouvez des repères communaux sur la population, les logements et les mesures à prévoir avant de choisir un rail et un équipement."}</p>
       <div data-local-city-guides style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));gap:12px">${links}</div>`,
     16
   );
