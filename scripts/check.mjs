@@ -51,6 +51,17 @@ for (const file of htmlFiles) {
     if (descriptionCount !== 1) failures.push(`${relative}: ${descriptionCount} meta description dans head`);
     if (canonicalCount !== 1) failures.push(`${relative}: ${canonicalCount} canonical dans head`);
     if (structuredDataCount !== 1) failures.push(`${relative}: JSON-LD absent ou dupliqué`);
+    for (const faviconSignal of [
+      'href="/favicon.svg"',
+      'href="/favicon-32.png"',
+      'href="/favicon-16.png"',
+      'href="/favicon-48.png"',
+      'href="/apple-touch-icon.png"',
+      'href="/site.webmanifest"',
+      '<meta name="theme-color" content="#2E5B4C">'
+    ]) {
+      if (!head.includes(faviconSignal)) failures.push(`${relative}: signal favicon manquant ${faviconSignal}`);
+    }
     if (localFontCount !== 4) failures.push(`${relative}: polices locales absentes ou dupliquées`);
     if (/fonts\.(?:googleapis|gstatic)\.com/i.test(head)) {
       failures.push(`${relative}: ressource Google Fonts externe restante`);
@@ -62,6 +73,12 @@ for (const file of htmlFiles) {
         const types = new Set((parsed["@graph"] || []).map((entry) => entry["@type"]));
         if (!types.has("Organization") || !types.has("WebSite") || !types.has("WebPage")) {
           failures.push(`${relative}: graphe JSON-LD incomplet`);
+        }
+        if (relative === "index.html") {
+          const organization = (parsed["@graph"] || []).find((entry) => entry["@type"] === "Organization");
+          if (organization?.logo !== "https://go-senior.fr/favicon-512.png") {
+            failures.push("index.html: logo Organization manquant ou incorrect");
+          }
         }
       } catch {
         failures.push(`${relative}: JSON-LD invalide`);
@@ -128,6 +145,32 @@ for (const file of htmlFiles) {
       : path.join(dist, pathname);
     if (!await targetExists(target)) failures.push(`${relative}: cible absente ${reference}`);
   }
+}
+
+for (const faviconFile of [
+  "favicon.svg",
+  "favicon-16.png",
+  "favicon-32.png",
+  "favicon-48.png",
+  "favicon-64.png",
+  "favicon-192.png",
+  "favicon-512.png",
+  "apple-touch-icon.png",
+  "site.webmanifest"
+]) {
+  if (!await targetExists(path.join(dist, faviconFile))) failures.push(`${faviconFile}: actif favicon absent du build`);
+}
+try {
+  const manifest = JSON.parse(await readFile(path.join(dist, "site.webmanifest"), "utf8"));
+  if (manifest.theme_color !== "#2E5B4C") failures.push("site.webmanifest: theme_color incorrect");
+  if (!manifest.icons?.some((icon) => icon.src === "/favicon-192.png" && icon.sizes === "192x192")) {
+    failures.push("site.webmanifest: icône 192x192 manquante");
+  }
+  if (!manifest.icons?.some((icon) => icon.src === "/favicon-512.png" && icon.sizes === "512x512")) {
+    failures.push("site.webmanifest: icône 512x512 manquante");
+  }
+} catch {
+  failures.push("site.webmanifest: manifeste invalide");
 }
 
 for (const entry of await readdir(root)) {

@@ -27,6 +27,24 @@ const organizationId = `${origin}/#organization`;
 const websiteId = `${origin}/#website`;
 const editorialMethodUrl = `${origin}/methodologie-editoriale/`;
 const defaultSocialImage = `${origin}/uploads/cover-linkedin-1584x396.png`;
+const faviconFiles = [
+  "favicon.svg",
+  "favicon-16.png",
+  "favicon-32.png",
+  "favicon-48.png",
+  "favicon-64.png",
+  "favicon-192.png",
+  "favicon-512.png",
+  "apple-touch-icon.png",
+  "site.webmanifest"
+];
+const faviconHead = `<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#2E5B4C">`;
 const supportSource = await readFile(path.join(root, "support.js"), "utf8");
 const supportVersion = createHash("sha256").update(supportSource).digest("hex").slice(0, 10);
 const consentSource = await readFile(path.join(root, "consent.js"), "utf8");
@@ -207,6 +225,8 @@ function structuredData(route, title, description, options = {}) {
       publisher: { "@id": organizationId }
     }
   ];
+
+  if (route === "/") graph[0].logo = `${origin}/favicon-512.png`;
 
   if (options.datePublished) graph[2].datePublished = options.datePublished;
   if (options.dateModified) graph[2].dateModified = options.dateModified;
@@ -408,6 +428,7 @@ function addProductionHead(source, file, route, indexed, options = {}) {
     `<title>${title}</title>`,
     `<meta name="description" content="${escapeAttribute(description)}">`,
     `<meta name="robots" content="${robots}">`,
+    faviconHead,
     `<link rel="canonical" href="${canonical}">`,
     `<link rel="alternate" hreflang="fr-FR" href="${canonical}">`,
     `<meta property="og:locale" content="fr_FR">`,
@@ -424,7 +445,6 @@ function addProductionHead(source, file, route, indexed, options = {}) {
     `<meta name="twitter:image" content="${escapeAttribute(image.url)}">`,
     `<meta name="author" content="${options.article ? "Équipe éditoriale Go Senior" : "Go Senior"}">`,
     ...articleMeta,
-    `<meta name="theme-color" content="#1F4237">`,
     `<script type="application/ld+json">${structuredData(route, title, description, { ...options, imageUrl: image.url })}</script>`
   ].join("\n");
 
@@ -569,6 +589,7 @@ for (const page of localPages) {
 
 await cp(path.join(root, "uploads"), path.join(dist, "uploads"), { recursive: true });
 await cp(path.join(root, "vendor"), path.join(dist, "vendor"), { recursive: true });
+await Promise.all(faviconFiles.map((file) => cp(path.join(root, file), path.join(dist, file))));
 const minifiedSupport = await minifyJavaScript(supportSource, {
   minify: true,
   target: "es2020"
@@ -643,6 +664,15 @@ const headers = `/*
 /vendor/*
   Cache-Control: public, max-age=31536000, immutable
 
+/favicon*
+  Cache-Control: public, max-age=31536000, immutable
+
+/apple-touch-icon.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/site.webmanifest
+  Cache-Control: public, max-age=86400, must-revalidate
+
 /projet/*
   Cache-Control: public, max-age=0, must-revalidate, no-transform
 
@@ -660,6 +690,7 @@ const notFound = `<!doctype html>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
+  ${faviconHead}
   <title>Page introuvable — Go Senior</title>
   <style>
     body{margin:0;background:#FAF7F0;color:#22322B;font:18px/1.6 system-ui,sans-serif}
