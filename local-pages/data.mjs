@@ -5,6 +5,54 @@ const showerUpdatedAt = "2026-08-13";
 const stairCityUpdatedAt = "2026-08-14";
 const seoUpdatedAt = "2026-08-19";
 
+function chooseSeoVariant(key, variants) {
+  let hash = 0;
+  for (const character of key) {
+    hash = (hash * 31 + character.codePointAt(0)) >>> 0;
+  }
+  return variants[hash % variants.length];
+}
+
+function stairliftDepartmentDescription(config) {
+  const location = `${config.preposition} (${config.departmentCode})`;
+  return chooseSeoVariant(`stair-department-${config.departmentSlug}`, [
+    `Besoin d’un monte-escalier ${location} ? Comparez modèles, prix et aides possibles, puis demandez gratuitement une étude adaptée à votre escalier.`,
+    `Vous cherchez un monte-escalier ${location} ? Comparez budget, modèles et aides possibles, puis lancez gratuitement votre demande d’étude.`,
+    `Un projet de monte-escalier ${location} ? Comparez modèles, prix et aides possibles, puis demandez une étude gratuite adaptée à votre logement.`,
+    `Quel monte-escalier choisir ${location} ? Comparez prix, configurations et aides possibles, puis demandez gratuitement une étude adaptée.`
+  ]);
+}
+
+function stairliftCityDescription(config) {
+  const location = `${config.cityPreposition} (${config.departmentCode})`;
+  return chooseSeoVariant(`stair-city-${config.departmentSlug}-${config.citySlug}`, [
+    `Besoin d’un monte-escalier ${location} ? Comparez modèles, prix et aides possibles, puis demandez gratuitement une étude adaptée à votre escalier.`,
+    `Vous cherchez un monte-escalier ${location} ? Comparez budget, modèles et aides possibles, puis lancez gratuitement votre demande d’étude.`,
+    `Un projet de monte-escalier ${location} ? Comparez modèles, prix et aides possibles, puis demandez une étude gratuite adaptée à votre logement.`,
+    `Quel monte-escalier choisir ${location} ? Comparez prix, configurations et aides possibles, puis demandez gratuitement une étude adaptée.`
+  ]);
+}
+
+function showerDepartmentDescription(config) {
+  const location = `${config.preposition} (${config.departmentCode})`;
+  return chooseSeoVariant(`shower-department-${config.departmentSlug}`, [
+    `Besoin d’une douche senior ${location} ? Comparez solutions, prix et travaux, puis demandez gratuitement une étude adaptée à votre salle de bain.`,
+    `Vous cherchez une douche senior ${location} ? Comparez équipements, prix et travaux, puis lancez gratuitement votre demande d’étude.`,
+    `Un projet de douche senior ${location} ? Comparez équipements, budget et travaux, puis demandez une étude gratuite, sans engagement.`,
+    `Vous souhaitez remplacer une baignoire ou sécuriser une douche ${location} ? Comparez prix et solutions, puis demandez une étude gratuite.`
+  ]);
+}
+
+function showerCityDescription(config) {
+  const location = `${config.cityPreposition} (${config.departmentCode})`;
+  return chooseSeoVariant(`shower-city-${config.departmentSlug}-${config.citySlug}`, [
+    `Besoin d’une douche senior ${location} ? Comparez solutions, prix et travaux, puis demandez gratuitement une étude adaptée à votre salle de bain.`,
+    `Vous cherchez une douche senior ${location} ? Comparez équipements, prix et travaux, puis lancez gratuitement votre demande d’étude.`,
+    `Un projet de douche senior ${location} ? Comparez équipements, budget et travaux, puis demandez une étude gratuite, sans engagement.`,
+    `Vous souhaitez remplacer une baignoire ou sécuriser une douche ${location} ? Comparez prix et solutions, puis demandez une étude gratuite.`
+  ]);
+}
+
 const stairliftPrices = Object.freeze([
   {
     productType: "Monte-escalier droit",
@@ -285,7 +333,7 @@ function createPublishedStairliftDepartment(config) {
     inseeCode: config.departmentCode,
     locationPhrase: config.preposition,
     seoTitle: `Monte-escalier ${config.prepositionTitle} (${config.departmentCode}) : prix et aides`,
-    metaDescription: `Monte-escalier ${config.prepositionTitle} (${config.departmentCode}) : comparez les prix, les modèles et les aides, puis préparez une étude adaptée à votre logement.`,
+    metaDescription: stairliftDepartmentDescription(config),
     h1: `Monte-escalier ${config.prepositionTitle} : prix, aides et professionnels`,
     introduction: config.introduction,
     geographicScope: config.geographicScope || `Ce guide couvre le département ${config.inseeLabel} (${config.departmentCode}). Les indicateurs INSEE concernent l’ensemble du département ; les aides et contacts cités renvoient vers les organismes officiels compétents. Le code postal sert ensuite à orienter la demande selon le lieu réel du projet.`,
@@ -387,7 +435,7 @@ function createPublishedStairliftCity(config) {
     postalCodes: config.postalCodes,
     intercommunalityName: null,
     seoTitle: `Monte-escalier ${config.cityPreposition} (${config.departmentCode}) : prix, aides et devis`,
-    metaDescription: `Pour un projet ${config.cityPreposition} (${config.departmentCode}), comparez les prix et modèles de monte-escalier, les aides possibles et les points à vérifier avant un devis.`,
+    metaDescription: stairliftCityDescription(config),
     h1: `Monte-escalier ${config.cityPreposition} : prix, aides et devis`,
     introduction: config.introduction,
     geographicScope: config.geographicScope,
@@ -456,7 +504,7 @@ function createPublishedShowerDepartment(config) {
     inseeCode: config.departmentCode,
     locationPhrase: config.preposition,
     seoTitle: `Douche senior ${config.prepositionTitle} (${config.departmentCode}) : prix et travaux`,
-    metaDescription: `Douche senior ${config.prepositionTitle} (${config.departmentCode}) : comparez les prix, les solutions et les travaux, puis préparez un devis adapté à votre salle de bain.`,
+    metaDescription: showerDepartmentDescription(config),
     h1: `Douche senior ${config.prepositionTitle} : prix, travaux et professionnels`,
     introduction: config.introduction,
     geographicScope: config.geographicScope,
@@ -532,7 +580,7 @@ function createPublishedShowerCity(config) {
     postalCodes: config.postalCodes,
     intercommunalityName: null,
     seoTitle: `Douche senior ${config.cityPreposition} (${config.departmentCode}) : prix et devis`,
-    metaDescription: `Pour un projet ${config.cityPreposition} (${config.departmentCode}), découvrez les prix d’une douche senior, les travaux à prévoir et les points à vérifier avant un devis.`,
+    metaDescription: showerCityDescription(config),
     h1: `Douche senior ${config.cityPreposition} : prix, travaux et devis`,
     introduction: config.introduction,
     geographicScope: config.geographicScope,
@@ -1465,7 +1513,11 @@ export const localPages = [
     locationPhrase: "dans le Nord",
     inseeCode: "59",
     seoTitle: "Monte-escalier dans le Nord (59) : prix et aides",
-    metaDescription: "Monte-escalier dans le Nord (59) : comparez les prix, les modèles et les aides, puis préparez une étude adaptée à votre logement.",
+    metaDescription: stairliftDepartmentDescription({
+      preposition: "dans le Nord",
+      departmentCode: "59",
+      departmentSlug: "nord"
+    }),
     h1: "Monte-escalier dans le Nord : prix, aides et professionnels",
     introduction: "Dans le Nord, la configuration de l’escalier et une prise de mesures permettent de préciser le type de rail, les options et le devis du projet.",
     geographicScope: "Ce guide couvre le département du Nord (59). Les données INSEE portent sur l’ensemble du département. Les aides dépendent de la situation du demandeur, tandis que le code postal permet d’orienter la demande vers le professionnel intervenant dans le secteur du projet.",
