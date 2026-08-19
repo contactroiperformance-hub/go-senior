@@ -337,8 +337,8 @@ assert.ok(nordBuilt.includes("consulté le 12 août 2026"));
 assert.ok(nordBuilt.includes("Démarrer mon projet"));
 assert.ok(nordBuilt.includes("Tous les codes postaux du Nord sont couverts"));
 assert.equal((nordBuilt.match(/<h1\b/g) || []).length, 1);
-assert.ok(nordBuilt.includes("<title>Monte-escalier dans le Nord (59)\u00a0: prix et aides | Go Senior</title>"));
-assert.ok(nordBuilt.includes('content="Découvrez les prix d’un monte-escalier dans le Nord, les modèles droits ou tournants, les aides disponibles et les professionnels intervenant dans votre secteur."'));
+assert.ok(nordBuilt.includes("<title>Monte-escalier dans le Nord (59)\u00a0: prix et aides</title>"));
+assert.ok(nordBuilt.includes('content="Monte-escalier dans le Nord (59) : comparez les prix, les modèles et les aides, puis préparez une étude adaptée à votre logement."'));
 assert.ok(nordBuilt.includes('<link rel="canonical" href="https://go-senior.fr/monte-escalier/nord/">'));
 assert.ok(nordBuilt.includes('href="/monte-escalier/nord/" aria-current="page"'));
 assert.ok(nordBuilt.includes('@media(max-width:1060px)'));
@@ -406,7 +406,7 @@ assert.equal(/prix et aides|aides et professionnels/i.test(showerGirondeBuilt), 
 assert.equal(containsPublicPlaceholder(showerGirondeBuilt), false);
 
 const showerPillarBuilt = await readFile(path.join(dist, "douche-senior/index.html"), "utf8");
-assert.ok(showerPillarBuilt.includes("Douche senior\u00a0: prix, modèles, travaux et installation"));
+assert.ok(showerPillarBuilt.includes("Douche senior\u00a0: prix, travaux et devis"));
 assert.ok(showerPillarBuilt.includes('id="contraintes"'));
 assert.ok(showerPillarBuilt.includes('href="/douche-senior/departements/"'));
 assert.equal(showerPillarBuilt.includes('id="aides"'), false);
