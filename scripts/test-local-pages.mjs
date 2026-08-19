@@ -56,6 +56,22 @@ for (const page of localPages.filter((item) => item.service === "douche-senior")
   assert.equal(page.nationalPriceReference.length, 5, `${page.id}: cinq fourchettes de prix structurées`);
 }
 
+for (const page of localPages) {
+  assert.match(page.metaDescription, /gratuit/i, `${page.id}: bénéfice de la demande gratuite explicite`);
+  assert.match(page.metaDescription, /demandez|demande d’étude/i, `${page.id}: appel à l’action explicite`);
+  assert.match(page.metaDescription, /prix|budget/i, `${page.id}: intention commerciale prix ou budget explicite`);
+}
+
+for (const service of ["monte-escalier", "douche-senior"]) {
+  for (const pageLevel of ["department", "city"]) {
+    const descriptions = localPages.filter((page) => page.service === service && page.pageLevel === pageLevel);
+    const structures = new Set(descriptions.map((page) => page.metaDescription
+      .replace(page.locationPhrase, "{lieu}")
+      .replace(`(${page.departmentCode})`, "({code})")));
+    assert.ok(structures.size >= 4, `${service}-${pageLevel}: au moins quatre structures de meta description`);
+  }
+}
+
 const nord = localPages.find((page) => page.id === "monte-escalier-nord");
 const oise = localPages.find((page) => page.id === "monte-escalier-oise");
 const somme = localPages.find((page) => page.id === "monte-escalier-somme");
@@ -338,7 +354,7 @@ assert.ok(nordBuilt.includes("Démarrer mon projet"));
 assert.ok(nordBuilt.includes("Tous les codes postaux du Nord sont couverts"));
 assert.equal((nordBuilt.match(/<h1\b/g) || []).length, 1);
 assert.ok(nordBuilt.includes("<title>Monte-escalier dans le Nord (59)\u00a0: prix et aides</title>"));
-assert.ok(nordBuilt.includes('content="Monte-escalier dans le Nord (59) : comparez les prix, les modèles et les aides, puis préparez une étude adaptée à votre logement."'));
+assert.ok(nordBuilt.includes(`content="${nord.metaDescription}"`));
 assert.ok(nordBuilt.includes('<link rel="canonical" href="https://go-senior.fr/monte-escalier/nord/">'));
 assert.ok(nordBuilt.includes('href="/monte-escalier/nord/" aria-current="page"'));
 assert.ok(nordBuilt.includes('@media(max-width:1060px)'));
@@ -406,7 +422,7 @@ assert.equal(/prix et aides|aides et professionnels/i.test(showerGirondeBuilt), 
 assert.equal(containsPublicPlaceholder(showerGirondeBuilt), false);
 
 const showerPillarBuilt = await readFile(path.join(dist, "douche-senior/index.html"), "utf8");
-assert.ok(showerPillarBuilt.includes("Douche senior\u00a0: prix, travaux et devis"));
+assert.ok(showerPillarBuilt.includes("Douche senior\u00a0: prix 2026, travaux et devis"));
 assert.ok(showerPillarBuilt.includes('id="contraintes"'));
 assert.ok(showerPillarBuilt.includes('href="/douche-senior/departements/"'));
 assert.equal(showerPillarBuilt.includes('id="aides"'), false);
