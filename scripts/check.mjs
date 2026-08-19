@@ -7,6 +7,19 @@ const dist = path.join(root, "dist");
 const failures = [];
 const htmlFiles = [];
 const checkedTargets = new Map();
+const indexedMetadata = [];
+
+function visibleMetadataText(value = "") {
+  return value
+    .replace(/&nbsp;|&#160;/gi, " ")
+    .replace(/&#0*39;|&apos;/gi, "'")
+    .replace(/&quot;/gi, '"')
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 async function targetExists(target) {
   if (!checkedTargets.has(target)) {
@@ -51,6 +64,23 @@ for (const file of htmlFiles) {
     if (descriptionCount !== 1) failures.push(`${relative}: ${descriptionCount} meta description dans head`);
     if (canonicalCount !== 1) failures.push(`${relative}: ${canonicalCount} canonical dans head`);
     if (structuredDataCount !== 1) failures.push(`${relative}: JSON-LD absent ou dupliqué`);
+    if (/<meta name="robots" content="index,follow(?:,[^"]+)?">/i.test(head)) {
+      const title = visibleMetadataText(head.match(/<title>([\s\S]*?)<\/title>/i)?.[1]);
+      const description = visibleMetadataText(head.match(/<meta name="description" content="([^"]*)"/i)?.[1]);
+      const openGraphTitle = visibleMetadataText(head.match(/<meta property="og:title" content="([^"]*)"/i)?.[1]);
+      const openGraphDescription = visibleMetadataText(head.match(/<meta property="og:description" content="([^"]*)"/i)?.[1]);
+      const titleLength = [...title].length;
+      const descriptionLength = [...description].length;
+      indexedMetadata.push({ relative, title, description });
+      if (titleLength < 30 || titleLength > 75) {
+        failures.push(`${relative}: title SEO de ${titleLength} caractères (attendu 30 à 75)`);
+      }
+      if (descriptionLength < 110 || descriptionLength > 175) {
+        failures.push(`${relative}: meta description de ${descriptionLength} caractères (attendu 110 à 175)`);
+      }
+      if (openGraphTitle !== title) failures.push(`${relative}: og:title différent du title SEO`);
+      if (openGraphDescription !== description) failures.push(`${relative}: og:description différente de la meta description`);
+    }
     for (const faviconSignal of [
       'href="/favicon.svg"',
       'href="/favicon-32.png"',
@@ -147,6 +177,20 @@ for (const file of htmlFiles) {
   }
 }
 
+for (const field of ["title", "description"]) {
+  const occurrences = new Map();
+  for (const metadata of indexedMetadata) {
+    const matches = occurrences.get(metadata[field]) || [];
+    matches.push(metadata.relative);
+    occurrences.set(metadata[field], matches);
+  }
+  for (const [value, matches] of occurrences) {
+    if (matches.length > 1) {
+      failures.push(`${field} SEO dupliqué sur ${matches.join(", ")}: ${value}`);
+    }
+  }
+}
+
 for (const faviconFile of [
   "favicon.svg",
   "favicon-16.png",
@@ -186,7 +230,7 @@ if (sitemap.includes("/projet/")) failures.push("sitemap.xml: page projet ne doi
 if (sitemap.includes("<loc>https://go-senior.fr/actualites/</loc>")) {
   failures.push("sitemap.xml: la liste actualités ne doit pas encore être indexée");
 }
-if (!sitemap.includes("<loc>https://go-senior.fr/actualites/compte-personnel-france-renov/</loc><lastmod>2026-08-14</lastmod>")) {
+if (!sitemap.includes("<loc>https://go-senior.fr/actualites/compte-personnel-france-renov/</loc><lastmod>2026-08-19</lastmod>")) {
   failures.push("sitemap.xml: actualité France Rénov’ indexable manquante");
 }
 const sitemapUrls = [...sitemap.matchAll(/<url><loc>([^<]+)<\/loc>(?:<lastmod>([^<]+)<\/lastmod>)?<\/url>/g)];
@@ -234,7 +278,7 @@ const newsArticleSchema = (newsJsonLd["@graph"] || []).find((entry) => entry["@t
 if (!newsArticleSchema) failures.push("actualité France Rénov’: schéma NewsArticle manquant");
 else {
   if (newsArticleSchema.datePublished !== "2026-07-28") failures.push("actualité France Rénov’: datePublished incorrecte");
-  if (newsArticleSchema.dateModified !== "2026-08-14") failures.push("actualité France Rénov’: dateModified incorrecte");
+  if (newsArticleSchema.dateModified !== "2026-08-19") failures.push("actualité France Rénov’: dateModified incorrecte");
   if (newsArticleSchema.author?.url !== "https://go-senior.fr/methodologie-editoriale/") failures.push("actualité France Rénov’: auteur structuré incomplet");
   if (!Array.isArray(newsArticleSchema.citation) || newsArticleSchema.citation.length < 2) failures.push("actualité France Rénov’: citations officielles structurées manquantes");
   if (!newsArticleSchema.citation?.some((url) => url.includes("anah.gouv.fr/presse/compter-du-17-aout-2026"))) failures.push("actualité France Rénov’: communiqué Anah exact manquant");

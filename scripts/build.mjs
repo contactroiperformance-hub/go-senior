@@ -108,33 +108,33 @@ const localModelFiles = new Set([
 // Une date n'est renseignée que lorsqu'elle correspond à une révision
 // éditoriale réelle. Elle doit être mise à jour avec le contenu, pas au build.
 const pages = [
-  ["Accueil.dc.html", "/", true, "2026-08-14"],
-  ["Monte-escalier.dc.html", "/monte-escalier/", true, "2026-08-14"],
-  ["Douche-senior.dc.html", "/douche-senior/", true, "2026-08-14"],
-  ["MaPrimeAdapt.dc.html", "/maprimeadapt/", true, "2026-08-14"],
-  ["Guides.dc.html", "/guides/", true, "2026-08-14"],
-  ["Guide-prix-monte-escalier.dc.html", "/guides/prix-monte-escalier/", true, "2026-08-14"],
-  ["Guide-droit-tournant.dc.html", "/guides/monte-escalier-droit-ou-tournant/", true, "2026-08-14"],
-  ["Guide-aides-monte-escalier.dc.html", "/guides/aides-monte-escalier/", true, "2026-08-14"],
-  ["Guide-monte-escalier-exterieur.dc.html", "/guides/monte-escalier-exterieur/", true, "2026-08-14"],
-  ["Guide-occasion-location.dc.html", "/guides/monte-escalier-occasion-location/", true, "2026-08-14"],
-  ["Guide-delai-installation.dc.html", "/guides/delai-installation-monte-escalier/", true, "2026-08-14"],
-  ["Guide-prix-douche-senior.dc.html", "/guides/prix-douche-senior/", true, "2026-08-14"],
-  ["Guide-remplacer-baignoire-douche.dc.html", "/guides/remplacer-baignoire-par-douche/", true, "2026-08-14"],
+  ["Accueil.dc.html", "/", true, "2026-08-19"],
+  ["Monte-escalier.dc.html", "/monte-escalier/", true, "2026-08-19"],
+  ["Douche-senior.dc.html", "/douche-senior/", true, "2026-08-19"],
+  ["MaPrimeAdapt.dc.html", "/maprimeadapt/", true, "2026-08-19"],
+  ["Guides.dc.html", "/guides/", true, "2026-08-19"],
+  ["Guide-prix-monte-escalier.dc.html", "/guides/prix-monte-escalier/", true, "2026-08-19"],
+  ["Guide-droit-tournant.dc.html", "/guides/monte-escalier-droit-ou-tournant/", true, "2026-08-19"],
+  ["Guide-aides-monte-escalier.dc.html", "/guides/aides-monte-escalier/", true, "2026-08-19"],
+  ["Guide-monte-escalier-exterieur.dc.html", "/guides/monte-escalier-exterieur/", true, "2026-08-19"],
+  ["Guide-occasion-location.dc.html", "/guides/monte-escalier-occasion-location/", true, "2026-08-19"],
+  ["Guide-delai-installation.dc.html", "/guides/delai-installation-monte-escalier/", true, "2026-08-19"],
+  ["Guide-prix-douche-senior.dc.html", "/guides/prix-douche-senior/", true, "2026-08-19"],
+  ["Guide-remplacer-baignoire-douche.dc.html", "/guides/remplacer-baignoire-par-douche/", true, "2026-08-19"],
   ["Guide-douche-senior-pmr.dc.html", "/guides/douche-senior-ou-pmr/", true, "2026-08-14"],
   ["Guide-baignoire-porte-douche.dc.html", "/guides/baignoire-a-porte-ou-douche/", true, "2026-08-14"],
-  ["Guide-equipements-douche.dc.html", "/guides/equipements-securiser-douche/", true, "2026-08-14"],
-  ["Guide-prix-salle-de-bain.dc.html", "/guides/prix-salle-de-bain-adaptee/", true, "2026-08-14"],
-  ["Guide-plafonds-ressources.dc.html", "/guides/plafonds-ressources/", true, "2026-08-14"],
-  ["Guide-apa-pch.dc.html", "/guides/apa-pch/", true, "2026-08-14"],
+  ["Guide-equipements-douche.dc.html", "/guides/equipements-securiser-douche/", true, "2026-08-19"],
+  ["Guide-prix-salle-de-bain.dc.html", "/guides/prix-salle-de-bain-adaptee/", true, "2026-08-19"],
+  ["Guide-plafonds-ressources.dc.html", "/guides/plafonds-ressources/", true, "2026-08-19"],
+  ["Guide-apa-pch.dc.html", "/guides/apa-pch/", true, "2026-08-19"],
   ["Formulaire.dc.html", "/projet/", false],
   // La liste reste hors index jusqu'à contenir plusieurs véritables articles.
   // Un article éditorialement complet peut être indexé séparément.
   ["Actualites.dc.html", "/actualites/", false],
-  ["Actualite-modele.dc.html", "/actualites/compte-personnel-france-renov/", true, "2026-08-14"],
-  ["A-propos.dc.html", "/a-propos/", true, "2026-08-14"],
-  ["Methodologie.dc.html", "/methodologie-editoriale/", true, "2026-08-14"],
-  ["Contact.dc.html", "/contact/", true, "2026-08-14"],
+  ["Actualite-modele.dc.html", "/actualites/compte-personnel-france-renov/", true, "2026-08-19"],
+  ["A-propos.dc.html", "/a-propos/", true, "2026-08-19"],
+  ["Methodologie.dc.html", "/methodologie-editoriale/", true, "2026-08-19"],
+  ["Contact.dc.html", "/contact/", true, "2026-08-19"],
   ["Mentions-legales.dc.html", "/mentions-legales/", false],
   ["Conditions-generales.dc.html", "/conditions-generales/", false],
   ["Politique-confidentialite.dc.html", "/politique-de-confidentialite/", false],
@@ -158,8 +158,20 @@ function escapeAttribute(value) {
     .replaceAll(">", "&gt;");
 }
 
+function decodeHtmlText(value) {
+  return value
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(Number.parseInt(code, 16)))
+    .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number.parseInt(code, 10)))
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&apos;/gi, "'")
+    .replace(/&quot;/gi, '"')
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&amp;/gi, "&");
+}
+
 function titleFrom(source) {
-  return source.match(/<title>([\s\S]*?)<\/title>/i)?.[1]
+  return decodeHtmlText(source.match(/<title>([\s\S]*?)<\/title>/i)?.[1] || "")
     .replace(/<[^>]+>/g, "")
     .trim() || "Go Senior";
 }
@@ -425,7 +437,7 @@ function addProductionHead(source, file, route, indexed, options = {}) {
       ].filter(Boolean)
     : [];
   const social = [
-    `<title>${title}</title>`,
+    `<title>${escapeAttribute(title)}</title>`,
     `<meta name="description" content="${escapeAttribute(description)}">`,
     `<meta name="robots" content="${robots}">`,
     faviconHead,
